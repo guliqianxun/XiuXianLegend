@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AffixData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/affix_data.gd" id="1_a"]
+
+[resource]
+script = ExtResource("1_a")
+id = &"block_on_turn"
+display_name = "回合开始格挡"
+description_template = "每回合获得 {value} 格挡（TODO 战斗未实装）"
+polarity = 0
+min_tier = 2
+weight = 0.4
+value_min = 2.0
+value_max = 5.0
+hooks = PackedStringArray("on_turn_start")
+path_filter = Array[StringName]([])

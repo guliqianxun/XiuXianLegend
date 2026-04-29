@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_card"]
+[ext_resource type="Script" path="res://scripts/combat/effects/damage_effect.gd" id="2_dmg"]
+
+[sub_resource type="Resource" id="Fx_dmg4a"]
+script = ExtResource("2_dmg")
+amount = 4
+kind = &"physical"
+
+[sub_resource type="Resource" id="Fx_dmg4b"]
+script = ExtResource("2_dmg")
+amount = 4
+kind = &"physical"
+
+[sub_resource type="Resource" id="Fx_dmg4c"]
+script = ExtResource("2_dmg")
+amount = 4
+kind = &"physical"
+
+[resource]
+script = ExtResource("1_card")
+id = &"sword_sweep"
+display_name = "横扫"
+description = "三段连斩。各造成 4 点伤害。"
+path = &"sword"
+cost = 2
+rarity = 1
+pollute_on_play = 0
+effects = Array[Resource]([SubResource("Fx_dmg4a"), SubResource("Fx_dmg4b"), SubResource("Fx_dmg4c")])

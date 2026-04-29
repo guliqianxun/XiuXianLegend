@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="GearData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/gear_data.gd" id="1_gd"]
+
+[resource]
+script = ExtResource("1_gd")
+id = &"bloodfang_sword"
+display_name = "血牙剑"
+flavor = "饮过血的剑会自己挑食。"
+slot = 0
+path_affinity = &"sword"
+base_attack = 8
+base_defense = 0

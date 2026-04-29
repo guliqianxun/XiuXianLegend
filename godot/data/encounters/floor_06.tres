@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EncounterData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/encounter_data.gd" id="1_e"]
+
+[resource]
+script = ExtResource("1_e")
+id = &"floor_06"
+display_name = "诡修·瞎眼修士"
+hp = 44
+atk = 7
+intent_pool = ["怨气呼啸", "残影一击"]
+loot_table = {0: 1.2, 1: 1.0, 3: 1.0}
+tier = 1
+rarity_hint = 2
+spirit_stones_min = 50
+spirit_stones_max = 75
+insight_chance = 0.4

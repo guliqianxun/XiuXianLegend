@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/card_data.gd" id="1_card"]
+[ext_resource type="Script" path="res://scripts/combat/effects/draw_effect.gd" id="2_drw"]
+
+[sub_resource type="Resource" id="Fx_drw2"]
+script = ExtResource("2_drw")
+amount = 2
+
+[resource]
+script = ExtResource("1_card")
+id = &"insight_glance"
+display_name = "见微"
+description = "凝神细察。抽 2 张牌。"
+path = &""
+cost = 1
+rarity = 1
+pollute_on_play = 0
+effects = Array[Resource]([SubResource("Fx_drw2")])

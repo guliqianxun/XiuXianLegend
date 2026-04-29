@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="GearData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/gear_data.gd" id="1_gd"]
+
+[resource]
+script = ExtResource("1_gd")
+id = &"cinder_furnace"
+display_name = "残烬丹炉"
+flavor = "火已熄三百年，炉壁仍温。"
+slot = 3
+path_affinity = &""
+base_attack = 0
+base_defense = 2

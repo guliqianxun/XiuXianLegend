@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="GearData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/gear_data.gd" id="1_gd"]
+
+[resource]
+script = ExtResource("1_gd")
+id = &"warding_talisman"
+display_name = "镇煞符"
+flavor = "符上朱砂干涸如旧伤。"
+slot = 1
+path_affinity = &""
+base_attack = 0
+base_defense = 5

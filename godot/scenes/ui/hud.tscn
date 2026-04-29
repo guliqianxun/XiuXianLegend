@@ -1,0 +1,73 @@
+[gd_scene load_steps=3 format=3 uid="uid://b1xianbing0hud0"]
+
+[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
+
+[sub_resource type="StyleBoxFlat" id="HudPanel"]
+bg_color = Color(0.06, 0.06, 0.075, 0.92)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 2
+border_color = Color(0.72, 0.11, 0.11, 1)
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+
+[node name="HUD" type="PanelContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 64.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("HudPanel")
+script = ExtResource("1_hud")
+
+[node name="Row" type="HBoxContainer" parent="."]
+theme_override_constants/separation = 24
+
+[node name="StonesLabel" type="Label" parent="Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 0)
+theme_override_colors/font_color = Color(0.95, 0.86, 0.45, 1)
+theme_override_font_sizes/font_size = 18
+text = "灵石 0"
+
+[node name="InsightsLabel" type="Label" parent="Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 0)
+theme_override_colors/font_color = Color(0.7, 0.85, 1.0, 1)
+theme_override_font_sizes/font_size = 18
+text = "见闻 0"
+
+[node name="PollutionWrap" type="VBoxContainer" parent="Row"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="PollutionLabel" type="Label" parent="Row/PollutionWrap"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.85, 0.45, 0.85, 1)
+theme_override_font_sizes/font_size = 14
+text = "污染 0/100"
+
+[node name="PollutionBar" type="ProgressBar" parent="Row/PollutionWrap"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 12)
+max_value = 100.0
+show_percentage = false
+
+[node name="SanityWrap" type="VBoxContainer" parent="Row"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="SanityLabel" type="Label" parent="Row/SanityWrap"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.65, 0.95, 0.85, 1)
+theme_override_font_sizes/font_size = 14
+text = "道心 100/100"
+
+[node name="SanityBar" type="ProgressBar" parent="Row/SanityWrap"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 12)
+max_value = 100.0
+value = 100.0
+show_percentage = false

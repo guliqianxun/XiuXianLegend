@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AffixData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/affix_data.gd" id="1_a"]
+
+[resource]
+script = ExtResource("1_a")
+id = &"neg_atk_pct"
+display_name = "攻击衰减"
+description_template = "攻击 -{value}%"
+polarity = 1
+min_tier = 0
+weight = 1.0
+value_min = 5.0
+value_max = 12.0
+hooks = PackedStringArray("stat_mod")
+path_filter = Array[StringName]([])

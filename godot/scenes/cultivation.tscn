@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://dhtrvfp6ykdo8"]
+
+[ext_resource type="Script" path="res://scripts/ui/cultivation_screen.gd" id="1_cult"]
+[ext_resource type="PackedScene" uid="uid://b1xianbing0hud0" path="res://scenes/ui/hud.tscn" id="2_hud"]
+
+[sub_resource type="StyleBoxFlat" id="BgPanel"]
+bg_color = Color(0.04, 0.04, 0.06, 1)
+
+[node name="Cultivation" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_cult")
+
+[node name="Bg" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_styles/panel = SubResource("BgPanel")
+
+[node name="HUD" parent="." instance=ExtResource("2_hud")]
+layout_mode = 1
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 80.0
+offset_left = 60.0
+offset_right = -60.0
+offset_bottom = -24.0
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Margin/VBox"]
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.85, 0.85, 0.95, 1)
+text = "修 炼"
+
+[node name="RateLabel" type="RichTextLabel" parent="Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 180)
+bbcode_enabled = true
+fit_content = true
+
+[node name="SliderRow" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SliderTitle" type="Label" parent="Margin/VBox/SliderRow"]
+text = "预览时长："
+theme_override_font_sizes/font_size = 16
+
+[node name="HoursSlider" type="HSlider" parent="Margin/VBox/SliderRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HoursValue" type="Label" parent="Margin/VBox/SliderRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 0)
+theme_override_font_sizes/font_size = 16
+text = "4 小时"
+
+[node name="PreviewLabel" type="RichTextLabel" parent="Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+fit_content = true
+
+[node name="BackBtn" type="Button" parent="Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 44)
+text = "返 回 主 城"

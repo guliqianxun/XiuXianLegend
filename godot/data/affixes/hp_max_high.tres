@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AffixData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/affix_data.gd" id="1_a"]
+
+[resource]
+script = ExtResource("1_a")
+id = &"hp_max_high"
+display_name = "气血上限（精）"
+description_template = "气血上限 +{value}"
+polarity = 0
+min_tier = 2
+weight = 0.6
+value_min = 16.0
+value_max = 28.0
+hooks = PackedStringArray("stat_mod")
+path_filter = Array[StringName]([])

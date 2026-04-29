@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AffixData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/affix_data.gd" id="1_a"]
+
+[resource]
+script = ExtResource("1_a")
+id = &"neg_extra_pollution"
+display_name = "渎神之蚀"
+description_template = "结算时额外污染 +{value}（TODO 未实装）"
+polarity = 1
+min_tier = 1
+weight = 0.7
+value_min = 1.0
+value_max = 3.0
+hooks = PackedStringArray("on_settle")
+path_filter = Array[StringName]([])

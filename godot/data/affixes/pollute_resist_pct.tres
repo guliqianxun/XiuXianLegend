@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AffixData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/affix_data.gd" id="1_a"]
+
+[resource]
+script = ExtResource("1_a")
+id = &"pollute_resist_pct"
+display_name = "污染抗性"
+description_template = "污染抗性 +{value}%"
+polarity = 0
+min_tier = 1
+weight = 0.6
+value_min = 5.0
+value_max = 18.0
+hooks = PackedStringArray("stat_mod")
+path_filter = Array[StringName]([])

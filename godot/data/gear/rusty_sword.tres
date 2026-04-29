@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="GearData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/gear_data.gd" id="1_gd"]
+
+[resource]
+script = ExtResource("1_gd")
+id = &"rusty_sword"
+display_name = "锈剑"
+flavor = "宗门外勤入门发放。剑身布满褐红斑迹，似血迹，又似锈。"
+slot = 0
+path_affinity = &"sword"
+base_attack = 5
+base_defense = 0

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AffixData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/affix_data.gd" id="1_a"]
+
+[resource]
+script = ExtResource("1_a")
+id = &"neg_self_dmg_midnight"
+display_name = "午夜自伤"
+description_template = "午夜自伤 {value}（TODO 未实装）"
+polarity = 1
+min_tier = 1
+weight = 0.6
+value_min = 3.0
+value_max = 8.0
+hooks = PackedStringArray("midnight")
+path_filter = Array[StringName]([])
