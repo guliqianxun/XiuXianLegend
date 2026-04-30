@@ -1,0 +1,90 @@
+extends Node
+## 离线模拟器 Autoload。
+## 启动时被 ShopScreen 调用，根据 last_settle_unix 推算「这段时间发生了什么」，
+## 写成程序化日记条目（不修改 inventory，仅记录——避免无铺规情况下的 imbalance）。
+##
+## v1（N5a）：默认行为
+##   - 每时辰 30% 概率开炉（写入 forge 日记）
+##   - 每时辰 50% 概率来客（默认按规劝退，写入 customer_refuse 日记）
+## v2（N5b 后）：用 ShopRule 替代默认行为，模拟器查规决定接/拒/造哪种
+##
+## 离线衰减：调 TimeLine.effective_offline_seconds；>24h 在头部加"老铁打盹"叙事。
+
+const FORGE_PROB_PER_SHICHEN: float = 0.30
+const CUSTOMER_PROB_PER_SHICHEN: float = 0.50
+
+const SHICHEN_NAMES: Array[String] = [
+	"子", "丑", "寅", "卯", "辰", "巳",
+	"午", "未", "申", "酉", "戌", "亥",
+]
+
+
+## 主入口：根据「上次结算时戳」与「现在真实时戳」算离线时长，模拟事件，返回日记条目数组。
+## 不修改 GameState；调用方负责把返回值塞 GameState.offline_diary_pending。
+func simulate(last_settle_unix: int, real_now_unix: int) -> Array:
+	var raw: int = real_now_unix - last_settle_unix
+	if raw <= 0:
+		return []
+	var effective: int = TimeLine.effective_offline_seconds(raw)
+	var diary: Array = []
+
+	# 老铁打盹叙事卡（>24h 才出现）
+	if raw > TimeLine.FULL_THRESHOLD_SEC:
+		diary.append({
+			"unix": last_settle_unix,
+			"shichen": TimeLine.shichen_of_unix(last_settle_unix),
+			"kind": &"sleep",
+			"detail": _sleep_detail(raw),
+		})
+
+	# 按时辰节奏推进 effective 秒
+	var rng := RandomNumberGenerator.new()
+	rng.seed = last_settle_unix
+	var n_shichen: int = effective / TimeLine.SECONDS_PER_SHICHEN
+	var recipes: Array = _recipe_pool()
+	var customers: Array = _customer_pool()
+
+	for i in n_shichen:
+		var cur_unix: int = last_settle_unix + (i + 1) * TimeLine.SECONDS_PER_SHICHEN
+		var cur_shichen: int = TimeLine.shichen_of_unix(cur_unix)
+		if rng.randf() < FORGE_PROB_PER_SHICHEN and not recipes.is_empty():
+			var r: RecipeData = recipes[rng.randi() % recipes.size()]
+			diary.append({
+				"unix": cur_unix,
+				"shichen": cur_shichen,
+				"kind": &"forge",
+				"detail": "%s时，炉火又起，出 %s 一件。" % [SHICHEN_NAMES[cur_shichen], r.display_name],
+			})
+		if rng.randf() < CUSTOMER_PROB_PER_SHICHEN and not customers.is_empty():
+			var c: CustomerData = customers[rng.randi() % customers.size()]
+			diary.append({
+				"unix": cur_unix,
+				"shichen": cur_shichen,
+				"kind": &"customer_refuse",
+				"detail": "%s时，%s 来访，按规劝退。" % [SHICHEN_NAMES[cur_shichen], c.display_name],
+			})
+	return diary
+
+
+static func _sleep_detail(raw_seconds: int) -> String:
+	if raw_seconds > TimeLine.DECAY_THRESHOLD_SEC:
+		return "灶火早就凉了。老铁不知道睡了多久。"
+	return "老铁趴在炉边睡过去了，错过了一些事。"
+
+
+static func _recipe_pool() -> Array:
+	var out: Array = []
+	for rid in DataRegistry.ids_of(&"recipe"):
+		var r := DataRegistry.get_resource(&"recipe", rid) as RecipeData
+		if r != null:
+			out.append(r)
+	return out
+
+
+static func _customer_pool() -> Array:
+	var out: Array = []
+	for cid in DataRegistry.ids_of(&"customer"):
+		var c := DataRegistry.get_resource(&"customer", cid) as CustomerData
+		if c != null:
+			out.append(c)
+	return out
