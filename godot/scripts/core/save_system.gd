@@ -1,11 +1,11 @@
 extends Node
 ## 存档系统（Autoload 单例）。
-## - JSON 文本存档，便于调试与迁移。
-## - 带版本号 + migration 链，旧存档不丢。
-## - 写入差量限流：最少 5 秒间隔，避免战斗中频繁 I/O。
+## - JSON 文本存档。
+## - 带版本号 + migration 链。
+## - 写入 5 秒最小间隔限流。
 
 const SAVE_PATH := "user://save_main.json"
-const SAVE_VERSION := 1
+const SAVE_VERSION := 2
 const WRITE_COOLDOWN_SEC := 5.0
 
 var _last_write_msec: int = -10000
@@ -19,6 +19,7 @@ func save_now(force: bool = false) -> bool:
 		"version": SAVE_VERSION,
 		"saved_at": Time.get_unix_time_from_system(),
 		"game_state": GameState.to_dict(),
+		"shop_state": ShopState.to_dict(),
 	}
 	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if f == null:
@@ -45,28 +46,48 @@ func load_or_init() -> void:
 		_init_new_game()
 		EventBus.save_loaded.emit()
 		return
-	parsed = _migrate(parsed)
+	parsed = migrate(parsed)
 	var gs: Dictionary = parsed.get("game_state", {})
 	GameState.from_dict(gs)
+	var ss: Dictionary = parsed.get("shop_state", {})
+	ShopState.from_dict(ss)
 	EventBus.save_loaded.emit()
 
 
 func _init_new_game() -> void:
 	GameState.last_settle_unix = int(Time.get_unix_time_from_system())
-	GameState.season_started_unix = GameState.last_settle_unix
-	GameState.ensure_starter_deck()
 
 
-## 版本迁移：每个版本写一个 _migrate_v{n}_to_v{n+1}，按顺序套用。
-func _migrate(payload: Dictionary) -> Dictionary:
+## 公开 wrapper，供测试与外部调用使用。
+## 注意：直接对外暴露 schema 升级路径，签名变更视为破坏性变更。
+## 注意：会原地修改 payload；如需保留原档，请先 .duplicate(true)。
+func migrate(payload: Dictionary) -> Dictionary:
 	var v := int(payload.get("version", 1))
-	# 当前 SAVE_VERSION == 1，无需迁移；预留扩展点
+	# 未来版本档案：不动数据，不改 version，记日志返回
+	if v > SAVE_VERSION:
+		push_warning("save: payload version v%d is newer than SAVE_VERSION v%d; returned as-is" % [v, SAVE_VERSION])
+		return payload
 	while v < SAVE_VERSION:
 		match v:
-			# 1: payload = _migrate_v1_to_v2(payload)
+			1:
+				payload = _migrate_v1_to_v2(payload)
 			_:
-				push_warning("save: no migration from v%d" % v)
-				break
+				push_warning("save: no migration from v%d; aborting" % v)
+				return payload  # 中途未知版本：保留原 version，不再前进
 		v += 1
 	payload["version"] = SAVE_VERSION
+	return payload
+
+
+## v1 → v2: 删除战斗/塔/赛季字段；保留 spirit_stones/insights/last_settle_unix/equipped/inventory；
+## 新增 reputation 默认 0
+func _migrate_v1_to_v2(payload: Dictionary) -> Dictionary:
+	var gs: Dictionary = payload.get("game_state", {})
+	for bad in ["pollution", "pollution_cap", "sanity", "sanity_cap",
+			"sequence_ranks", "season_id", "season_started_unix",
+			"owned_cards", "tower_floor", "tower_max_reached"]:
+		gs.erase(bad)
+	if not gs.has("reputation"):
+		gs["reputation"] = 0
+	payload["game_state"] = gs
 	return payload

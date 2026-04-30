@@ -1,36 +1,56 @@
-# 仙兵传 · Weird Cultivation
+# 我在诡异修仙造兵器
 
-一款 **诡异修仙 + 挂机卡牌 + 暗黑 Build 构筑** 的单机 / 单人在线游戏。
+一款 **诡异修仙世界 · 铁匠铺挂机** 的单机游戏。
 
-> 天道崩坏，灵气混入"异象"。修士每一次吐纳，皆是与未知的赌局；每一次突破，皆是序列的收编。
-> 仙兵不再悬于云海之上，而藏于诡谲之中——你打造的，是仙兵，还是封印？
+> 你不记得自己是谁，但你的手记得怎么打铁。
+> 每一炉都是一次开奖；每一位推门而入的访客都是一个盲盒；
+> 每一件造出来的兵器都会带着自己的履历回到你的器谱里——
+> 直到某一天，你从那本谱子上认出了自己。
 
 ## 玩法支柱
 
-- **挂机修炼**：离线产出经验 / 灵石 / 见闻 / 污染，回来一键结算。
-- **卡牌战斗**：自动回合制 + 速度条，玩家通过组牌、装备、功法构筑流派。
-- **暗黑掉落**：装备词缀随机生成，凡 / 灵 / 法 / 禁 / 秘 五品质，禁品强力但带反噬。
-- **诡异序列**：6 条道途（剑 / 咒 / 傀 / 丹 / 食 / 卜），每序列 9→0 共 10 阶，扮演仪式突破。
-- **怪谈夜事件**：白天挂机，夜晚触发文本事件 + 卡牌战斗。
-- **赛季降临**：每季主神不同，词缀池 / Boss / 序列特性整体偏移。
+- **挂机时间线**：在线/离线产出一致，离线时系统按"铺规"自动跑铺子
+- **造装备**：选配方、投料、捶打、出炉——凡 / 灵 / 法 / 禁 / 秘 五品质，附带巧成 + 反噬
+- **28 宿器谱**：装备落入预设星位，凑齐古谱 → 共鸣，玩家自连支脉 → 隐藏图案
+- **问道门客**：神秘访客求借兵器，常 / 罕 / 怪三档，怪客身份是盲盒
+- **诡异叙事**：每段离线由系统拼出"老铁的小本"——你不在的时候，铺子也活着
 
 ## 技术栈
 
 - **引擎**：Godot 4.6（GDScript）
-- **架构**：Resource 数据驱动 + Autoload 服务 + 信号事件总线
-- **AI 辅助开发**：代码（Claude Code）、美术（SD/MJ）、文案（LLM 批量生成 + 人审）、数值（蒙特卡洛）
-- **运行时不依赖任何 AI / 联网服务**
+- **架构**：Resource 数据驱动 + Autoload 服务 + 信号事件总线 + MVVM
+- **运行时**：纯单机，零网络依赖（选配 Steam Cloud 同步）
 
 ## 目录
 
 ```
-godot/        Godot 项目（主体）
-DESIGN.md     世界观、系统、数值、设计模式约束
-README.md     本文件
+godot/                                                            Godot 项目（主体）
+docs/superpowers/specs/2026-04-30-weird-cultivation-smith-design.md  ← 当前生效设计
+docs/superpowers/plans/                                           ← 逐里程碑实现计划
+DESIGN.md                                                         旧设计文档（已重定位）
 ```
 
 ## 开始
 
-1. 安装 [Godot 4.6](https://godotengine.org/) 稳定版（项目已在 `E:\soft\godot\Godot_v4.6.2-stable_win64.exe` 验证）
+1. 安装 [Godot 4.6](https://godotengine.org/) 稳定版（本机验证路径：`D:\soft\GODOT\Godot_v4.6.2-stable_win64.exe`）
 2. 启动 Godot，导入 `godot/project.godot`
-3. F5 运行
+3. F5 运行（当前为 N1 骨架阶段：空铺子 4 区域 + 老铁剪影 + 时辰/灵石 HUD）
+
+## 当前进度
+
+- ✅ N0：旧战斗/塔/赛季/卡牌系统归档到 `_deprecated/`
+- ✅ N1：铺子主场景 + TimeLine/ShopState Autoload + 5 个数据 Resource 类骨架
+- ⏳ N2：锻造 v2（火候窗口 + 巧成 + 反噬）
+- ⏳ N3-N10：见 spec §13.2
+
+## 测试
+
+跑全部测试（10 个测试场景，N1 阶段共 122 个断言）：
+
+```bash
+for t in test_game_state test_save_migration test_save_with_shopstate \
+         test_recipe_data test_customer_data test_gupu_data test_narrative_card \
+         test_time_line test_shop_state playtest_n1_smoke; do
+  "D:/soft/GODOT/Godot_v4.6.2-stable_win64_console.exe" --headless --path godot "res://scenes/test/$t.tscn"
+done
+```

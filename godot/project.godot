@@ -10,9 +10,9 @@ config_version=5
 
 [application]
 
-config/name="仙兵传"
-config/description="诡异修仙 + 挂机卡牌 + 暗黑 Build 构筑"
-run/main_scene="res://scenes/city.tscn"
+config/name="我在诡异修仙造兵器"
+config/description="诡异修仙 + 造兵器 + 单机挂机"
+run/main_scene="res://scenes/shop.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -22,6 +22,8 @@ EventBus="*res://scripts/core/event_bus.gd"
 GameState="*res://scripts/core/game_state.gd"
 SaveSystem="*res://scripts/core/save_system.gd"
 DataRegistry="*res://scripts/core/data_registry.gd"
+TimeLine="*res://scripts/core/time_line.gd"
+ShopState="*res://scripts/core/shop_state.gd"
 
 [debug]
 
