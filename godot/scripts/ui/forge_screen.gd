@@ -124,12 +124,26 @@ func _on_timing_finished(score: float) -> void:
 		GameState.add_material(result.byproduct, result.byproduct_amount)
 		_result_label.text = "⚠ 反噬！材料化作 %s ×1" % str(result.byproduct)
 		_result_overlay.play(-1)
+		# 反噬反馈：低沉嗡声 + 大震
+		Sfx.play_breach()
+		ScreenFx.shake(14.0, 0.5)
 	else:
 		GameState.add_to_inventory(result.equipment)
 		var qiao_str := "（巧成 +1 阶）" if result.was_qiao_cheng else ""
 		_result_label.text = "出炉：%s %s" % [GearInstance.rarity_prefix(result.quality), qiao_str]
 		_result_overlay.play(result.quality)
+		# 出炉反馈：5 级铛声 + 渐强震动（凡 0px / 秘 12px）
+		Sfx.play_forge(int(result.quality))
+		ScreenFx.shake(float(int(result.quality)) * 3.0, 0.3)
+		_pulse_label(_result_label)
 	EventBus.forge_finished.emit(result.equipment, result.was_qiao_cheng, result.was_backlash)
+
+
+func _pulse_label(label: Label) -> void:
+	if label == null: return
+	label.scale = Vector2(0.85, 0.85)
+	var tw := create_tween()
+	tw.tween_property(label, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func _on_overlay_done() -> void:

@@ -91,6 +91,18 @@ func _on_inspect() -> void:
 	if c != null and not c.traits.is_empty():
 		GameState.learn_traits(c.traits)
 	_render(_current)
+	# 反馈：短铃 + 名字脉冲
+	Sfx.play_inspect()
+	_pulse_name()
+
+
+func _pulse_name() -> void:
+	if _name_label == null: return
+	_name_label.modulate = Color(1, 1, 1, 0)
+	_name_label.scale = Vector2(1.05, 1.05)
+	var tw := create_tween().set_parallel(true)
+	tw.tween_property(_name_label, "modulate", Color(1, 1, 1, 1), 0.25)
+	tw.tween_property(_name_label, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 static func _slot_zh(slot: StringName) -> String:
