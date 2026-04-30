@@ -55,16 +55,22 @@ func _init_new_game() -> void:
 	GameState.last_settle_unix = int(Time.get_unix_time_from_system())
 
 
-## 公开 wrapper，供测试与外部调用使用
+## 公开 wrapper，供测试与外部调用使用。
+## 注意：直接对外暴露 schema 升级路径，签名变更视为破坏性变更。
+## 注意：会原地修改 payload；如需保留原档，请先 .duplicate(true)。
 func migrate(payload: Dictionary) -> Dictionary:
 	var v := int(payload.get("version", 1))
+	# 未来版本档案：不动数据，不改 version，记日志返回
+	if v > SAVE_VERSION:
+		push_warning("save: payload version v%d is newer than SAVE_VERSION v%d; returned as-is" % [v, SAVE_VERSION])
+		return payload
 	while v < SAVE_VERSION:
 		match v:
 			1:
 				payload = _migrate_v1_to_v2(payload)
 			_:
-				push_warning("save: no migration from v%d" % v)
-				break
+				push_warning("save: no migration from v%d; aborting" % v)
+				return payload  # 中途未知版本：保留原 version，不再前进
 		v += 1
 	payload["version"] = SAVE_VERSION
 	return payload
