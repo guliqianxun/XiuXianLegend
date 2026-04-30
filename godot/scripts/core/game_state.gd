@@ -32,6 +32,10 @@ var inventory: Array = []
 ## entry: { unix:int, shichen:int, kind:StringName, detail:String }
 var offline_diary_pending: Array = []
 
+# ── 已学到的客人特征（spec §7.3）─────────────────
+## 打听 / 攻破后永久解锁；用于在 RulesScreen 生成精确条款
+var learned_traits: Array[StringName] = []
+
 
 func add_currency(kind: StringName, amount: int) -> void:
 	match kind:
@@ -114,6 +118,24 @@ func add_to_inventory(inst: GearInstance) -> void:
 	EventBus.loot_dropped.emit([inst])
 
 
+# ── trait 学习 ────────────────────────────────
+func learn_traits(list: Array) -> void:
+	if list == null or list.is_empty(): return
+	var added: Array[StringName] = []
+	for t in list:
+		var sn := StringName(t)
+		if sn == &"": continue
+		if not learned_traits.has(sn):
+			learned_traits.append(sn)
+			added.append(sn)
+	if not added.is_empty():
+		EventBus.traits_learned.emit(added)
+
+
+func has_learned_trait(t: StringName) -> bool:
+	return learned_traits.has(t)
+
+
 func _read_currency(kind: StringName) -> int:
 	match kind:
 		&"spirit_stones": return spirit_stones
@@ -144,6 +166,9 @@ func to_dict() -> Dictionary:
 			"kind": String(ed.get("kind", "")),
 			"detail": String(ed.get("detail", "")),
 		})
+	var traits_ser: Array = []
+	for t in learned_traits:
+		traits_ser.append(String(t))
 	return {
 		"spirit_stones": spirit_stones,
 		"insights": insights,
@@ -154,6 +179,7 @@ func to_dict() -> Dictionary:
 		"materials": mats_ser,
 		"smith_hand_today": smith_hand_today,
 		"offline_diary_pending": diary_ser,
+		"learned_traits": traits_ser,
 	}
 
 
@@ -188,3 +214,8 @@ func from_dict(d: Dictionary) -> void:
 			"kind": StringName(ed.get("kind", "")),
 			"detail": String(ed.get("detail", "")),
 		})
+
+	learned_traits = []
+	var traits_raw: Array = d.get("learned_traits", [])
+	for s in traits_raw:
+		learned_traits.append(StringName(s))

@@ -34,18 +34,38 @@ func _rebuild() -> void:
 	for child in _list_root.get_children():
 		child.queue_free()
 	_checks.clear()
-	# 重建
-	for id in ShopRules.all_preset_ids():
-		var rule: ShopRule = ShopRules.get_preset(id)
-		if rule == null: continue
-		var cb := CheckBox.new()
-		cb.text = "%s   ·   [%s → %s]" % [rule.display_name, _cond_zh(rule.condition), _act_zh(rule.action)]
-		cb.button_pressed = ShopRules.is_enabled(id)
-		var captured_id: StringName = id
-		cb.toggled.connect(func(on: bool) -> void: _on_toggle(captured_id, on))
-		_list_root.add_child(cb)
-		_checks[id] = cb
+	# 4 预设区
+	for id in [ShopRules.PRESET_REFUSE_ALL, ShopRules.PRESET_LEND_ANY,
+			ShopRules.PRESET_REFUSE_WEIRD, ShopRules.PRESET_LEND_REGULAR]:
+		_add_rule_check(id)
+	# 已学 trait 区（仅当玩家学到至少 1 条时显示）
+	var learned_ids: Array[StringName] = []
+	for t in GameState.learned_traits:
+		if ShopRules.TRAIT_LIBRARY.has(t):
+			learned_ids.append(StringName(ShopRules.LEARNED_PREFIX + String(t)))
+	if not learned_ids.is_empty():
+		var sep := HSeparator.new()
+		_list_root.add_child(sep)
+		var lbl := Label.new()
+		lbl.text = "—— 已学到的特征 ——"
+		lbl.theme_font_size = 14
+		lbl.add_theme_color_override("font_color", Color(0.8, 0.7, 0.5))
+		_list_root.add_child(lbl)
+		for id in learned_ids:
+			_add_rule_check(id)
 	_refresh_hint()
+
+
+func _add_rule_check(id: StringName) -> void:
+	var rule: ShopRule = ShopRules.get_preset(id)
+	if rule == null: return
+	var cb := CheckBox.new()
+	cb.text = "%s   ·   [%s → %s]" % [rule.display_name, _cond_zh(rule.condition), _act_zh(rule.action)]
+	cb.button_pressed = ShopRules.is_enabled(id)
+	var captured_id: StringName = id
+	cb.toggled.connect(func(on: bool) -> void: _on_toggle(captured_id, on))
+	_list_root.add_child(cb)
+	_checks[id] = cb
 
 
 func _on_toggle(id: StringName, on: bool) -> void:
@@ -77,6 +97,7 @@ static func _cond_zh(c: StringName) -> String:
 		&"is_rare": return "罕客"
 		&"is_regular": return "常客"
 		&"deep_night": return "深夜"
+		&"has_trait": return "带此特征"
 		_: return String(c)
 
 

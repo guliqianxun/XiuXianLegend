@@ -14,3 +14,4 @@ allowed_shichen = Array[int]([0, 1, 2, 3])
 faction_state_bonus = 0.0
 disguise_name = "陌生剑客"
 disguise_tier = 0
+traits = Array[StringName]([&"sole_dustless", &"hooded"])
