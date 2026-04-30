@@ -19,6 +19,7 @@ func save_now(force: bool = false) -> bool:
 		"version": SAVE_VERSION,
 		"saved_at": Time.get_unix_time_from_system(),
 		"game_state": GameState.to_dict(),
+		"shop_state": ShopState.to_dict(),
 	}
 	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if f == null:
@@ -48,6 +49,8 @@ func load_or_init() -> void:
 	parsed = migrate(parsed)
 	var gs: Dictionary = parsed.get("game_state", {})
 	GameState.from_dict(gs)
+	var ss: Dictionary = parsed.get("shop_state", {})
+	ShopState.from_dict(ss)
 	EventBus.save_loaded.emit()
 
 
