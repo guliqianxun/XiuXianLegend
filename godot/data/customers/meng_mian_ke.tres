@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CustomerData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/customer_data.gd" id="1_c"]
+
+[resource]
+script = ExtResource("1_c")
+id = &"meng_mian_ke"
+display_name = "蒙面客"
+tier = 2
+path_affinity = &"sword"
+faction = &"unknown"
+base_payment = 600
+allowed_shichen = Array[int]([0, 1, 2, 3])
+faction_state_bonus = 0.0
+portrait_path = ""
