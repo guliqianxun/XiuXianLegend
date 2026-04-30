@@ -22,17 +22,12 @@ offset_bottom = 520.0
 color = Color(0.18, 0.10, 0.08, 1)
 
 [node name="OpenForgeButton" type="Button" parent="AreaFurnace"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -60.0
-offset_top = -20.0
-offset_right = 60.0
-offset_bottom = 20.0
-text = "开炉"
-flat = false
+offset_left = 120.0
+offset_top = 110.0
+offset_right = 280.0
+offset_bottom = 170.0
+text = "开　炉"
+theme_override_font_sizes/font_size = 28
 
 [node name="LabelFurnace" type="Label" parent="AreaFurnace"]
 offset_left = 10.0
