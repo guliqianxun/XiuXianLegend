@@ -27,3 +27,24 @@ static func roll_quality(dist: PackedFloat32Array, qiao_cheng_hit: bool, rng: Ra
 	if qiao_cheng_hit:
 		q = mini(q + 1, 4)
 	return q
+
+
+## "巧成材料"id 集合：添加这些材料 +0.10 巧成率/件
+const QIAO_MATERIALS: Array[StringName] = [&"hui", &"zhu_yu", &"yi_zhong_liao_qiao"]
+
+
+## 计算巧成命中概率，封顶 0.50。
+## - timing_score: 火候判定窗口得分 0..1（离线/无判定时传 0）
+## - smith_hand: GameState.smith_hand_today，1.0 baseline，± 5%
+## - optional_materials: 玩家投入的可选添料 id 列表
+static func compute_qiao_cheng_chance(timing_score: float, smith_hand: float, optional_materials: Array) -> float:
+	var c: float = 0.0
+	# 火候：score 0..1 → 0..+0.20
+	c += clampf(timing_score, 0.0, 1.0) * 0.20
+	# 手感：(1.0 + delta) → +delta（baseline 1.0 贡献 0）
+	c += smith_hand - 1.0
+	# 加料：每个巧成材料 +0.10
+	for mid in optional_materials:
+		if mid in QIAO_MATERIALS:
+			c += 0.10
+	return clampf(c, 0.0, 0.50)
