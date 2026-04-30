@@ -5,7 +5,7 @@ extends Node
 ## - 写入 5 秒最小间隔限流。
 
 const SAVE_PATH := "user://save_main.json"
-const SAVE_VERSION := 2
+const SAVE_VERSION := 3
 const WRITE_COOLDOWN_SEC := 5.0
 
 var _last_write_msec: int = -10000
@@ -77,11 +77,22 @@ func migrate(payload: Dictionary) -> Dictionary:
 		match v:
 			1:
 				payload = _migrate_v1_to_v2(payload)
+			2:
+				payload = _migrate_v2_to_v3(payload)
 			_:
 				push_warning("save: no migration from v%d; aborting" % v)
 				return payload  # 中途未知版本：保留原 version，不再前进
 		v += 1
 	payload["version"] = SAVE_VERSION
+	return payload
+
+
+## v2 → v3: GameState 加 offline_diary_pending 字段（默认空 []）
+func _migrate_v2_to_v3(payload: Dictionary) -> Dictionary:
+	var gs: Dictionary = payload.get("game_state", {})
+	if not gs.has("offline_diary_pending"):
+		gs["offline_diary_pending"] = []
+	payload["game_state"] = gs
 	return payload
 
 

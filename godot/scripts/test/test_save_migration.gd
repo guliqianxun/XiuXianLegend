@@ -8,7 +8,8 @@ var _failed: int = 0
 func _ready() -> void:
 	await get_tree().process_frame
 	_test_v1_payload_migrates()
-	_test_v2_payload_unchanged()
+	_test_v2_payload_migrates()
+	_test_v3_payload_unchanged()
 	_test_future_version_passthrough()
 	print("\n========== test_save_migration ==========")
 	print("PASS: %d  FAIL: %d" % [_passed, _failed])
@@ -47,19 +48,20 @@ func _test_v1_payload_migrates() -> void:
 		}
 	}
 	var migrated := SaveSystem.migrate(v1)  # 测试用 public wrapper
-	_assert(int(migrated.get("version", 0)) == SaveSystem.SAVE_VERSION, "version bumped to v2")
+	_assert(int(migrated.get("version", 0)) == SaveSystem.SAVE_VERSION, "version bumped to v%d" % SaveSystem.SAVE_VERSION)
 	var gs: Dictionary = migrated.get("game_state", {})
 	_assert(int(gs.get("spirit_stones", 0)) == 333, "spirit_stones preserved")
 	_assert(int(gs.get("insights", 0)) == 11, "insights preserved")
 	_assert(int(gs.get("last_settle_unix", 0)) == 1700000000, "last_settle_unix preserved")
 	_assert(int(gs.get("reputation", -1)) == 0, "reputation defaulted to 0")
+	_assert(gs.has("offline_diary_pending"), "diary_pending added (v1→v3 chain)")
 	for bad in ["pollution", "pollution_cap", "sanity", "sanity_cap",
 			"sequence_ranks", "season_id", "season_started_unix",
 			"owned_cards", "tower_floor", "tower_max_reached"]:
 		_assert(not gs.has(bad), "v1 field '%s' stripped" % bad)
 
 
-func _test_v2_payload_unchanged() -> void:
+func _test_v2_payload_migrates() -> void:
 	var v2 := {
 		"version": 2,
 		"saved_at": 1700001234,
@@ -73,9 +75,27 @@ func _test_v2_payload_unchanged() -> void:
 		}
 	}
 	var migrated := SaveSystem.migrate(v2)
-	_assert(int(migrated.get("version", 0)) == 2, "v2 stays at 2")
+	_assert(int(migrated.get("version", 0)) == 3, "v2 → v3")
 	var gs: Dictionary = migrated.get("game_state", {})
 	_assert(int(gs.get("reputation", 0)) == 20, "v2 reputation preserved")
+	_assert(gs.has("offline_diary_pending"), "v2→v3 added diary_pending")
+	_assert((gs["offline_diary_pending"] as Array).is_empty(), "diary_pending defaulted empty")
+
+
+func _test_v3_payload_unchanged() -> void:
+	var v3 := {
+		"version": 3,
+		"saved_at": 1700009999,
+		"game_state": {
+			"spirit_stones": 50,
+			"reputation": 5,
+			"offline_diary_pending": [{"unix": 1, "shichen": 0, "kind": "forge", "detail": "x"}],
+		}
+	}
+	var migrated := SaveSystem.migrate(v3)
+	_assert(int(migrated.get("version", 0)) == 3, "v3 stays at 3")
+	var gs: Dictionary = migrated.get("game_state", {})
+	_assert((gs["offline_diary_pending"] as Array).size() == 1, "v3 diary preserved")
 
 
 func _test_future_version_passthrough() -> void:
