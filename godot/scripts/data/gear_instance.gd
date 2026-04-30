@@ -3,11 +3,22 @@ extends RefCounted
 ## 装备 *运行时* 实例。基础模板取自 GearData，具体词缀在生成时 roll。
 ## 通过 to_dict / from_dict 支持 JSON 存档。
 
+enum Status { IN_SHOP = 0, LENT = 1, NOT_RETURNED = 2, DAMAGED = 3, MUTATED = 4 }
+
 var base_id: StringName = &""          ## GearData id
 var affix_ids: Array[StringName] = []  ## AffixData id 列表
 var affix_values: Array[float] = []    ## 与 affix_ids 一一对应
 var rarity: int = 0                    ## 0 凡 1 灵 2 法 3 禁 4 秘
 var seed: int = 0                      ## 生成种子（用于复现）
+
+## 出生记录：unix / recipe / ingredients / qiao_cheng / smith_hand 等
+var origin: Dictionary = {}
+## 履历：每项 {unix:int, event:String, detail:String}
+var history: Array = []
+## 入谱位：{gupu:StringName, su:StringName}
+var star_position: Dictionary = {}
+## 当前状态（在铺/借出/不归还/损/异变）
+var status: int = Status.IN_SHOP
 
 
 func get_base() -> GearData:
@@ -76,6 +87,10 @@ func to_dict() -> Dictionary:
 		"affix_values": affix_values.duplicate(),
 		"rarity": rarity,
 		"seed": seed,
+		"origin": origin.duplicate(true),
+		"history": history.duplicate(true),
+		"star_position": star_position.duplicate(true),
+		"status": status,
 	}
 
 
@@ -94,4 +109,8 @@ static func from_dict(d: Dictionary) -> GearInstance:
 	g.affix_values = vals_typed
 	g.rarity = int(d.get("rarity", 0))
 	g.seed = int(d.get("seed", 0))
+	g.origin = (d.get("origin", {}) as Dictionary).duplicate(true)
+	g.history = (d.get("history", []) as Array).duplicate(true)
+	g.star_position = (d.get("star_position", {}) as Dictionary).duplicate(true)
+	g.status = int(d.get("status", Status.IN_SHOP))
 	return g
