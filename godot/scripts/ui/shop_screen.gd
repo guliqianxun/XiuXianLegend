@@ -25,15 +25,15 @@ const AREA_POSITIONS: Dictionary = {
 
 
 func _ready() -> void:
-	# 强制 ForgeScreen / CodexScreen / LendDialog / ReturnNotice 占满 viewport 并隐藏
-	# CustomerArrivalPanel 是底部小卡，不需要全屏 size
+	# 强制所有覆盖层 UI 占满 viewport 并隐藏。
+	# 即使 CustomerArrivalPanel/ReturnNotice 视觉只占部分屏幕，仍需 size = viewport
+	# 让其内部 anchors_preset (12=底部宽 / 5=居中上) 正确定位（Control 在 Node2D
+	# 父下 anchors 全失效）。
 	var vp_size: Vector2 = get_viewport_rect().size
-	for screen in [_forge_screen, _codex_screen, _lend_dialog]:
+	for screen in [_forge_screen, _codex_screen, _lend_dialog, _customer_panel, _return_notice]:
 		screen.position = Vector2.ZERO
 		screen.size = vp_size
 		screen.visible = false
-	_customer_panel.visible = false
-	_return_notice.visible = false
 	# 老铁初始站在炉房（避开按钮位置）
 	_old_iron.global_position = AREA_POSITIONS[&"furnace"]
 	# 启动后立即载档
