@@ -1,16 +1,17 @@
 extends Node
 ## 数据注册表（Autoload 单例）。
 ## 启动时只扫描"索引"（路径列表），具体 Resource 按需 load + LRU 缓存。
-## 任何静态配置（卡 / 装 / 词缀 / 序列 / 怪谈）都从这里取，禁止脚本里硬编码常量。
+## 任何静态配置（配方 / 客人 / 古谱 / 星宿 / 叙事 / 装备 / 词缀）都从这里取，禁止脚本里硬编码常量。
 
 const LRU_CAP := 200
 const INDEX_DIRS := {
-	&"card": "res://data/cards",
 	&"gear": "res://data/gear",
 	&"affix": "res://data/affixes",
-	&"sequence": "res://data/sequences",
-	&"anomaly": "res://data/anomalies",
-	&"encounter": "res://data/encounters",
+	&"recipe": "res://data/recipes",
+	&"customer": "res://data/customers",
+	&"gupu": "res://data/gupu",
+	&"su": "res://data/sus",
+	&"narrative": "res://data/narratives",
 }
 
 # category -> { id: path }
