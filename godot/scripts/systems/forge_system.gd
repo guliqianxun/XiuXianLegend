@@ -65,3 +65,75 @@ static func compute_backlash_chance(optional_materials: Array) -> float:
 			c = BACKLASH_BASE + BACKLASH_BOOST
 			break  # 不重复累加
 	return c
+
+
+## 完整锻造路径：roll backlash → roll qiao_cheng → roll quality → build GearInstance
+## - recipe: RecipeData
+## - optional_materials: 玩家选的可选添料 id 列表（一次性消费）
+## - timing_score: 火候得分 0..1（离线传 0）
+## - smith_hand: GameState.smith_hand_today
+## - now_unix: 出炉时间戳
+## - rng: 注入的 RandomNumberGenerator
+##
+## **不消耗** GameState 的材料 — 调用方负责消费（保持函数纯粹）
+static func forge_one(
+	recipe: RecipeData,
+	optional_materials: Array,
+	timing_score: float,
+	smith_hand: float,
+	now_unix: int,
+	rng: RandomNumberGenerator
+) -> ForgeResult:
+	var result := ForgeResult.new()
+
+	# 1. 反噬检定（先做，命中则提前返回）
+	var backlash_chance := compute_backlash_chance(optional_materials)
+	if rng.randf() < backlash_chance:
+		result.was_backlash = true
+		result.quality = -1
+		result.equipment = null
+		# 副产物：50% hui / 50% yi_zhong_liao
+		if rng.randf() < 0.5:
+			result.byproduct = &"hui"
+		else:
+			result.byproduct = &"yi_zhong_liao"
+		result.byproduct_amount = 1
+		return result
+
+	# 2. 巧成检定
+	var qiao_cheng_chance := compute_qiao_cheng_chance(timing_score, smith_hand, optional_materials)
+	var qiao_cheng_hit: bool = rng.randf() < qiao_cheng_chance
+	result.was_qiao_cheng = qiao_cheng_hit
+
+	# 3. 品质抽样
+	var q := roll_quality(recipe.base_quality_distribution, qiao_cheng_hit, rng)
+	result.quality = q
+
+	# 4. 建装备
+	var g := GearInstance.new()
+	g.base_id = recipe.id  # N2 临时：以配方 id 当 base_id；N3 引入 base_template_id 字段时改
+	g.rarity = q
+	g.seed = rng.seed
+	g.origin = {
+		"unix": now_unix,
+		"recipe": String(recipe.id),
+		"qiao_cheng": qiao_cheng_hit,
+		"timing_score": timing_score,
+		"smith_hand": smith_hand,
+		"optional_materials": _stringify_array(optional_materials),
+	}
+	g.history = [{
+		"unix": now_unix,
+		"event": "forged",
+		"detail": "巧成" if qiao_cheng_hit else ""
+	}]
+	g.status = GearInstance.Status.IN_SHOP
+	result.equipment = g
+	return result
+
+
+static func _stringify_array(arr: Array) -> Array:
+	var out: Array = []
+	for x in arr:
+		out.append(String(x))
+	return out
