@@ -3,12 +3,12 @@ extends Node2D
 ## 4 区域 placeholder：炉房 / 柜台 / 阁楼 / 后院。
 ## N1 仅显示 + 老铁站位 + 时辰 HUD；交互留给后续 milestone。
 
-## 4 区域中心坐标（相对于场景原点；2.5D 俯视布局）
+## 4 区域中老铁的"站位"坐标（相对于场景原点；避开炉房中央按钮）
 const AREA_POSITIONS: Dictionary = {
-	&"furnace": Vector2(280, 380),  # 炉房：左下
-	&"counter": Vector2(640, 380),  # 柜台：中下
-	&"loft":    Vector2(640, 200),  # 阁楼：中上
-	&"yard":    Vector2(960, 380),  # 后院：右下
+	&"furnace": Vector2(150, 490),  # 炉房：左下角（避开中央"开炉"按钮）
+	&"counter": Vector2(640, 490),
+	&"loft":    Vector2(640, 110),
+	&"yard":    Vector2(960, 490),
 }
 
 @onready var _old_iron: Node2D = $OldIron
@@ -19,7 +19,13 @@ const AREA_POSITIONS: Dictionary = {
 
 
 func _ready() -> void:
-	# 老铁初始站在炉房
+	# 强制 ForgeScreen 占满 viewport 并隐藏（Control 在 Node2D 父下 anchors 不工作，
+	# 必须显式设 size 与 visible）
+	var vp_size: Vector2 = get_viewport_rect().size
+	_forge_screen.position = Vector2.ZERO
+	_forge_screen.size = vp_size
+	_forge_screen.visible = false
+	# 老铁初始站在炉房（避开按钮位置）
 	_old_iron.global_position = AREA_POSITIONS[&"furnace"]
 	# 启动后立即载档
 	SaveSystem.load_or_init()
