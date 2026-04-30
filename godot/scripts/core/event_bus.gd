@@ -3,9 +3,10 @@ extends Node
 ## UI 与逻辑解耦的唯一通道。任何跨模块通信优先走这里，避免 get_node 耦合。
 ## 命名规范：信号名用过去时（forge_finished 而非 finish_forge）。
 
-# ── 货币 / 声誉 ────────────────────────────────
+# ── 货币 / 声誉 / 材料 ────────────────────────
 signal currency_changed(kind: StringName, value: int)
 signal reputation_changed(value: int)
+signal materials_changed(material_id: StringName, value: int)
 
 # ── 装备 ──────────────────────────────────────
 signal gear_equipped(slot: StringName, gear_id: StringName)

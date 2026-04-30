@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RecipeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/recipe_data.gd" id="1_r"]
+
+[resource]
+script = ExtResource("1_r")
+id = &"bone_blade"
+display_name = "骨刃"
+required_materials = {
+&"bone": 2,
+&"jin": 2
+}
+optional_materials = Array[StringName]([&"yi_zhong_liao"])
+base_quality_distribution = PackedFloat32Array(0.5, 0.30, 0.13, 0.05, 0.02)
+base_minutes_in_furnace = 35
+path_affinity = &"eat"
+slot_kind = &"eating_vessel"

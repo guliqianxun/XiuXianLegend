@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/shop_screen.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/actors/old_iron.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/forge_screen.tscn" id="3"]
 
 [node name="Shop" type="Node2D"]
 script = ExtResource("1")
@@ -19,6 +20,14 @@ offset_top = 240.0
 offset_right = 480.0
 offset_bottom = 520.0
 color = Color(0.18, 0.10, 0.08, 1)
+
+[node name="OpenForgeButton" type="Button" parent="AreaFurnace"]
+offset_left = 120.0
+offset_top = 110.0
+offset_right = 280.0
+offset_bottom = 170.0
+text = "开　炉"
+theme_override_font_sizes/font_size = 28
 
 [node name="LabelFurnace" type="Label" parent="AreaFurnace"]
 offset_left = 10.0
@@ -74,7 +83,7 @@ text = "后院"
 theme_override_colors/font_color = Color(0.55, 0.50, 0.40, 1)
 
 [node name="OldIron" parent="." instance=ExtResource("2")]
-position = Vector2(280, 380)
+position = Vector2(150, 490)
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
@@ -93,3 +102,5 @@ offset_right = 300.0
 offset_bottom = 80.0
 text = "灵石：0"
 theme_override_colors/font_color = Color(0.85, 0.78, 0.65, 1)
+
+[node name="ForgeScreen" parent="." instance=ExtResource("3")]
