@@ -64,7 +64,12 @@ func _on_forge_finished(inst: Variant, _qiao: bool, was_back: bool) -> void:
 		var gear: GearInstance = inst
 		# slot_kind 反查自配方（N3 简化：inst.base_id 就是 recipe id）
 		var recipe: RecipeData = DataRegistry.get_resource(&"recipe", gear.base_id) as RecipeData
-		var slot_kind: StringName = recipe.slot_kind if recipe != null else &"sword"
+		var slot_kind: StringName
+		if recipe != null:
+			slot_kind = recipe.slot_kind
+		else:
+			push_warning("forge: recipe %s not found, falling back slot_kind=sword" % gear.base_id)
+			slot_kind = &"sword"
 		CodexState.place_equipment(gear, slot_kind)
 	# 出炉后存档（强制）
 	SaveSystem.save_now(true)

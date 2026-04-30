@@ -10,7 +10,9 @@ func _ready() -> void:
 	_test_default_gupu()
 	_test_place_and_query()
 	_test_multiple_at_same_star()
-	_test_serialize_roundtrip()
+	_test_idempotent_double_place()
+	_test_serialize_only_gupu_id()
+	_test_rebuild_from_game_state()
 	print("\n========== test_codex_state ==========")
 	print("PASS: %d  FAIL: %d" % [_passed, _failed])
 	get_tree().quit(0 if _failed == 0 else 1)
@@ -58,14 +60,38 @@ func _test_multiple_at_same_star() -> void:
 	_assert(CodexState.equipments_at_star(su1).size() == 2, "2 equipments at star")
 
 
-func _test_serialize_roundtrip() -> void:
+func _test_idempotent_double_place() -> void:
+	# 同一装备两次 place 应只入一次（幂等）
+	CodexState.reset()
+	var g := _make_gear(0)
+	var su1 := CodexState.place_equipment(g, &"sword")
+	var count_after_1 := CodexState.equipments_at_star(su1).size()
+	var su2 := CodexState.place_equipment(g, &"sword")
+	var count_after_2 := CodexState.equipments_at_star(su1).size()
+	_assert(su1 == su2, "second place returns same su_id")
+	_assert(count_after_1 == count_after_2, "second place doesn't add duplicate (still %d)" % count_after_2)
+
+
+func _test_serialize_only_gupu_id() -> void:
+	# to_dict 只存 current_gupu_id（不存 _stars，避免与 GameState.inventory 重复持久化）
 	CodexState.reset()
 	var g := _make_gear(1)
 	CodexState.place_equipment(g, &"talisman")
 	var d: Dictionary = CodexState.to_dict()
+	_assert(d.has("current_gupu_id"), "to_dict has current_gupu_id")
+	_assert(not d.has("stars"), "to_dict does NOT contain stars (派生数据)")
+
+
+func _test_rebuild_from_game_state() -> void:
+	# 模拟 load 流程：CodexState.from_dict 后，_stars 应从 GameState.inventory 重建
 	CodexState.reset()
-	CodexState.from_dict(d)
-	var any_count: int = 0
-	for su_id in CodexState._stars.keys():
-		any_count += (CodexState._stars[su_id] as Array).size()
-	_assert(any_count >= 1, "after roundtrip at least 1 placement preserved")
+	GameState.inventory.clear()
+	# 准备一件装备：放进 GameState.inventory 并预设 star_position
+	var g := _make_gear(0)
+	g.star_position = {"gupu": "qing_long", "su": "jiao"}
+	GameState.inventory.append(g)
+	# 模拟 from_dict
+	CodexState.from_dict({"current_gupu_id": "qing_long"})
+	_assert(CodexState.equipments_at_star(&"jiao").size() == 1, "rebuild: jiao has 1 (got %d)" % CodexState.equipments_at_star(&"jiao").size())
+	# 同一对象 reference（不是 copy）
+	_assert(CodexState.equipments_at_star(&"jiao")[0] == g, "rebuild: same object reference")
