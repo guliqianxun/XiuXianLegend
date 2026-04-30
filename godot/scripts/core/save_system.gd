@@ -5,7 +5,7 @@ extends Node
 ## - 写入 5 秒最小间隔限流。
 
 const SAVE_PATH := "user://save_main.json"
-const SAVE_VERSION := 3
+const SAVE_VERSION := 4
 const WRITE_COOLDOWN_SEC := 5.0
 
 var _last_write_msec: int = -10000
@@ -24,6 +24,7 @@ func save_now(force: bool = false) -> bool:
 		"shop_state": ShopState.to_dict(),
 		"codex_state": CodexState.to_dict(),
 		"encounter_state": EncounterState.to_dict(),
+		"shop_rules": ShopRules.to_dict(),
 	}
 	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if f == null:
@@ -59,6 +60,8 @@ func load_or_init() -> void:
 	CodexState.from_dict(cs)
 	var es: Dictionary = parsed.get("encounter_state", {})
 	EncounterState.from_dict(es)
+	var sr: Dictionary = parsed.get("shop_rules", {})
+	ShopRules.from_dict(sr)
 	EventBus.save_loaded.emit()
 
 
@@ -81,11 +84,20 @@ func migrate(payload: Dictionary) -> Dictionary:
 				payload = _migrate_v1_to_v2(payload)
 			2:
 				payload = _migrate_v2_to_v3(payload)
+			3:
+				payload = _migrate_v3_to_v4(payload)
 			_:
 				push_warning("save: no migration from v%d; aborting" % v)
 				return payload  # 中途未知版本：保留原 version，不再前进
 		v += 1
 	payload["version"] = SAVE_VERSION
+	return payload
+
+
+## v3 → v4: payload 顶层加 shop_rules（默认 enabled=["refuse_all"]）
+func _migrate_v3_to_v4(payload: Dictionary) -> Dictionary:
+	if not payload.has("shop_rules"):
+		payload["shop_rules"] = {"enabled": ["refuse_all"]}
 	return payload
 
 

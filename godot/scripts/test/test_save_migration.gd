@@ -9,7 +9,8 @@ func _ready() -> void:
 	await get_tree().process_frame
 	_test_v1_payload_migrates()
 	_test_v2_payload_migrates()
-	_test_v3_payload_unchanged()
+	_test_v3_payload_migrates()
+	_test_v4_payload_unchanged()
 	_test_future_version_passthrough()
 	print("\n========== test_save_migration ==========")
 	print("PASS: %d  FAIL: %d" % [_passed, _failed])
@@ -75,14 +76,15 @@ func _test_v2_payload_migrates() -> void:
 		}
 	}
 	var migrated := SaveSystem.migrate(v2)
-	_assert(int(migrated.get("version", 0)) == 3, "v2 → v3")
+	_assert(int(migrated.get("version", 0)) == SaveSystem.SAVE_VERSION, "v2 → current SAVE_VERSION")
 	var gs: Dictionary = migrated.get("game_state", {})
 	_assert(int(gs.get("reputation", 0)) == 20, "v2 reputation preserved")
 	_assert(gs.has("offline_diary_pending"), "v2→v3 added diary_pending")
 	_assert((gs["offline_diary_pending"] as Array).is_empty(), "diary_pending defaulted empty")
+	_assert(migrated.has("shop_rules"), "v2→v4 chain added shop_rules")
 
 
-func _test_v3_payload_unchanged() -> void:
+func _test_v3_payload_migrates() -> void:
 	var v3 := {
 		"version": 3,
 		"saved_at": 1700009999,
@@ -93,9 +95,25 @@ func _test_v3_payload_unchanged() -> void:
 		}
 	}
 	var migrated := SaveSystem.migrate(v3)
-	_assert(int(migrated.get("version", 0)) == 3, "v3 stays at 3")
+	_assert(int(migrated.get("version", 0)) == 4, "v3 → v4")
 	var gs: Dictionary = migrated.get("game_state", {})
-	_assert((gs["offline_diary_pending"] as Array).size() == 1, "v3 diary preserved")
+	_assert((gs["offline_diary_pending"] as Array).size() == 1, "v3 diary preserved across v4 migration")
+	_assert(migrated.has("shop_rules"), "v3→v4 added shop_rules at top level")
+	var sr: Dictionary = migrated["shop_rules"]
+	_assert((sr["enabled"] as Array).has("refuse_all"), "v3→v4 default enabled refuse_all")
+
+
+func _test_v4_payload_unchanged() -> void:
+	var v4 := {
+		"version": 4,
+		"saved_at": 1700019999,
+		"game_state": {"spirit_stones": 1, "reputation": 0, "offline_diary_pending": []},
+		"shop_rules": {"enabled": ["refuse_weird", "lend_regular"]},
+	}
+	var migrated := SaveSystem.migrate(v4)
+	_assert(int(migrated.get("version", 0)) == 4, "v4 stays at 4")
+	var sr: Dictionary = migrated["shop_rules"]
+	_assert((sr["enabled"] as Array).size() == 2, "v4 enabled list preserved")
 
 
 func _test_future_version_passthrough() -> void:
