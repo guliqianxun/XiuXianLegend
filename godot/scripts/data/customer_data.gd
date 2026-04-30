@@ -31,3 +31,11 @@ enum Tier { REGULAR = 0, RARE = 1, WEIRD = 2 }
 
 ## 客人剪影/立绘资源路径（N1 用 placeholder）
 @export var portrait_path: String = ""
+
+## 伪装名（spec §7.3：怪客可"伪装"成符合铺规的客人）
+## 空 = 不伪装（常客真名公开）；非空 = 此名字会先显示给玩家，需"打听"识破
+@export var disguise_name: String = ""
+
+## 伪装看起来的 tier（仅当 disguise_name 非空时生效）
+## -1 = 跟真实 tier 一致（仅改名）；0..2 = 显示成 REGULAR/RARE/WEIRD
+@export var disguise_tier: int = -1
