@@ -143,11 +143,7 @@ func _on_equipment_returned(_cid: StringName, gear: Variant, outcome_text: Strin
 
 
 func _process(delta: float) -> void:
-	# N1 简单：每个真实秒推进游戏时间 1 秒（1:1）
-	# N5 改为可调倍速 + 离线时长积分
-	TimeLine.advance_seconds(int(delta * 1.0))
-	# 防止 0 -> 不发信号；只在每整秒 emit 一次靠 advance_seconds 内部判断
-	# (此处 delta 通常 ~0.016，int 化后是 0，所以 advance 实际不会发——这是预期；下版会改)
+	TimeLine.tick(delta)
 
 
 func _on_time_advanced(_new_unix: int, _delta: int) -> void:

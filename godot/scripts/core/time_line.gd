@@ -10,14 +10,20 @@ const DECAY_THRESHOLD_SEC: int = 259200        # 72h
 const DECAY_RATE_TIER1: float = 0.7            # 24-72h
 const DECAY_RATE_TIER2: float = 0.3            # >72h
 
+## 在线倍速：1 现实秒 = N 游戏秒。默认 60（1 现实分钟 = 1 游戏时辰）。
+## 测试可以临时改 1 跑 1:1。
+const GAME_SECONDS_PER_REAL_SEC: int = 60
+
 var _now_unix: int = 0
 var _last_shichen: int = -1
+var _real_accum: float = 0.0
 
 
 func _ready() -> void:
 	# 启动时同步系统时间
 	_now_unix = int(Time.get_unix_time_from_system())
 	_last_shichen = shichen_of_unix(_now_unix)
+	_real_accum = 0.0
 
 
 ## 当前游戏时间戳（unix 秒）
@@ -41,6 +47,17 @@ func advance_seconds(delta: int) -> void:
 	if cur_shichen != _last_shichen:
 		_last_shichen = cur_shichen
 		EventBus.hour_passed.emit(cur_shichen)
+
+
+## 主场景 _process 调用：累加 delta 现实秒，到 1 整秒就以 GAME_SECONDS_PER_REAL_SEC 倍速推进游戏时间。
+## 这样不会被 1:1 截断（int(0.016) == 0），也方便后续做倍速调节。
+func tick(delta_real_sec: float) -> void:
+	if delta_real_sec <= 0.0: return
+	_real_accum += delta_real_sec
+	if _real_accum >= 1.0:
+		var whole := int(_real_accum)
+		_real_accum -= float(whole)
+		advance_seconds(whole * GAME_SECONDS_PER_REAL_SEC)
 
 
 ## 给定 unix 时间戳，返回该时辰索引 0..11

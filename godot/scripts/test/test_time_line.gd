@@ -11,6 +11,7 @@ func _ready() -> void:
 	_test_shichen_index()
 	_test_advance_emits_signal()
 	_test_offline_decay()
+	_test_tick_accumulates()
 	print("\n========== test_time_line ==========")
 	print("PASS: %d  FAIL: %d" % [_passed, _failed])
 	get_tree().quit(0 if _failed == 0 else 1)
@@ -73,3 +74,21 @@ func _test_offline_decay() -> void:
 	var got_100 := TimeLine.effective_offline_seconds(100 * h)
 	var want_100 := 24 * h + int(round(48 * h * 0.7)) + int(round(28 * h * 0.3))
 	_assert(got_100 == want_100, "100h: got %d want %d" % [got_100, want_100])
+
+
+func _test_tick_accumulates() -> void:
+	# tick(delta_real_sec) 累加 < 1s 不发；满 1s 发 GAME_SECONDS_PER_REAL_SEC
+	TimeLine.set_now_unix(1700000000)
+	var emitted: Array = []
+	var cb := func(_new_unix: int, delta: int) -> void:
+		emitted.append(delta)
+	EventBus.time_advanced.connect(cb)
+	# 6 次 0.1s 共 0.6s，不应触发
+	for i in 6:
+		TimeLine.tick(0.1)
+	_assert(emitted.size() == 0, "tick 0.6s real: no advance")
+	# 再 0.5s 累计 1.1s，触发一次（推进 1 现实秒 = 60 游戏秒）
+	TimeLine.tick(0.5)
+	_assert(emitted.size() == 1, "tick crosses 1s real: 1 advance")
+	_assert(emitted[0] == TimeLine.GAME_SECONDS_PER_REAL_SEC, "advance delta = GAME_SECONDS_PER_REAL_SEC")
+	EventBus.time_advanced.disconnect(cb)
