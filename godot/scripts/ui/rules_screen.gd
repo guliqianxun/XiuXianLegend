@@ -48,7 +48,7 @@ func _rebuild() -> void:
 		_list_root.add_child(sep)
 		var lbl := Label.new()
 		lbl.text = "—— 已学到的特征 ——"
-		lbl.theme_font_size = 14
+		lbl.add_theme_font_size_override("font_size", 14)
 		lbl.add_theme_color_override("font_color", Color(0.8, 0.7, 0.5))
 		_list_root.add_child(lbl)
 		for id in learned_ids:
