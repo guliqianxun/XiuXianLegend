@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/star_node.gd" id="1"]
+
+[node name="StarNode" type="Control"]
+custom_minimum_size = Vector2(40, 40)
+script = ExtResource("1")
+
+[node name="Dot" type="ColorRect" parent="."]
+offset_left = -6.0
+offset_top = -6.0
+offset_right = 6.0
+offset_bottom = 6.0
+color = Color(0.30, 0.30, 0.40, 1)
+mouse_filter = 2
+
+[node name="CountLabel" type="Label" parent="."]
+offset_left = 8.0
+offset_top = -10.0
+offset_right = 40.0
+offset_bottom = 10.0
+text = ""
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(1, 0.95, 0.7, 1)
+mouse_filter = 2
+
+[node name="HitArea" type="Button" parent="."]
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+flat = true
