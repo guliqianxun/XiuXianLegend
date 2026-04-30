@@ -18,6 +18,11 @@ var quest_label: String = "外勤"
 ## 借出后预计回信秒数（在线/离线 1:1）
 var expected_duration_sec: int = 600  # 默认 10 分钟
 
+## 是否已揭露真身。
+## - 无伪装客人（CustomerData.disguise_name 为空）：spawn 时直接 = true
+## - 伪装怪客：spawn = false，玩家"打听"后变 true
+var unmasked: bool = false
+
 
 func _to_string() -> String:
 	return "[CustomerRequest %s wants %s>=Q%d for %d 灵石]" % [

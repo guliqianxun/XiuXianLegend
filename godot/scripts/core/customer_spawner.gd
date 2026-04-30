@@ -46,6 +46,8 @@ static func spawn_one(rng: RandomNumberGenerator, now_unix: int) -> CustomerRequ
 	req.payment = pick.base_payment
 	req.quest_label = "外勤" if tier == CustomerData.Tier.REGULAR else "夜事"
 	req.expected_duration_sec = DURATION_BY_TIER[tier]
+	# 伪装名为空 → 真名公开（常客）；非空 → 盲盒，需玩家打听
+	req.unmasked = (pick.disguise_name.is_empty())
 	return req
 
 
