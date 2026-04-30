@@ -12,6 +12,5 @@ faction = &"unknown"
 base_payment = 600
 allowed_shichen = Array[int]([0, 1, 2, 3])
 faction_state_bonus = 0.0
-portrait_path = ""
 disguise_name = "陌生剑客"
 disguise_tier = 0

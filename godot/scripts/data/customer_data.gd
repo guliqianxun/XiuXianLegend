@@ -29,9 +29,6 @@ enum Tier { REGULAR = 0, RARE = 1, WEIRD = 2 }
 ## 当此势力"动态状态"激活时来访权重 +N（N1 暂不实装动态状态，留字段）
 @export var faction_state_bonus: float = 0.0
 
-## 客人剪影/立绘资源路径（N1 用 placeholder）
-@export var portrait_path: String = ""
-
 ## 伪装名（spec §7.3：怪客可"伪装"成符合铺规的客人）
 ## 空 = 不伪装（常客真名公开）；非空 = 此名字会先显示给玩家，需"打听"识破
 @export var disguise_name: String = ""
