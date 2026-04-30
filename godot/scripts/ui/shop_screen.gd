@@ -22,6 +22,7 @@ const AREA_POSITIONS: Dictionary = {
 @onready var _customer_panel: CustomerArrivalPanel = $CustomerArrivalPanel
 @onready var _lend_dialog: LendDialog = $LendDialog
 @onready var _return_notice: ReturnNotice = $ReturnNotice
+@onready var _diary_screen: DiaryScreen = $DiaryScreen
 
 
 func _ready() -> void:
@@ -30,7 +31,7 @@ func _ready() -> void:
 	# 让其内部 anchors_preset (12=底部宽 / 5=居中上) 正确定位（Control 在 Node2D
 	# 父下 anchors 全失效）。
 	var vp_size: Vector2 = get_viewport_rect().size
-	for screen in [_forge_screen, _codex_screen, _lend_dialog, _customer_panel, _return_notice]:
+	for screen in [_forge_screen, _codex_screen, _lend_dialog, _customer_panel, _return_notice, _diary_screen]:
 		screen.position = Vector2.ZERO
 		screen.size = vp_size
 		screen.visible = false
@@ -40,6 +41,8 @@ func _ready() -> void:
 	SaveSystem.load_or_init()
 	# 给玩家点初始材料用于试炉（仅在 inventory 为空时）
 	_seed_starter_materials()
+	# 离线积分：从 last_settle_unix 算到现在，模拟事件 → 写入 diary_pending
+	_run_offline_settlement()
 	# 接信号刷 HUD + 锻造完成 + 客人来访 + 装备归来
 	EventBus.time_advanced.connect(_on_time_advanced)
 	EventBus.currency_changed.connect(_on_currency_changed)
@@ -54,7 +57,21 @@ func _ready() -> void:
 	_customer_panel.lend_pressed.connect(_on_customer_lend)
 	_customer_panel.refuse_pressed.connect(_on_customer_refuse)
 	_lend_dialog.gear_chosen.connect(_on_gear_chosen)
+	# 启动后弹出小本（如果有未读条目）
+	if not GameState.offline_diary_pending.is_empty():
+		_diary_screen.open(GameState.offline_diary_pending.duplicate())
 	_refresh_hud()
+
+
+func _run_offline_settlement() -> void:
+	if GameState.last_settle_unix <= 0:
+		return
+	var real_now: int = int(Time.get_unix_time_from_system())
+	var new_entries: Array = OfflineSimulator.simulate(GameState.last_settle_unix, real_now)
+	if new_entries.is_empty():
+		return
+	GameState.offline_diary_pending.append_array(new_entries)
+	# 不强制存档；diary 关闭时会 save_now(true)
 
 
 func _seed_starter_materials() -> void:

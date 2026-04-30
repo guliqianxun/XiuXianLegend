@@ -15,6 +15,8 @@ func save_now(force: bool = false) -> bool:
 	var now_msec := Time.get_ticks_msec()
 	if not force and now_msec - _last_write_msec < int(WRITE_COOLDOWN_SEC * 1000.0):
 		return false
+	# 写盘前刷 last_settle_unix 为现实时戳，下次启动用这个算离线时长
+	GameState.last_settle_unix = int(Time.get_unix_time_from_system())
 	var payload := {
 		"version": SAVE_VERSION,
 		"saved_at": Time.get_unix_time_from_system(),
