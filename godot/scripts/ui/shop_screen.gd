@@ -14,6 +14,8 @@ const AREA_POSITIONS: Dictionary = {
 @onready var _old_iron: Node2D = $OldIron
 @onready var _hud_time: Label = $HUD/TimeLabel
 @onready var _hud_money: Label = $HUD/MoneyLabel
+@onready var _open_forge_btn: Button = $AreaFurnace/OpenForgeButton
+@onready var _forge_screen: ForgeScreen = $ForgeScreen
 
 
 func _ready() -> void:
@@ -21,10 +23,34 @@ func _ready() -> void:
 	_old_iron.global_position = AREA_POSITIONS[&"furnace"]
 	# 启动后立即载档
 	SaveSystem.load_or_init()
+	# 给玩家点初始材料用于试炉（仅在 inventory 为空时）
+	_seed_starter_materials()
 	# 接信号刷 HUD
 	EventBus.time_advanced.connect(_on_time_advanced)
 	EventBus.currency_changed.connect(_on_currency_changed)
+	EventBus.forge_finished.connect(_on_forge_finished)
+	# 炉房按钮 → 开锻造弹窗
+	_open_forge_btn.pressed.connect(_on_open_forge)
 	_refresh_hud()
+
+
+func _seed_starter_materials() -> void:
+	# 首次进入或清存档后给一把材料，避免玩家无米下锅
+	if GameState.material_count(&"iron") == 0 and GameState.material_count(&"jin") == 0:
+		GameState.add_material(&"iron", 8)
+		GameState.add_material(&"jin", 16)
+		GameState.add_material(&"zhusha", 6)
+		GameState.add_material(&"yellow_paper", 6)
+		GameState.add_material(&"bone", 4)
+
+
+func _on_open_forge() -> void:
+	_forge_screen.open()
+
+
+func _on_forge_finished(_inst: Resource, _qiao: bool, _back: bool) -> void:
+	# 出炉后存档（强制）
+	SaveSystem.save_now(true)
 
 
 func _process(delta: float) -> void:
