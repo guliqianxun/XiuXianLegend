@@ -22,6 +22,7 @@ EventBus="*res://scripts/core/event_bus.gd"
 GameState="*res://scripts/core/game_state.gd"
 SaveSystem="*res://scripts/core/save_system.gd"
 DataRegistry="*res://scripts/core/data_registry.gd"
+TimeLine="*res://scripts/core/time_line.gd"
 
 [debug]
 
