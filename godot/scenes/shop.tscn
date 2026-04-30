@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/shop_screen.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/actors/old_iron.tscn" id="2"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/customer_arrival_panel.tscn" id="5"]
 [ext_resource type="PackedScene" path="res://scenes/ui/lend_dialog.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://scenes/ui/return_notice.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/ui/diary_screen.tscn" id="8"]
 
 [node name="Shop" type="Node2D"]
 script = ExtResource("1")
@@ -132,3 +133,5 @@ theme_override_colors/font_color = Color(0.85, 0.78, 0.65, 1)
 [node name="LendDialog" parent="." instance=ExtResource("6")]
 
 [node name="ReturnNotice" parent="." instance=ExtResource("7")]
+
+[node name="DiaryScreen" parent="." instance=ExtResource("8")]

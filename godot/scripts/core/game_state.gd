@@ -27,6 +27,11 @@ var equipped: Dictionary = {}
 ## 库存：未派出的 GearInstance 列表
 var inventory: Array = []
 
+# ── 离线日记（铁炉小本）────────────────────────
+## OfflineSimulator 在启动时填充，DiaryScreen 显示后清空。
+## entry: { unix:int, shichen:int, kind:StringName, detail:String }
+var offline_diary_pending: Array = []
+
 
 func add_currency(kind: StringName, amount: int) -> void:
 	match kind:
@@ -130,6 +135,15 @@ func to_dict() -> Dictionary:
 	var mats_ser: Dictionary = {}
 	for k in materials:
 		mats_ser[String(k)] = materials[k]
+	var diary_ser: Array = []
+	for e in offline_diary_pending:
+		var ed: Dictionary = e
+		diary_ser.append({
+			"unix": int(ed.get("unix", 0)),
+			"shichen": int(ed.get("shichen", 0)),
+			"kind": String(ed.get("kind", "")),
+			"detail": String(ed.get("detail", "")),
+		})
 	return {
 		"spirit_stones": spirit_stones,
 		"insights": insights,
@@ -139,6 +153,7 @@ func to_dict() -> Dictionary:
 		"inventory": inv_ser,
 		"materials": mats_ser,
 		"smith_hand_today": smith_hand_today,
+		"offline_diary_pending": diary_ser,
 	}
 
 
@@ -162,3 +177,14 @@ func from_dict(d: Dictionary) -> void:
 	var inv_raw: Array = d.get("inventory", [])
 	for it in inv_raw:
 		inventory.append(GearInstance.from_dict(it))
+
+	offline_diary_pending = []
+	var diary_raw: Array = d.get("offline_diary_pending", [])
+	for it in diary_raw:
+		var ed: Dictionary = it
+		offline_diary_pending.append({
+			"unix": int(ed.get("unix", 0)),
+			"shichen": int(ed.get("shichen", 0)),
+			"kind": StringName(ed.get("kind", "")),
+			"detail": String(ed.get("detail", "")),
+		})

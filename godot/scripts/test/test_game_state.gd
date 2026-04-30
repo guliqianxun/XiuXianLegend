@@ -10,6 +10,7 @@ func _ready() -> void:
 	_test_fields_exist()
 	_test_serialize_roundtrip()
 	_test_no_deprecated_fields()
+	_test_diary_roundtrip()
 	print("\n========== test_game_state ==========")
 	print("PASS: %d  FAIL: %d" % [_passed, _failed])
 	get_tree().quit(0 if _failed == 0 else 1)
@@ -51,6 +52,22 @@ func _test_serialize_roundtrip() -> void:
 	_assert(GameState.insights == 7, "insights roundtrip")
 	_assert(GameState.reputation == 15, "reputation roundtrip")
 	_assert(GameState.last_settle_unix == 1700001234, "last_settle_unix roundtrip")
+
+
+func _test_diary_roundtrip() -> void:
+	GameState.offline_diary_pending = [
+		{"unix": 1700000000, "shichen": 0, "kind": &"forge", "detail": "出炉一件"},
+		{"unix": 1700007200, "shichen": 1, "kind": &"customer_refuse", "detail": "雾丘野修被拒"},
+	]
+	var d: Dictionary = GameState.to_dict()
+	_assert(d.has("offline_diary_pending"), "to_dict has offline_diary_pending")
+	_assert((d["offline_diary_pending"] as Array).size() == 2, "diary 2 entries serialized")
+	GameState.offline_diary_pending = []
+	GameState.from_dict(d)
+	_assert(GameState.offline_diary_pending.size() == 2, "diary 2 entries restored")
+	var first: Dictionary = GameState.offline_diary_pending[0]
+	_assert(first["kind"] == &"forge", "first kind = forge (StringName)")
+	_assert(first["detail"] == "出炉一件", "first detail roundtrip")
 
 
 func _test_no_deprecated_fields() -> void:
