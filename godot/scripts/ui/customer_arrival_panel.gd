@@ -86,6 +86,10 @@ func _on_inspect() -> void:
 		push_warning("inspect: 灵石不足 %d" % INSPECT_COST)
 		return
 	_current.unmasked = true
+	# 学到该客人的所有 trait（spec §7.3：打听后永久解锁特征条款）
+	var c := DataRegistry.get_resource(&"customer", _current.customer_id) as CustomerData
+	if c != null and not c.traits.is_empty():
+		GameState.learn_traits(c.traits)
 	_render(_current)
 
 

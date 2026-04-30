@@ -35,6 +35,9 @@ signal star_lit(gupu_id: StringName, su_id: StringName, gear_inst: Resource)
 signal resonance_activated(gupu_id: StringName, pattern_id: StringName)
 signal codex_changed(gupu_id: StringName)   # 切换当前古谱
 
+# ── 知识 / 学习（spec §7.3）─────────────────────
+signal traits_learned(trait_ids: Array)  # 一次学到的 trait id 列表（仅新学到的）
+
 # ── 存档 ──────────────────────────────────────
 signal save_loaded()
 signal save_written()

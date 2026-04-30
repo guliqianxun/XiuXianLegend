@@ -12,3 +12,4 @@ faction = &"hanxing_zong"
 base_payment = 200
 allowed_shichen = Array[int]([])
 faction_state_bonus = 0.0
+traits = Array[StringName]([&"family_seal"])

@@ -87,6 +87,11 @@ func simulate(last_settle_unix: int, real_now_unix: int) -> Array:
 						"kind": &"rule_breach",
 						"detail": "——后来才看清，是 %s。铺规没拦住。" % c.display_name,
 					})
+					# 同时学到该客人的所有 trait（spec §7.3：攻破后永久解锁特征条款）
+					# 注：simulate 故意不改 inventory，但 trait 学习是知识不是物资，
+					# 不会造成数值膨胀，破坏隔离换交互闭环。
+					if not c.traits.is_empty():
+						GameState.learn_traits(c.traits)
 	return diary
 
 

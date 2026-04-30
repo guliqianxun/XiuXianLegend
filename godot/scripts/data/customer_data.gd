@@ -36,3 +36,8 @@ enum Tier { REGULAR = 0, RARE = 1, WEIRD = 2 }
 ## 伪装看起来的 tier（仅当 disguise_name 非空时生效）
 ## -1 = 跟真实 tier 一致（仅改名）；0..2 = 显示成 REGULAR/RARE/WEIRD
 @export var disguise_tier: int = -1
+
+## 客人特征（spec §7.3）：玩家打听 / 离线攻破后会学到这些 trait，
+## 解锁对应的精确铺规条款（如 sole_dustless → "鞋底无尘的客人 → 拒"）
+## trait id 必须在 ShopRules.TRAIT_LIBRARY 注册才会显示中文名
+@export var traits: Array[StringName] = []
