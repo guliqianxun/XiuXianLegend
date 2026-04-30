@@ -12,4 +12,3 @@ faction = &"kurong_gu"
 base_payment = 100
 allowed_shichen = Array[int]([])
 faction_state_bonus = 0.0
-portrait_path = ""
