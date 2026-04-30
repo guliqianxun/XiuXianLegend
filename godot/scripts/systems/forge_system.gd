@@ -48,3 +48,20 @@ static func compute_qiao_cheng_chance(timing_score: float, smith_hand: float, op
 		if mid in QIAO_MATERIALS:
 			c += 0.10
 	return clampf(c, 0.0, 0.50)
+
+
+const BACKLASH_BASE: float = 0.05
+const BACKLASH_BOOST: float = 0.05
+## 禁/秘料 ID 集合：添加这些材料反噬概率 +0.05（封顶 0.10）
+const DANGEROUS_MATERIALS: Array[StringName] = [&"yi_zhong_liao", &"mi_pin_zhi_xie"]
+
+
+## 计算反噬触发概率，封顶 0.10。
+## - optional_materials: 玩家投入的可选添料 id 列表
+static func compute_backlash_chance(optional_materials: Array) -> float:
+	var c: float = BACKLASH_BASE
+	for mid in optional_materials:
+		if mid in DANGEROUS_MATERIALS:
+			c = BACKLASH_BASE + BACKLASH_BOOST
+			break  # 不重复累加
+	return c
