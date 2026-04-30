@@ -18,29 +18,42 @@ const AREA_POSITIONS: Dictionary = {
 @onready var _forge_screen: ForgeScreen = $ForgeScreen
 @onready var _open_codex_btn: Button = $AreaLoft/OpenCodexButton
 @onready var _codex_screen: CodexScreen = $CodexScreen
+@onready var _open_counter_btn: Button = $AreaCounter/OpenCounterButton
+@onready var _customer_panel: CustomerArrivalPanel = $CustomerArrivalPanel
+@onready var _lend_dialog: LendDialog = $LendDialog
+@onready var _return_notice: ReturnNotice = $ReturnNotice
 
 
 func _ready() -> void:
-	# 强制 ForgeScreen / CodexScreen 占满 viewport 并隐藏（Control 在 Node2D 父下
-	# anchors 不工作，必须显式设 size 与 visible）
+	# 强制 ForgeScreen / CodexScreen / LendDialog / ReturnNotice 占满 viewport 并隐藏
+	# CustomerArrivalPanel 是底部小卡，不需要全屏 size
 	var vp_size: Vector2 = get_viewport_rect().size
-	for screen in [_forge_screen, _codex_screen]:
+	for screen in [_forge_screen, _codex_screen, _lend_dialog]:
 		screen.position = Vector2.ZERO
 		screen.size = vp_size
 		screen.visible = false
+	_customer_panel.visible = false
+	_return_notice.visible = false
 	# 老铁初始站在炉房（避开按钮位置）
 	_old_iron.global_position = AREA_POSITIONS[&"furnace"]
 	# 启动后立即载档
 	SaveSystem.load_or_init()
 	# 给玩家点初始材料用于试炉（仅在 inventory 为空时）
 	_seed_starter_materials()
-	# 接信号刷 HUD
+	# 接信号刷 HUD + 锻造完成 + 客人来访 + 装备归来
 	EventBus.time_advanced.connect(_on_time_advanced)
 	EventBus.currency_changed.connect(_on_currency_changed)
 	EventBus.forge_finished.connect(_on_forge_finished)
-	# 炉房按钮 → 开锻造弹窗；阁楼按钮 → 开器谱
+	EventBus.customer_arrived.connect(_on_customer_arrived)
+	EventBus.equipment_returned.connect(_on_equipment_returned)
+	# 4 区域按钮
 	_open_forge_btn.pressed.connect(_on_open_forge)
 	_open_codex_btn.pressed.connect(_on_open_codex)
+	_open_counter_btn.pressed.connect(_on_open_counter)
+	# Customer 流程
+	_customer_panel.lend_pressed.connect(_on_customer_lend)
+	_customer_panel.refuse_pressed.connect(_on_customer_refuse)
+	_lend_dialog.gear_chosen.connect(_on_gear_chosen)
 	_refresh_hud()
 
 
@@ -77,6 +90,56 @@ func _on_forge_finished(inst: Variant, _qiao: bool, was_back: bool) -> void:
 
 func _on_open_codex() -> void:
 	_codex_screen.open()
+
+
+# ── Customer 流程 ─────────────────────────────
+
+func _on_open_counter() -> void:
+	if not CustomerSpawner.spawn_now():
+		push_warning("counter: pending request exists or spawn failed")
+
+
+func _on_customer_arrived(_cid: StringName, req: Variant) -> void:
+	if req is CustomerRequest:
+		_customer_panel.show_request(req)
+
+
+func _on_customer_lend(req: CustomerRequest) -> void:
+	_lend_dialog.open(req)
+
+
+func _on_customer_refuse(_req: CustomerRequest) -> void:
+	EncounterState.pending_request = null
+	GameState.add_reputation(-1)
+
+
+func _on_gear_chosen(gear: GearInstance, req: CustomerRequest) -> void:
+	EncounterState.lend(req.customer_id, gear, TimeLine.now_unix(), req.expected_duration_sec)
+	EncounterState.pending_request = null
+	GameState.add_currency(&"spirit_stones", req.payment)
+	SaveSystem.save_now(true)
+	# N4 v1 简化：到时立即 resolve（玩家不用真等）；N5 改为正常计时
+	_resolve_now(gear, req)
+
+
+func _resolve_now(gear: GearInstance, req: CustomerRequest) -> void:
+	var c := DataRegistry.get_resource(&"customer", req.customer_id) as CustomerData
+	var tier: int = c.tier if c != null else 0
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	var outcome := ReturnResolver.roll_outcome(tier, rng)
+	EncounterState.resolve_return(gear, outcome, TimeLine.now_unix() + req.expected_duration_sec)
+	if outcome == ReturnResolver.Outcome.GREAT_DEED:
+		GameState.add_currency(&"spirit_stones", req.payment * 2)
+		GameState.add_reputation(2)
+	SaveSystem.save_now(true)
+
+
+func _on_equipment_returned(_cid: StringName, gear: Variant, outcome_text: StringName) -> void:
+	var name: String = "（装备）"
+	if gear is GearInstance:
+		name = (gear as GearInstance).display_full_name()
+	_return_notice.show_notice("%s · %s" % [name, String(outcome_text)])
 
 
 func _process(delta: float) -> void:
