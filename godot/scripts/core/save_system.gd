@@ -20,6 +20,7 @@ func save_now(force: bool = false) -> bool:
 		"saved_at": Time.get_unix_time_from_system(),
 		"game_state": GameState.to_dict(),
 		"shop_state": ShopState.to_dict(),
+		"codex_state": CodexState.to_dict(),
 	}
 	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if f == null:
@@ -51,6 +52,8 @@ func load_or_init() -> void:
 	GameState.from_dict(gs)
 	var ss: Dictionary = parsed.get("shop_state", {})
 	ShopState.from_dict(ss)
+	var cs: Dictionary = parsed.get("codex_state", {})
+	CodexState.from_dict(cs)
 	EventBus.save_loaded.emit()
 
 

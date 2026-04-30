@@ -24,6 +24,7 @@ SaveSystem="*res://scripts/core/save_system.gd"
 DataRegistry="*res://scripts/core/data_registry.gd"
 TimeLine="*res://scripts/core/time_line.gd"
 ShopState="*res://scripts/core/shop_state.gd"
+CodexState="*res://scripts/core/codex_state.gd"
 
 [debug]
 
