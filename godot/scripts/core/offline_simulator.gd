@@ -57,12 +57,36 @@ func simulate(last_settle_unix: int, real_now_unix: int) -> Array:
 			})
 		if rng.randf() < CUSTOMER_PROB_PER_SHICHEN and not customers.is_empty():
 			var c: CustomerData = customers[rng.randi() % customers.size()]
-			diary.append({
-				"unix": cur_unix,
-				"shichen": cur_shichen,
-				"kind": &"customer_refuse",
-				"detail": "%s时，%s 来访，按规劝退。" % [SHICHEN_NAMES[cur_shichen], c.display_name],
-			})
+			# 调铺规决策；伪装客人按 disguise 评估，可被攻破
+			var req := CustomerRequest.new()
+			req.customer_id = c.id
+			req.arrived_unix = cur_unix
+			var result: Dictionary = ShopRules.evaluate_offline(req, c)
+			var perceived_name: String = c.display_name
+			if not c.disguise_name.is_empty():
+				perceived_name = c.disguise_name
+			if result["action"] == &"refuse":
+				diary.append({
+					"unix": cur_unix,
+					"shichen": cur_shichen,
+					"kind": &"customer_refuse",
+					"detail": "%s时，%s 来访，按规劝退。" % [SHICHEN_NAMES[cur_shichen], perceived_name],
+				})
+			else:
+				diary.append({
+					"unix": cur_unix,
+					"shichen": cur_shichen,
+					"kind": &"customer_lend",
+					"detail": "%s时，借了一件给 %s。" % [SHICHEN_NAMES[cur_shichen], perceived_name],
+				})
+				if result["breached"]:
+					# 攻破特殊条目：玩家以为放进去的是 disguise 客，结果是真名/真 tier
+					diary.append({
+						"unix": cur_unix,
+						"shichen": cur_shichen,
+						"kind": &"rule_breach",
+						"detail": "——后来才看清，是 %s。铺规没拦住。" % c.display_name,
+					})
 	return diary
 
 

@@ -23,6 +23,8 @@ const AREA_POSITIONS: Dictionary = {
 @onready var _lend_dialog: LendDialog = $LendDialog
 @onready var _return_notice: ReturnNotice = $ReturnNotice
 @onready var _diary_screen: DiaryScreen = $DiaryScreen
+@onready var _rules_screen: RulesScreen = $RulesScreen
+@onready var _open_rules_btn: Button = $AreaYard/OpenRulesButton
 
 
 func _ready() -> void:
@@ -31,7 +33,7 @@ func _ready() -> void:
 	# 让其内部 anchors_preset (12=底部宽 / 5=居中上) 正确定位（Control 在 Node2D
 	# 父下 anchors 全失效）。
 	var vp_size: Vector2 = get_viewport_rect().size
-	for screen in [_forge_screen, _codex_screen, _lend_dialog, _customer_panel, _return_notice, _diary_screen]:
+	for screen in [_forge_screen, _codex_screen, _lend_dialog, _customer_panel, _return_notice, _diary_screen, _rules_screen]:
 		screen.position = Vector2.ZERO
 		screen.size = vp_size
 		screen.visible = false
@@ -53,6 +55,7 @@ func _ready() -> void:
 	_open_forge_btn.pressed.connect(_on_open_forge)
 	_open_codex_btn.pressed.connect(_on_open_codex)
 	_open_counter_btn.pressed.connect(_on_open_counter)
+	_open_rules_btn.pressed.connect(_on_open_rules)
 	# Customer 流程
 	_customer_panel.lend_pressed.connect(_on_customer_lend)
 	_customer_panel.refuse_pressed.connect(_on_customer_refuse)
@@ -107,6 +110,10 @@ func _on_forge_finished(inst: Variant, _qiao: bool, was_back: bool) -> void:
 
 func _on_open_codex() -> void:
 	_codex_screen.open()
+
+
+func _on_open_rules() -> void:
+	_rules_screen.open()
 
 
 # ── Customer 流程 ─────────────────────────────

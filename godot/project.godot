@@ -28,6 +28,7 @@ CodexState="*res://scripts/core/codex_state.gd"
 EncounterState="*res://scripts/core/encounter_state.gd"
 CustomerSpawner="*res://scripts/core/customer_spawner.gd"
 OfflineSimulator="*res://scripts/core/offline_simulator.gd"
+ShopRules="*res://scripts/core/shop_rules.gd"
 
 [debug]
 
