@@ -26,6 +26,7 @@ TimeLine="*res://scripts/core/time_line.gd"
 ShopState="*res://scripts/core/shop_state.gd"
 CodexState="*res://scripts/core/codex_state.gd"
 EncounterState="*res://scripts/core/encounter_state.gd"
+CustomerSpawner="*res://scripts/core/customer_spawner.gd"
 
 [debug]
 
