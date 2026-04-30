@@ -1,0 +1,42 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/star_detail_panel.gd" id="1"]
+
+[node name="StarDetailPanel" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.5)
+
+[node name="Frame" type="PanelContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -160.0
+offset_right = 200.0
+offset_bottom = 160.0
+
+[node name="Layout" type="VBoxContainer" parent="Frame"]
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Frame/Layout"]
+text = ""
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.95, 0.85, 0.55, 1)
+
+[node name="List" type="ItemList" parent="Frame/Layout"]
+custom_minimum_size = Vector2(380, 220)
+
+[node name="CloseButton" type="Button" parent="Frame/Layout"]
+text = "关闭"
+theme_override_font_sizes/font_size = 16

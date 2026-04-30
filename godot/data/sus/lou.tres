@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SuData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/su_data.gd" id="1_s"]
+
+[resource]
+script = ExtResource("1_s")
+id = &"lou"
+display_name = "娄"
+match_path = &"sword"
+match_quality_min = 2
+match_quality_max = 2
+position_x = 0.217
+position_y = 0.253

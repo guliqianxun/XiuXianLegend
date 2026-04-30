@@ -33,6 +33,7 @@ signal customer_left(customer_id: StringName, was_refused: bool)
 # ── 器谱 / 共鸣 ────────────────────────────────
 signal star_lit(gupu_id: StringName, su_id: StringName, gear_inst: Resource)
 signal resonance_activated(gupu_id: StringName, pattern_id: StringName)
+signal codex_changed(gupu_id: StringName)   # 切换当前古谱
 
 # ── 存档 ──────────────────────────────────────
 signal save_loaded()
