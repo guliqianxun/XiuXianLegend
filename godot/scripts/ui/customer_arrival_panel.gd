@@ -23,6 +23,10 @@ func _ready() -> void:
 
 func show_request(req: CustomerRequest) -> void:
 	_current = req
+	# 防御性：每次 show 强制 size + position（防 anchor-on-Node2D 坑反复发作）
+	var vp_size: Vector2 = get_viewport_rect().size
+	position = Vector2.ZERO
+	size = vp_size
 	visible = true
 	var c := DataRegistry.get_resource(&"customer", req.customer_id) as CustomerData
 	_name_label.text = c.display_name if c != null else String(req.customer_id)

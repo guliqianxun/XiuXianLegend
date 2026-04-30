@@ -96,7 +96,7 @@ func _on_open_codex() -> void:
 
 func _on_open_counter() -> void:
 	if not CustomerSpawner.spawn_now():
-		push_warning("counter: pending request exists or spawn failed")
+		push_warning("counter: pending request exists or spawn failed (pending=%s)" % EncounterState.pending_request)
 
 
 func _on_customer_arrived(_cid: StringName, req: Variant) -> void:
