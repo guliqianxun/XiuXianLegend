@@ -16,15 +16,18 @@ const AREA_POSITIONS: Dictionary = {
 @onready var _hud_money: Label = $HUD/MoneyLabel
 @onready var _open_forge_btn: Button = $AreaFurnace/OpenForgeButton
 @onready var _forge_screen: ForgeScreen = $ForgeScreen
+@onready var _open_codex_btn: Button = $AreaLoft/OpenCodexButton
+@onready var _codex_screen: CodexScreen = $CodexScreen
 
 
 func _ready() -> void:
-	# 强制 ForgeScreen 占满 viewport 并隐藏（Control 在 Node2D 父下 anchors 不工作，
-	# 必须显式设 size 与 visible）
+	# 强制 ForgeScreen / CodexScreen 占满 viewport 并隐藏（Control 在 Node2D 父下
+	# anchors 不工作，必须显式设 size 与 visible）
 	var vp_size: Vector2 = get_viewport_rect().size
-	_forge_screen.position = Vector2.ZERO
-	_forge_screen.size = vp_size
-	_forge_screen.visible = false
+	for screen in [_forge_screen, _codex_screen]:
+		screen.position = Vector2.ZERO
+		screen.size = vp_size
+		screen.visible = false
 	# 老铁初始站在炉房（避开按钮位置）
 	_old_iron.global_position = AREA_POSITIONS[&"furnace"]
 	# 启动后立即载档
@@ -35,8 +38,9 @@ func _ready() -> void:
 	EventBus.time_advanced.connect(_on_time_advanced)
 	EventBus.currency_changed.connect(_on_currency_changed)
 	EventBus.forge_finished.connect(_on_forge_finished)
-	# 炉房按钮 → 开锻造弹窗
+	# 炉房按钮 → 开锻造弹窗；阁楼按钮 → 开器谱
 	_open_forge_btn.pressed.connect(_on_open_forge)
+	_open_codex_btn.pressed.connect(_on_open_codex)
 	_refresh_hud()
 
 
@@ -54,9 +58,20 @@ func _on_open_forge() -> void:
 	_forge_screen.open()
 
 
-func _on_forge_finished(_inst: Resource, _qiao: bool, _back: bool) -> void:
+func _on_forge_finished(inst: Variant, _qiao: bool, was_back: bool) -> void:
+	# 反噬时无装备入谱
+	if not was_back and inst is GearInstance:
+		var gear: GearInstance = inst
+		# slot_kind 反查自配方（N3 简化：inst.base_id 就是 recipe id）
+		var recipe: RecipeData = DataRegistry.get_resource(&"recipe", gear.base_id) as RecipeData
+		var slot_kind: StringName = recipe.slot_kind if recipe != null else &"sword"
+		CodexState.place_equipment(gear, slot_kind)
 	# 出炉后存档（强制）
 	SaveSystem.save_now(true)
+
+
+func _on_open_codex() -> void:
+	_codex_screen.open()
 
 
 func _process(delta: float) -> void:
