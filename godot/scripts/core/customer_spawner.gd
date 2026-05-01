@@ -18,7 +18,7 @@ const STORY_POOL_RATIO: float = 0.30
 ## 流程：抽 tier → 30% 概率从剧情池（手写 .tres）抽，70% 程序生成
 ## 剧情池此 tier 为空时直接走生成器
 static func spawn_one(rng: RandomNumberGenerator, now_unix: int) -> CustomerRequest:
-	var tier: int = _pick_tier(rng)
+	var tier: int = _pick_tier(rng, now_unix)
 	var c: CustomerData = null
 	if rng.randf() < STORY_POOL_RATIO:
 		c = _pick_from_story_pool(rng, tier)
@@ -33,18 +33,32 @@ static func spawn_one(rng: RandomNumberGenerator, now_unix: int) -> CustomerRequ
 	req.arrived_unix = now_unix
 	req.desired_slot = _slot_from_path(c.path_affinity)
 	req.min_quality = 0
-	req.payment = c.base_payment
+	var payment: int = c.base_payment
+	# N7 白虎宿：怪客酬金 ×1.2
+	if tier == CustomerData.Tier.WEIRD and GameState.has_resonance(&"bai_hu"):
+		payment = int(round(float(payment) * 1.2))
+	req.payment = payment
 	req.quest_label = "外勤" if tier == CustomerData.Tier.REGULAR else "夜事"
 	req.expected_duration_sec = DURATION_BY_TIER[tier]
 	req.unmasked = (c.disguise_name.is_empty())
 	return req
 
 
-static func _pick_tier(rng: RandomNumberGenerator) -> int:
+## 抽 tier。N7 血曜宿：深夜（子-寅时 0-2）怪客权重 ×2，从常客扣
+static func _pick_tier(rng: RandomNumberGenerator, now_unix: int = 0) -> int:
+	var weights: Array[float] = TIER_WEIGHTS.duplicate()
+	if now_unix > 0 and GameState.has_resonance(&"xue_yao"):
+		var shichen: int = TimeLine.shichen_of_unix(now_unix)
+		if shichen >= 0 and shichen <= 2:
+			var weird_orig: float = weights[CustomerData.Tier.WEIRD]
+			var weird_new: float = weird_orig * 2.0
+			weights[CustomerData.Tier.WEIRD] = weird_new
+			weights[CustomerData.Tier.REGULAR] = maxf(0.0,
+				weights[CustomerData.Tier.REGULAR] - (weird_new - weird_orig))
 	var u: float = rng.randf()
 	var acc: float = 0.0
-	for i in TIER_WEIGHTS.size():
-		acc += TIER_WEIGHTS[i]
+	for i in weights.size():
+		acc += weights[i]
 		if u < acc:
 			return i
 	return CustomerData.Tier.REGULAR

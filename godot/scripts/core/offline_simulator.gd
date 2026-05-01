@@ -97,15 +97,9 @@ func simulate(last_settle_unix: int, real_now_unix: int) -> Array:
 
 
 static func _spawn_customer_for_offline(rng: RandomNumberGenerator, gen_seed: int) -> CustomerData:
-	# 抽 tier
-	var u: float = rng.randf()
-	var acc: float = 0.0
-	var tier: int = CustomerData.Tier.REGULAR
-	for i in CustomerSpawner.TIER_WEIGHTS.size():
-		acc += CustomerSpawner.TIER_WEIGHTS[i]
-		if u < acc:
-			tier = i
-			break
+	# 用 spawner._pick_tier 让 N7 共鸣 buff（如血曜宿深夜怪客 ×2）在离线也生效
+	# 把 gen_seed 当作 unix 传入（粗略，shichen 计算够用）
+	var tier: int = CustomerSpawner._pick_tier(rng, gen_seed)
 	# 30% 剧情池
 	if rng.randf() < CustomerSpawner.STORY_POOL_RATIO:
 		var pool: Array = []
