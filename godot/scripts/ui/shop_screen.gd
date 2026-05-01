@@ -12,12 +12,12 @@ const AREA_POSITIONS: Dictionary = {
 }
 
 @onready var _old_iron: Node2D = $OldIron
-@onready var _hud_time: Label = $HUD/TimeLabel
-@onready var _hud_money: Label = $HUD/MoneyLabel
-@onready var _hud_reputation: Label = $HUD/ReputationLabel
-@onready var _hud_brush: Label = $HUD/BrushLabel
-@onready var _hud_codex: Label = $HUD/CodexLabel
-@onready var _hud_rules: Label = $HUD/RulesLabel
+@onready var _hud_time: Label = $HUD/HudFrame/VBox/TimeLabel
+@onready var _hud_money: Label = $HUD/HudFrame/VBox/MoneyLabel
+@onready var _hud_reputation: Label = $HUD/HudFrame/VBox/ReputationLabel
+@onready var _hud_brush: Label = $HUD/HudFrame/VBox/BrushLabel
+@onready var _hud_codex: Label = $HUD/HudFrame/VBox/CodexLabel
+@onready var _hud_rules: Label = $HUD/RulesFrame/RulesLabel
 @onready var _open_forge_btn: Button = $AreaFurnace/OpenForgeButton
 @onready var _forge_screen: ForgeScreen = $ForgeScreen
 @onready var _open_codex_btn: Button = $AreaLoft/OpenCodexButton

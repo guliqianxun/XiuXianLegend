@@ -28,8 +28,9 @@ func _assert(c: bool, m: String) -> void:
 func _test_shop_has_new_hud_labels() -> void:
 	var pkd: PackedScene = load("res://scenes/shop.tscn")
 	var inst: Node = pkd.instantiate()
-	for need in ["HUD/TimeLabel", "HUD/MoneyLabel", "HUD/ReputationLabel",
-			"HUD/BrushLabel", "HUD/CodexLabel", "HUD/RulesLabel"]:
+	for need in ["HUD/HudFrame/VBox/TimeLabel", "HUD/HudFrame/VBox/MoneyLabel",
+			"HUD/HudFrame/VBox/ReputationLabel", "HUD/HudFrame/VBox/BrushLabel",
+			"HUD/HudFrame/VBox/CodexLabel", "HUD/RulesFrame/RulesLabel"]:
 		_assert(inst.has_node(need), "shop has %s" % need)
 	_assert(inst.has_node("InventoryStrip"), "shop has InventoryStrip")
 	inst.queue_free()
