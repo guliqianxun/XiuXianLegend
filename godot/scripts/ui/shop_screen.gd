@@ -54,6 +54,8 @@ func _ready() -> void:
 	EventBus.equipment_returned.connect(_on_equipment_returned)
 	EventBus.resonance_activated.connect(_on_resonance_activated_narrative)
 	EventBus.identity_fragment_unlocked.connect(_on_identity_fragment_unlocked)
+	EventBus.traits_learned.connect(_on_traits_learned_sfx)
+	EventBus.weird_codex_recorded.connect(_on_weird_codex_recorded_sfx)
 	# 4 区域按钮
 	_open_forge_btn.pressed.connect(_on_open_forge)
 	_open_codex_btn.pressed.connect(_on_open_codex)
@@ -141,6 +143,7 @@ func _on_open_counter() -> void:
 
 func _on_customer_arrived(_cid: StringName, req: Variant) -> void:
 	if req is CustomerRequest:
+		Sfx.play_door_bell()
 		_customer_panel.show_request(req)
 		# 首次到访叙事卡
 		var c: CustomerData = (req as CustomerRequest).customer_data
@@ -198,6 +201,14 @@ func _on_resonance_activated_narrative(_gupu_id: StringName, _pattern_id: String
 		_narrative_overlay.show_text(t)
 
 
+func _on_traits_learned_sfx(_ids: Array) -> void:
+	Sfx.play_paper_flutter()
+
+
+func _on_weird_codex_recorded_sfx(_fp: StringName, _total: int) -> void:
+	Sfx.play_paper_flutter()
+
+
 func _on_identity_fragment_unlocked(_index: int, _total: int) -> void:
 	# 解锁段触发暗线碎片：稍延迟后弹（避免和共鸣/出炉文字撞车）
 	var t: String = NarrativeLibrary.pick_card(NarrativeCard.Trigger.IDENTITY_FRAGMENT)
@@ -208,6 +219,7 @@ func _on_identity_fragment_unlocked(_index: int, _total: int) -> void:
 
 
 func _on_equipment_returned(_cid: StringName, gear: Variant, outcome_text: StringName) -> void:
+	Sfx.play_door_knock()
 	var name: String = "（装备）"
 	if gear is GearInstance:
 		name = (gear as GearInstance).display_full_name()

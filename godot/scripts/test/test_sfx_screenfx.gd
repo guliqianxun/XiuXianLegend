@@ -26,8 +26,10 @@ func _assert(c: bool, m: String) -> void:
 
 
 func _test_sfx_streams_built() -> void:
-	# 5 forge tier + breach + inspect = 7 stream
-	for n in [&"forge_0", &"forge_1", &"forge_2", &"forge_3", &"forge_4", &"breach", &"inspect"]:
+	# 5 forge + breach + inspect + door_bell + door_knock + seal_stamp + paper_flutter = 11
+	for n in [&"forge_0", &"forge_1", &"forge_2", &"forge_3", &"forge_4",
+			&"breach", &"inspect",
+			&"door_bell", &"door_knock", &"seal_stamp", &"paper_flutter"]:
 		_assert(Sfx._streams.has(n), "stream %s built" % n)
 		var s: AudioStreamWAV = Sfx._streams[n]
 		_assert(s.data.size() > 0, "stream %s has data (size %d)" % [n, s.data.size()])
@@ -38,7 +40,11 @@ func _test_play_no_crash() -> void:
 	Sfx.play_forge(4)
 	Sfx.play_breach()
 	Sfx.play_inspect()
-	_ok("Sfx.play_* no crash")
+	Sfx.play_door_bell()
+	Sfx.play_door_knock()
+	Sfx.play_seal_stamp()
+	Sfx.play_paper_flutter()
+	_ok("Sfx.play_* no crash (11 streams)")
 
 
 func _test_screenfx_shake_no_crash() -> void:
