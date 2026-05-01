@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AffixData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/affix_data.gd" id="1_a"]
+
+[resource]
+script = ExtResource("1_a")
+id = &"jin_yan"
+display_name = "浸言"
+description_template = "盛物者言语不虚 +{value}"
+polarity = 0
+min_tier = 1
+weight = 0.6
+value_min = 3
+value_max = 7
+hooks = PackedStringArray()
+path_filter = Array[StringName]([&"eat"])

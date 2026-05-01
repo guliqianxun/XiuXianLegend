@@ -38,7 +38,13 @@ func _make_gear(base_id: StringName, q: int) -> GearInstance:
 func _test_fingerprint_format() -> void:
 	var g := _make_gear(&"iron_sword", 2)
 	var fp := WeirdCodex.fingerprint_of(g)
-	_assert(String(fp) == "iron_sword|2", "fingerprint = recipe_id|quality (got %s)" % fp)
+	_assert(String(fp) == "iron_sword|2|_", "fingerprint = recipe|q|affix (got %s)" % fp)
+	# 加 affix → 不同 fingerprint
+	g.affix_ids = [&"feng_li"]
+	g.affix_values = [5.0]
+	var fp2 := WeirdCodex.fingerprint_of(g)
+	_assert(String(fp2) == "iron_sword|2|feng_li", "with affix (got %s)" % fp2)
+	_assert(fp != fp2, "different affix → different fingerprint")
 
 
 func _test_record_dedup() -> void:
