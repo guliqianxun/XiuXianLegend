@@ -38,6 +38,10 @@ signal codex_changed(gupu_id: StringName)   # 切换当前古谱
 # ── 知识 / 学习（spec §7.3）─────────────────────
 signal traits_learned(trait_ids: Array)  # 一次学到的 trait id 列表（仅新学到的）
 
+# ── 诡器谱 + 暗线（spec §5.5 / §9.4）─────────────
+signal weird_codex_recorded(fingerprint: StringName, total: int)
+signal identity_fragment_unlocked(fragment_index: int, total_fingerprints: int)
+
 # ── 存档 ──────────────────────────────────────
 signal save_loaded()
 signal save_written()

@@ -139,6 +139,7 @@ func _test_v5_payload_unchanged() -> void:
 	_assert((gs["active_resonances"] as Array).is_empty(), "active_resonances defaulted empty")
 	_assert(migrated.has("faction_state"), "v5→v7 chain added faction_state")
 	_assert(migrated.has("narrative_library"), "v5→v7 chain added narrative_library")
+	_assert(migrated.has("weird_codex"), "v5→v8 chain added weird_codex")
 
 
 func _test_future_version_passthrough() -> void:

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"if_01"
+trigger = 7
+body = "炉火映在墙上，老铁的影子比他多了一只手。\n他没注意。"
+customer_id_filter = &""
+one_shot = true

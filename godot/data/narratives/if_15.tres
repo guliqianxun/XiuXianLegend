@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"if_15"
+trigger = 7
+body = "他终于在某个夜里，对着炉火说出了自己的名字。\n炉火没有回应。但屋里所有的灯，都暗了一瞬。"
+customer_id_filter = &""
+one_shot = true

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"if_13"
+trigger = 7
+body = "炉边掉了一封旧信。\n字是他的笔迹。但写信的人不是他。"
+customer_id_filter = &""
+one_shot = true

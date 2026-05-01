@@ -53,6 +53,7 @@ func _ready() -> void:
 	EventBus.customer_arrived.connect(_on_customer_arrived)
 	EventBus.equipment_returned.connect(_on_equipment_returned)
 	EventBus.resonance_activated.connect(_on_resonance_activated_narrative)
+	EventBus.identity_fragment_unlocked.connect(_on_identity_fragment_unlocked)
 	# 4 区域按钮
 	_open_forge_btn.pressed.connect(_on_open_forge)
 	_open_codex_btn.pressed.connect(_on_open_codex)
@@ -105,8 +106,10 @@ func _on_forge_finished(inst: Variant, qiao: bool, was_back: bool) -> void:
 			var t2: String = NarrativeLibrary.pick_card(NarrativeCard.Trigger.QIAO_CHENG)
 			if not t2.is_empty():
 				_narrative_overlay.show_text(t2)
-	# 反噬时无装备入谱
+	# 反噬时无装备入谱 + 不入诡器谱
 	if not was_back and inst is GearInstance:
+		# 诡器谱记录（spec §5.5）— 新 fingerprint 命中阈值会通过 identity_fragment_unlocked 信号弹卡
+		WeirdCodex.record_gear(inst as GearInstance)
 		var gear: GearInstance = inst
 		# slot_kind 反查自配方（N3 简化：inst.base_id 就是 recipe id）
 		var recipe: RecipeData = DataRegistry.get_resource(&"recipe", gear.base_id) as RecipeData
@@ -190,6 +193,15 @@ func _on_resonance_activated_narrative(_gupu_id: StringName, _pattern_id: String
 	var t: String = NarrativeLibrary.pick_card(NarrativeCard.Trigger.RESONANCE)
 	if not t.is_empty():
 		_narrative_overlay.show_text(t)
+
+
+func _on_identity_fragment_unlocked(_index: int, _total: int) -> void:
+	# 解锁段触发暗线碎片：稍延迟后弹（避免和共鸣/出炉文字撞车）
+	var t: String = NarrativeLibrary.pick_card(NarrativeCard.Trigger.IDENTITY_FRAGMENT)
+	if not t.is_empty():
+		await get_tree().create_timer(2.5).timeout
+		_narrative_overlay.show_text(t)
+		Sfx.play_breach()  # 暗线 = 重份量声音
 
 
 func _on_equipment_returned(_cid: StringName, gear: Variant, outcome_text: StringName) -> void:
