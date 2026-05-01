@@ -21,3 +21,20 @@ extends Resource
 ## 主脉骨架连线：每对 (i, j) 表示 stars[i] 和 stars[j] 之间有预设主脉
 ## 用 PackedInt32Array 存 [i0, j0, i1, j1, ...]
 @export var preset_lines: PackedInt32Array = PackedInt32Array()
+
+## 入谱 filter（spec §5.2 各古谱主题）
+## - allowed_paths：允许的 path_affinity 列表；空 = 任意
+## - quality_min/max：装备 quality 范围
+## 装备入谱前先过 filter，不过则此谱不收（玩家可切谱后重造）
+@export var allowed_paths: Array[StringName] = []
+@export var quality_min: int = 0
+@export var quality_max: int = 4
+
+
+## 装备 (path, quality) 能否入此谱
+func accepts(path_affinity: StringName, quality: int) -> bool:
+	if not allowed_paths.is_empty() and not allowed_paths.has(path_affinity):
+		return false
+	if quality < quality_min or quality > quality_max:
+		return false
+	return true

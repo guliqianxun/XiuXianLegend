@@ -34,6 +34,16 @@ horizontal_alignment = 1
 theme_override_font_sizes/font_size = 28
 theme_override_colors/font_color = Color(0.95, 0.85, 0.55, 1)
 
+[node name="GupuTabs" type="HBoxContainer" parent="Layout"]
+alignment = 1
+theme_override_constants/separation = 4
+
+[node name="Progress" type="Label" parent="Layout"]
+text = "已点亮 0 / 28"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.7, 0.7, 0.6, 1)
+
 [node name="StarField" type="Control" parent="Layout"]
 custom_minimum_size = Vector2(900, 540)
 

@@ -36,6 +36,10 @@ var offline_diary_pending: Array = []
 ## 打听 / 攻破后永久解锁；用于在 RulesScreen 生成精确条款
 var learned_traits: Array[StringName] = []
 
+# ── 已激活的共鸣古谱（spec §5.2）──────────────────
+## 28 颗星全亮的古谱 id；激活后 buff 永久生效
+var active_resonances: Array[StringName] = []
+
 
 func add_currency(kind: StringName, amount: int) -> void:
 	match kind:
@@ -136,6 +140,19 @@ func has_learned_trait(t: StringName) -> bool:
 	return learned_traits.has(t)
 
 
+# ── 共鸣 ──────────────────────────────────────
+func activate_resonance(gupu_id: StringName) -> bool:
+	if gupu_id == &"" or active_resonances.has(gupu_id):
+		return false
+	active_resonances.append(gupu_id)
+	EventBus.resonance_activated.emit(gupu_id, &"")
+	return true
+
+
+func has_resonance(gupu_id: StringName) -> bool:
+	return active_resonances.has(gupu_id)
+
+
 func _read_currency(kind: StringName) -> int:
 	match kind:
 		&"spirit_stones": return spirit_stones
@@ -169,6 +186,9 @@ func to_dict() -> Dictionary:
 	var traits_ser: Array = []
 	for t in learned_traits:
 		traits_ser.append(String(t))
+	var reso_ser: Array = []
+	for g in active_resonances:
+		reso_ser.append(String(g))
 	return {
 		"spirit_stones": spirit_stones,
 		"insights": insights,
@@ -180,6 +200,7 @@ func to_dict() -> Dictionary:
 		"smith_hand_today": smith_hand_today,
 		"offline_diary_pending": diary_ser,
 		"learned_traits": traits_ser,
+		"active_resonances": reso_ser,
 	}
 
 
@@ -219,3 +240,8 @@ func from_dict(d: Dictionary) -> void:
 	var traits_raw: Array = d.get("learned_traits", [])
 	for s in traits_raw:
 		learned_traits.append(StringName(s))
+
+	active_resonances = []
+	var reso_raw: Array = d.get("active_resonances", [])
+	for s in reso_raw:
+		active_resonances.append(StringName(s))

@@ -132,9 +132,11 @@ func _test_v5_payload_unchanged() -> void:
 		"shop_rules": {"enabled": ["refuse_all"]},
 	}
 	var migrated := SaveSystem.migrate(v5)
-	_assert(int(migrated.get("version", 0)) == 5, "v5 stays at 5")
+	_assert(int(migrated.get("version", 0)) == SaveSystem.SAVE_VERSION, "v5 → current SAVE_VERSION")
 	var gs: Dictionary = migrated["game_state"]
 	_assert((gs["learned_traits"] as Array).size() == 2, "v5 learned_traits preserved")
+	_assert(gs.has("active_resonances"), "v5→v6 added active_resonances")
+	_assert((gs["active_resonances"] as Array).is_empty(), "active_resonances defaulted empty")
 
 
 func _test_future_version_passthrough() -> void:

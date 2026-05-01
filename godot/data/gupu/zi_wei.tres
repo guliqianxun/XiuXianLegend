@@ -32,12 +32,12 @@
 
 [resource]
 script = ExtResource("1_g")
-id = &"qing_long"
-display_name = "青龙宿"
-theme = "剑系兵器"
-resonance_description = "出借兵器斩妖时回信故事强度 +1 级（N7 实装）"
+id = &"zi_wei"
+display_name = "紫微宿"
+theme = "高品质"
+resonance_description = "秘品出炉概率 ×1.5"
 stars = Array[Resource]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8"), ExtResource("9"), ExtResource("10"), ExtResource("11"), ExtResource("12"), ExtResource("13"), ExtResource("14"), ExtResource("15"), ExtResource("16"), ExtResource("17"), ExtResource("18"), ExtResource("19"), ExtResource("20"), ExtResource("21"), ExtResource("22"), ExtResource("23"), ExtResource("24"), ExtResource("25"), ExtResource("26"), ExtResource("27"), ExtResource("28"), ExtResource("29")])
-preset_lines = PackedInt32Array(0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23, 0)
-allowed_paths = Array[StringName]([&"sword"])
-quality_min = 0
+preset_lines = PackedInt32Array(0, 6, 6, 12, 12, 18, 18, 0)
+allowed_paths = Array[StringName]([])
+quality_min = 3
 quality_max = 4
