@@ -153,7 +153,10 @@ func _resolve_now(gear: GearInstance, req: CustomerRequest) -> void:
 	var tier: int = c.tier if c != null else 0
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
-	var outcome := ReturnResolver.roll_outcome(tier, rng)
+	# 传 gear 的 path（青龙宿 buff 用）
+	var gear_recipe := DataRegistry.get_resource(&"recipe", gear.base_id) as RecipeData
+	var path: StringName = gear_recipe.path_affinity if gear_recipe != null else &""
+	var outcome := ReturnResolver.roll_outcome(tier, rng, path)
 	EncounterState.resolve_return(gear, outcome, TimeLine.now_unix() + req.expected_duration_sec)
 	if outcome == ReturnResolver.Outcome.GREAT_DEED:
 		GameState.add_currency(&"spirit_stones", req.payment * 2)

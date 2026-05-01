@@ -16,11 +16,19 @@ const QUALITY_MI: int = 4
 static func roll_quality(dist: PackedFloat32Array, qiao_cheng_hit: bool, rng: RandomNumberGenerator) -> int:
 	if dist.size() < 5:
 		push_warning("forge: distribution has %d tiers, expected 5" % dist.size())
+	# N7 紫微宿：秘品(Q4)权重 ×1.5，多出的从凡品(Q0)扣
+	var working: PackedFloat32Array = dist.duplicate()
+	if working.size() >= 5 and GameState.has_resonance(&"zi_wei"):
+		var mi_orig: float = working[4]
+		var mi_new: float = mi_orig * 1.5
+		var delta: float = mi_new - mi_orig
+		working[4] = mi_new
+		working[0] = maxf(0.0, working[0] - delta)
 	var u: float = rng.randf()
 	var acc: float = 0.0
 	var q: int = 0
-	for i in dist.size():
-		acc += dist[i]
+	for i in working.size():
+		acc += working[i]
 		if u < acc:
 			q = i
 			break
@@ -98,6 +106,9 @@ static func forge_one(
 		else:
 			result.byproduct = &"yi_zhong_liao"
 		result.byproduct_amount = 1
+		# N7 朱雀宿：反噬副产物 ×2
+		if GameState.has_resonance(&"zhu_que"):
+			result.byproduct_amount = 2
 		return result
 
 	# 2. 巧成检定
