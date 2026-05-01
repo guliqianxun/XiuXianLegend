@@ -41,3 +41,8 @@ enum Tier { REGULAR = 0, RARE = 1, WEIRD = 2 }
 ## 解锁对应的精确铺规条款（如 sole_dustless → "鞋底无尘的客人 → 拒"）
 ## trait id 必须在 ShopRules.TRAIT_LIBRARY 注册才会显示中文名
 @export var traits: Array[StringName] = []
+
+## 诡异副标题（仅怪客及部分罕客有；伪装时不显示，打听后显现）
+## 例："他的手是反的" / "她没有影子"
+## 这是叙事 flavor，不影响系统判定，但增强"看清真身"的代入感
+@export var eerie_note: String = ""

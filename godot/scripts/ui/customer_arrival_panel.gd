@@ -9,6 +9,7 @@ signal refuse_pressed(req: CustomerRequest)
 const INSPECT_COST: int = 50  # 打听一次的灵石
 
 @onready var _name_label: Label = $Frame/Layout/NameLabel
+@onready var _eerie_label: Label = $Frame/Layout/EerieLabel
 @onready var _request_label: Label = $Frame/Layout/RequestLabel
 @onready var _payment_label: Label = $Frame/Layout/PaymentLabel
 @onready var _lend_btn: Button = $Frame/Layout/Buttons/LendBtn
@@ -43,6 +44,8 @@ func _render(req: CustomerRequest) -> void:
 		c = DataRegistry.get_resource(&"customer", req.customer_id) as CustomerData
 	if c == null:
 		_name_label.text = String(req.customer_id)
+		_eerie_label.text = ""
+		_eerie_label.visible = false
 		_request_label.text = "（未知客人）"
 		_payment_label.text = "酬金 %d 灵石" % req.payment
 		_inspect_btn.visible = false
@@ -58,6 +61,11 @@ func _render(req: CustomerRequest) -> void:
 		display = c.disguise_name
 		tier_for_label = c.disguise_tier if c.disguise_tier >= 0 else int(c.tier)
 	_name_label.text = "%s · %s" % [display, _tier_zh(tier_for_label)]
+
+	# 诡异副标题：仅在已识破真身（非伪装 / 已打听）且 eerie_note 非空时显示
+	var show_eerie: bool = (req.unmasked or c.disguise_name.is_empty()) and not c.eerie_note.is_empty()
+	_eerie_label.visible = show_eerie
+	_eerie_label.text = "—— %s" % c.eerie_note if show_eerie else ""
 
 	_request_label.text = "求借 %s ≥ Q%d  ·  %s" % [
 		_slot_zh(req.desired_slot), req.min_quality, req.quest_label

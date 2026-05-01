@@ -81,11 +81,14 @@ func simulate(last_settle_unix: int, real_now_unix: int) -> Array:
 					"detail": "%s时，借了一件给 %s。" % [SHICHEN_NAMES[cur_shichen], perceived_name],
 				})
 				if result["breached"]:
+					var breach_text: String = "——后来才看清，是 %s。铺规没拦住。" % c.display_name
+					if not c.eerie_note.is_empty():
+						breach_text += "（%s）" % c.eerie_note
 					diary.append({
 						"unix": cur_unix,
 						"shichen": cur_shichen,
 						"kind": &"rule_breach",
-						"detail": "——后来才看清，是 %s。铺规没拦住。" % c.display_name,
+						"detail": breach_text,
 					})
 					# trait 学习是知识不是物资，破坏隔离换交互闭环
 					if not c.traits.is_empty():

@@ -18,9 +18,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -300.0
-offset_top = -70.0
+offset_top = -100.0
 offset_right = 300.0
-offset_bottom = 70.0
+offset_bottom = 100.0
 
 [node name="Layout" type="VBoxContainer" parent="Frame"]
 theme_override_constants/separation = 6
@@ -29,6 +29,12 @@ theme_override_constants/separation = 6
 text = ""
 theme_override_font_sizes/font_size = 22
 theme_override_colors/font_color = Color(0.95, 0.85, 0.55, 1)
+
+[node name="EerieLabel" type="Label" parent="Frame/Layout"]
+text = ""
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.7, 0.5, 0.55, 1)
+visible = false
 
 [node name="RequestLabel" type="Label" parent="Frame/Layout"]
 text = ""

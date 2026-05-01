@@ -15,3 +15,4 @@ faction_state_bonus = 0.0
 disguise_name = "陌生剑客"
 disguise_tier = 0
 traits = Array[StringName]([&"sole_dustless", &"hooded"])
+eerie_note = "他从不看你的眼睛。"

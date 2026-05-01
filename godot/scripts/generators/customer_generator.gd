@@ -56,6 +56,46 @@ const FACTIONS: Array[StringName] = [
 const PAYMENT_MIN: Array[int] = [80, 350, 600]
 const PAYMENT_MAX: Array[int] = [200, 600, 1000]
 
+## 诡异副标题池（spec §9.2 怪客离奇行为类目）
+## 怪客 80% 抽一条；罕客 25% 抽一条（"微异"）；伪装时不显示，打听后显现
+const EERIE_NOTES_WEIRD: Array[String] = [
+	"他的手是反的。",
+	"她有六根手指。",
+	"他的舌头黑得像墨。",
+	"他没有眉毛。",
+	"他没有影子。",
+	"她的影子比她高。",
+	"他的影子在动而他不动。",
+	"他说话像两个人在说。",
+	"他从不眨眼。",
+	"他怀里有什么在动。",
+	"他袖子里有水声。",
+	"他的钱有古旧的味道。",
+	"他不喝你递的茶。",
+	"他贴着墙站着。",
+	"他的脚不沾地。",
+	"他从不看你的眼睛。",
+	"他身上有冷气。",
+	"他过处香烛会自灭。",
+	"他来时鸡狗噤声。",
+	"他指甲是青的。",
+	"他笑时露的牙太多。",
+	"他的耳朵是尖的。",
+	"他袖中有铃，自响。",
+	"他站着却没有重量。",
+]
+
+## 罕客的"微异"池（更轻的诡异感，不像怪客那样明显）
+const EERIE_NOTES_RARE: Array[String] = [
+	"她的腰牌不是这一朝的。",
+	"他的剑鞘上有旧血。",
+	"他左手戴着右手的扳指。",
+	"她从北边来，但脚是干的。",
+	"他袖中藏一卷不打开的图。",
+	"他自称没姓氏。",
+	"他的腰牌写的不是他的名字。",
+]
+
 
 ## 主入口：按 tier 生成一个 CustomerData（不入 DataRegistry）
 static func generate(rng: RandomNumberGenerator, tier: int, gen_seed: int) -> CustomerData:
@@ -77,7 +117,22 @@ static func generate(rng: RandomNumberGenerator, tier: int, gen_seed: int) -> Cu
 	else:
 		c.disguise_name = ""
 		c.disguise_tier = -1
+	# 诡异副标题
+	c.eerie_note = _maybe_eerie_note(rng, t)
 	return c
+
+
+static func _maybe_eerie_note(rng: RandomNumberGenerator, tier: int) -> String:
+	match tier:
+		2:  # WEIRD：80% 抽一条明显诡异
+			if rng.randf() < 0.80:
+				return EERIE_NOTES_WEIRD[rng.randi() % EERIE_NOTES_WEIRD.size()]
+		1:  # RARE：25% 抽一条微异
+			if rng.randf() < 0.25:
+				return EERIE_NOTES_RARE[rng.randi() % EERIE_NOTES_RARE.size()]
+		_:
+			pass
+	return ""
 
 
 static func _pick(rng: RandomNumberGenerator, pool: Array) -> String:
