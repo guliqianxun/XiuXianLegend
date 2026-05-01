@@ -15,3 +15,4 @@ faction_state_bonus = 0.0
 disguise_name = "云游郎中"
 disguise_tier = 1
 traits = Array[StringName]([&"pale_face", &"carries_doll"])
+eerie_note = "她怀里的偶人会眨眼。"
