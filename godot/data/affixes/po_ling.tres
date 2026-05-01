@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AffixData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/affix_data.gd" id="1_a"]
+
+[resource]
+script = ExtResource("1_a")
+id = &"po_ling"
+display_name = "破灵"
+description_template = "破微薄之灵 +{value}"
+polarity = 0
+min_tier = 1
+weight = 0.8
+value_min = 2
+value_max = 6
+hooks = PackedStringArray()
+path_filter = Array[StringName]([&"curse"])

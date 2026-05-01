@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AffixData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/affix_data.gd" id="1_a"]
+
+[resource]
+script = ExtResource("1_a")
+id = &"duan_qing"
+display_name = "断情"
+description_template = "斩之不犹豫 +{value}"
+polarity = 0
+min_tier = 1
+weight = 0.6
+value_min = 4
+value_max = 9
+hooks = PackedStringArray()
+path_filter = Array[StringName]([&"sword"])

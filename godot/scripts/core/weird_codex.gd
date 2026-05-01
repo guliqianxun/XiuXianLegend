@@ -16,10 +16,18 @@ var fingerprints: Array[StringName] = []
 var unlocked_fragments: int = 0
 
 
-## 计算装备 fingerprint
+## 计算装备 fingerprint：recipe_id|quality|main_affix_id（N9 升级 v2）
+## 主词缀为空时 affix 段写 "_"，保持格式稳定
 static func fingerprint_of(gear: GearInstance) -> StringName:
 	if gear == null: return &""
-	return StringName("%s%s%d" % [String(gear.base_id), FINGERPRINT_SEP, gear.rarity])
+	var affix_part: String = "_"
+	if not gear.affix_ids.is_empty():
+		affix_part = String(gear.affix_ids[0])
+	return StringName("%s%s%d%s%s" % [
+		String(gear.base_id), FINGERPRINT_SEP,
+		gear.rarity, FINGERPRINT_SEP,
+		affix_part,
+	])
 
 
 ## 记录装备：新加返回 true（带 emit + 阈值检查）；已有返回 false

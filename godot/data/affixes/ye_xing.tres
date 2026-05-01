@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AffixData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/affix_data.gd" id="1_a"]
+
+[resource]
+script = ExtResource("1_a")
+id = &"ye_xing"
+display_name = "夜行"
+description_template = "夜里更称手 +{value}"
+polarity = 0
+min_tier = 0
+weight = 0.8
+value_min = 1
+value_max = 4
+hooks = PackedStringArray()
+path_filter = Array[StringName]([])

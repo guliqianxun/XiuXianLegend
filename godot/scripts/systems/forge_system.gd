@@ -125,6 +125,11 @@ static func forge_one(
 	g.base_id = recipe.id  # N2 临时：以配方 id 当 base_id；N3 引入 base_template_id 字段时改
 	g.rarity = q
 	g.seed = rng.seed
+	# N9 主词缀：按 path × quality roll 一个
+	var main_affix: AffixData = roll_main_affix(recipe.path_affinity, q, rng)
+	if main_affix != null:
+		g.affix_ids = [main_affix.id]
+		g.affix_values = [rng.randf_range(main_affix.value_min, main_affix.value_max)]
 	g.origin = {
 		"unix": now_unix,
 		"recipe": String(recipe.id),
@@ -141,6 +146,47 @@ static func forge_one(
 	g.status = GearInstance.Status.IN_SHOP
 	result.equipment = g
 	return result
+
+
+## 抽 1 个主词缀。
+## - pool 来自 DataRegistry（hooks 为空 = 主题词缀，过滤旧战斗 affix）
+## - path_filter 命中 path 或为空（通用）
+## - min_tier <= quality
+## - quality≥3（禁/秘）有 5% 概率从诡缀池抽（ARCANE）
+## 返回 null 表示无 match（罕见）
+static func roll_main_affix(path: StringName, quality: int, rng: RandomNumberGenerator) -> AffixData:
+	var thematic: Array = []
+	var arcane: Array = []
+	for aid in DataRegistry.ids_of(&"affix"):
+		var a := DataRegistry.get_resource(&"affix", aid) as AffixData
+		if a == null: continue
+		if not a.hooks.is_empty(): continue  # 排除旧战斗 affix
+		if int(a.min_tier) > quality: continue
+		var path_ok: bool = a.path_filter.is_empty() or a.path_filter.has(path)
+		if not path_ok: continue
+		if a.min_tier == AffixData.Tier.ARCANE:
+			arcane.append(a)
+		else:
+			thematic.append(a)
+	# 禁/秘品 + 5% → 诡缀池
+	if quality >= 3 and not arcane.is_empty() and rng.randf() < 0.05:
+		return _weighted_pick(arcane, rng)
+	if thematic.is_empty():
+		return null
+	return _weighted_pick(thematic, rng)
+
+
+static func _weighted_pick(pool: Array, rng: RandomNumberGenerator) -> AffixData:
+	var total: float = 0.0
+	for a in pool:
+		total += float((a as AffixData).weight)
+	var u: float = rng.randf() * total
+	var acc: float = 0.0
+	for a in pool:
+		acc += float((a as AffixData).weight)
+		if u < acc:
+			return a as AffixData
+	return pool[0] as AffixData
 
 
 static func _stringify_array(arr: Array) -> Array:

@@ -34,8 +34,20 @@ func get_affix(i: int) -> AffixData:
 
 func display_full_name() -> String:
 	var base := get_base()
-	var name := base.display_name if base != null else String(base_id)
-	return "%s %s" % [rarity_prefix(rarity), name]
+	var name: String = ""
+	if base != null:
+		name = base.display_name
+	else:
+		# base_id 现阶段临时存 recipe id（N2 妥协）；fallback 查 recipe.display_name
+		var r := DataRegistry.get_resource(&"recipe", base_id) as RecipeData
+		name = r.display_name if r != null else String(base_id)
+	# N9：主词缀缀在末尾
+	var affix_suffix: String = ""
+	if not affix_ids.is_empty():
+		var a := get_affix(0)
+		if a != null:
+			affix_suffix = " · " + a.display_name
+	return "%s %s%s" % [rarity_prefix(rarity), name, affix_suffix]
 
 
 static func rarity_prefix(r: int) -> String:
