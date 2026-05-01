@@ -76,8 +76,16 @@ func _render(req: CustomerRequest) -> void:
 	var disguised: bool = (not c.disguise_name.is_empty()) and (not req.unmasked)
 	_inspect_btn.visible = disguised
 	if disguised:
-		_inspect_btn.text = "打听（%d 灵石）" % INSPECT_COST
-		_inspect_btn.disabled = (GameState.spirit_stones < INSPECT_COST)
+		var cost: int = _inspect_cost_for(c)
+		_inspect_btn.text = "打听（%d 灵石）" % cost
+		_inspect_btn.disabled = (GameState.spirit_stones < cost)
+
+
+## N7b xue_yao_blood pattern：怪客打听灵石半价
+static func _inspect_cost_for(c: CustomerData) -> int:
+	if c != null and c.tier == CustomerData.Tier.WEIRD and GameState.has_pattern(&"xue_yao_blood"):
+		return INSPECT_COST / 2
+	return INSPECT_COST
 
 
 func _on_lend() -> void:
@@ -94,8 +102,12 @@ func _on_refuse() -> void:
 
 func _on_inspect() -> void:
 	if _current == null: return
-	if not GameState.spend_currency(&"spirit_stones", INSPECT_COST):
-		push_warning("inspect: 灵石不足 %d" % INSPECT_COST)
+	var c0: CustomerData = _current.customer_data
+	if c0 == null:
+		c0 = DataRegistry.get_resource(&"customer", _current.customer_id) as CustomerData
+	var cost: int = _inspect_cost_for(c0)
+	if not GameState.spend_currency(&"spirit_stones", cost):
+		push_warning("inspect: 灵石不足 %d" % cost)
 		return
 	_current.unmasked = true
 	# 学到该客人的所有 trait（spec §7.3：打听后永久解锁特征条款）

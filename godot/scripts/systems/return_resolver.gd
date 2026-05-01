@@ -26,6 +26,9 @@ const DISTRIBUTION: Array = [
 ## - 玄武宿：DAMAGED -50%，剩余转入 OK_RETURN
 ## - 青龙宿：path=sword 时 GREAT_DEED +5%，从 OK_RETURN 扣
 ## - 残宿：NOT_RETURNED -30%，剩余转入 OK_RETURN
+## N7b pattern buff（在共鸣 buff 之后叠加）：
+## - xuan_wu_quad：DAMAGED 额外 -5%
+## - can_xiu_bind：NOT_RETURNED 额外 -5%
 ##
 ## path 可选（默认 &""）；shop_screen 调用时传入 gear path
 static func roll_outcome(tier: int, rng: RandomNumberGenerator, path: StringName = &"") -> int:
@@ -47,6 +50,16 @@ static func roll_outcome(tier: int, rng: RandomNumberGenerator, path: StringName
 		var nr_orig: float = float(dist[Outcome.NOT_RETURNED])
 		dist[Outcome.NOT_RETURNED] = nr_orig * 0.7
 		dist[Outcome.OK_RETURN] = float(dist[Outcome.OK_RETURN]) + nr_orig * 0.3
+	# Pattern: xuan_wu_quad 额外 -5% DAMAGED
+	if GameState.has_pattern(&"xuan_wu_quad"):
+		var d: float = minf(0.05, float(dist[Outcome.DAMAGED]))
+		dist[Outcome.DAMAGED] = float(dist[Outcome.DAMAGED]) - d
+		dist[Outcome.OK_RETURN] = float(dist[Outcome.OK_RETURN]) + d
+	# Pattern: can_xiu_bind 额外 -5% NOT_RETURNED
+	if GameState.has_pattern(&"can_xiu_bind"):
+		var d: float = minf(0.05, float(dist[Outcome.NOT_RETURNED]))
+		dist[Outcome.NOT_RETURNED] = float(dist[Outcome.NOT_RETURNED]) - d
+		dist[Outcome.OK_RETURN] = float(dist[Outcome.OK_RETURN]) + d
 	var u: float = rng.randf()
 	var acc: float = 0.0
 	for i in dist.size():

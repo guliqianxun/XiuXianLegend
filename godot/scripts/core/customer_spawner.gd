@@ -34,9 +34,13 @@ static func spawn_one(rng: RandomNumberGenerator, now_unix: int) -> CustomerRequ
 	req.desired_slot = _slot_from_path(c.path_affinity)
 	req.min_quality = 0
 	var payment: int = c.base_payment
-	# N7 白虎宿：怪客酬金 ×1.2
-	if tier == CustomerData.Tier.WEIRD and GameState.has_resonance(&"bai_hu"):
-		payment = int(round(float(payment) * 1.2))
+	# N7 白虎宿：怪客酬金 ×1.2；N7b bai_hu_fang pattern 再 +10% 叠加（先后乘）
+	if tier == CustomerData.Tier.WEIRD:
+		var mul: float = 1.0
+		if GameState.has_resonance(&"bai_hu"): mul *= 1.2
+		if GameState.has_pattern(&"bai_hu_fang"): mul *= 1.1
+		if mul > 1.0:
+			payment = int(round(float(payment) * mul))
 	req.payment = payment
 	req.quest_label = "外勤" if tier == CustomerData.Tier.REGULAR else "夜事"
 	req.expected_duration_sec = DURATION_BY_TIER[tier]
