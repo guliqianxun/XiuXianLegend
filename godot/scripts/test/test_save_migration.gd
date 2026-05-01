@@ -140,6 +140,9 @@ func _test_v5_payload_unchanged() -> void:
 	_assert(migrated.has("faction_state"), "v5→v7 chain added faction_state")
 	_assert(migrated.has("narrative_library"), "v5→v7 chain added narrative_library")
 	_assert(migrated.has("weird_codex"), "v5→v8 chain added weird_codex")
+	# v5→v9 应同时加 star_brushes/activated_patterns
+	_assert(gs.has("star_brushes"), "v5→v9 chain added star_brushes")
+	_assert(gs.has("activated_patterns"), "v5→v9 chain added activated_patterns")
 
 
 func _test_future_version_passthrough() -> void:

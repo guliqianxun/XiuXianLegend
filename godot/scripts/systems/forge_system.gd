@@ -55,6 +55,9 @@ static func compute_qiao_cheng_chance(timing_score: float, smith_hand: float, op
 	for mid in optional_materials:
 		if mid in QIAO_MATERIALS:
 			c += 0.10
+	# N7b 隐藏图案 buff：角亢氐三角 → 巧成率 +5%
+	if GameState.has_pattern(&"jiao_kang_di_triangle"):
+		c += 0.05
 	return clampf(c, 0.0, 0.50)
 
 

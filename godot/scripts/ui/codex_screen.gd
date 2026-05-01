@@ -12,6 +12,7 @@ const STAR_NODE_SCENE := preload("res://scenes/ui/star_node.tscn")
 @onready var _title: Label = $Layout/Title
 @onready var _gupu_tabs: HBoxContainer = $Layout/GupuTabs
 @onready var _progress_label: Label = $Layout/Progress
+@onready var _brush_label: Label = $Layout/BrushBar
 @onready var _close_btn: Button = $Layout/CloseButton
 @onready var _star_field: Control = $Layout/StarField
 @onready var _line_canvas: CodexLineCanvas = $Layout/StarField/LineCanvas
@@ -23,6 +24,7 @@ const GUPU_ORDER: Array[StringName] = [
 
 var _gupu: GuPuData = null
 var _star_nodes: Dictionary = {}  # su_id -> StarNode
+var _selected_su: StringName = &""  # 第一颗已选星位（用于自连画线）
 
 
 func _ready() -> void:
@@ -30,6 +32,9 @@ func _ready() -> void:
 	_close_btn.pressed.connect(_on_close)
 	EventBus.star_lit.connect(_on_star_lit)
 	EventBus.resonance_activated.connect(_on_resonance_activated)
+	EventBus.star_brushes_changed.connect(_on_brushes_changed)
+	EventBus.player_line_drawn.connect(_on_player_line_drawn)
+	EventBus.pattern_resonance_activated.connect(_on_pattern_activated)
 	_build_gupu_tabs()
 
 
@@ -84,6 +89,17 @@ func _refresh_title_and_progress() -> void:
 	var resonance_mark: String = " ✦" if GameState.has_resonance(_gupu.id) else ""
 	_title.text = _gupu.display_name + resonance_mark
 	_progress_label.text = "已点亮 %d / %d" % [CodexState.lit_star_count(), _gupu.stars.size()]
+	_refresh_brush_label()
+
+
+func _refresh_brush_label() -> void:
+	if _brush_label == null: return
+	var hint: String = ""
+	if _selected_su != &"":
+		hint = "  ·  已选 %s · 再点一颗连线" % _selected_su
+	elif GameState.star_brushes > 0:
+		hint = "  ·  点亮的星位上长按可连线"
+	_brush_label.text = "星轨笔 %d%s" % [GameState.star_brushes, hint]
 
 
 func _rebuild_star_field() -> void:
@@ -134,7 +150,52 @@ func _on_resonance_activated(gupu_id: StringName, _pattern_id: StringName) -> vo
 func _on_star_clicked(su_id: StringName) -> void:
 	if _gupu == null:
 		return
+	# N7b：如果有星轨笔 + 该星已点亮 → 进入"自连"模式；否则正常打开 detail
+	var lit: bool = CodexState._stars.has(su_id)
+	if GameState.star_brushes > 0 and lit:
+		if _selected_su == &"":
+			_selected_su = su_id
+			_refresh_brush_label()
+			Sfx.play_inspect()
+			return
+		if _selected_su == su_id:
+			_selected_su = &""
+			_refresh_brush_label()
+			return
+		# 第二颗 → 尝试画线
+		var ok: bool = CodexState.add_player_line(_gupu.id, _selected_su, su_id)
+		_selected_su = &""
+		if ok:
+			Sfx.play_forge(2)
+		else:
+			push_warning("draw line failed (条件不足)")
+		_refresh_brush_label()
+		return
 	_detail_panel.open(_gupu, su_id)
+
+
+func _on_brushes_changed(_n: int) -> void:
+	_refresh_brush_label()
+
+
+func _on_player_line_drawn(_g: StringName, _a: StringName, _b: StringName) -> void:
+	if visible:
+		_rebuild_star_field()  # 让 LineCanvas 重画含玩家线
+		_refresh_title_and_progress()
+
+
+func _on_pattern_activated(pattern_id: StringName) -> void:
+	# 隐藏图案命中：屏震 + 嗡声 + 弹叙事
+	ScreenFx.shake(20.0, 0.8)
+	Sfx.play_breach()
+	# 简单提示文本（无固定 NarrativeCard 类目，直接拼）
+	if visible:
+		var pattern_name: String = "图案"
+		for gid in CodexState.PATTERN_LIBRARY:
+			for p in CodexState.PATTERN_LIBRARY[gid]:
+				if p["id"] == pattern_id:
+					pattern_name = p["name"]
+					break
 
 
 func _on_close() -> void:

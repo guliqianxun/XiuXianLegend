@@ -186,6 +186,9 @@ func _resolve_now(gear: GearInstance, req: CustomerRequest) -> void:
 	if outcome == ReturnResolver.Outcome.GREAT_DEED:
 		GameState.add_currency(&"spirit_stones", req.payment * 2)
 		GameState.add_reputation(2)
+		# spec §5.4：立大功 10% 留赠星轨笔
+		if rng.randf() < 0.10:
+			GameState.add_star_brushes(1)
 	SaveSystem.save_now(true)
 
 
