@@ -86,6 +86,7 @@ func _refresh_hint() -> void:
 
 func _on_close() -> void:
 	visible = false
+	Sfx.play_seal_stamp()
 	SaveSystem.save_now(true)
 	closed.emit()
 
