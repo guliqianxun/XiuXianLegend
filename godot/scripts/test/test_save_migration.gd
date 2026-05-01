@@ -137,6 +137,8 @@ func _test_v5_payload_unchanged() -> void:
 	_assert((gs["learned_traits"] as Array).size() == 2, "v5 learned_traits preserved")
 	_assert(gs.has("active_resonances"), "v5→v6 added active_resonances")
 	_assert((gs["active_resonances"] as Array).is_empty(), "active_resonances defaulted empty")
+	_assert(migrated.has("faction_state"), "v5→v7 chain added faction_state")
+	_assert(migrated.has("narrative_library"), "v5→v7 chain added narrative_library")
 
 
 func _test_future_version_passthrough() -> void:

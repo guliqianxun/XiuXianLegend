@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="FactionData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/faction_data.gd" id="1_f"]
+
+[resource]
+script = ExtResource("1_f")
+id = &"wendao_zong"
+display_name = "问道宗"
+style = "名门正派、大户"
+baseline_relation = "中-友"
+influence = "来料/来单/常客"

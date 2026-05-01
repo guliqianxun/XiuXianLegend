@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="FactionData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/faction_data.gd" id="1_f"]
+
+[resource]
+script = ExtResource("1_f")
+id = &"wandan_men"
+display_name = "万丹门"
+style = "丹道一脉、清贫"
+baseline_relation = "中"
+influence = "罕客"

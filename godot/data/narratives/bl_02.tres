@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"bl_02"
+trigger = 2
+body = "材料化作灰烬。空气里有股焦土与腐叶混在一起的味道。"
+customer_id_filter = &""
+one_shot = false

@@ -24,6 +24,7 @@ const AREA_POSITIONS: Dictionary = {
 @onready var _return_notice: ReturnNotice = $ReturnNotice
 @onready var _diary_screen: DiaryScreen = $DiaryScreen
 @onready var _rules_screen: RulesScreen = $RulesScreen
+@onready var _narrative_overlay: NarrativeOverlay = $NarrativeOverlay
 @onready var _open_rules_btn: Button = $AreaYard/OpenRulesButton
 
 
@@ -33,7 +34,7 @@ func _ready() -> void:
 	# 让其内部 anchors_preset (12=底部宽 / 5=居中上) 正确定位（Control 在 Node2D
 	# 父下 anchors 全失效）。
 	var vp_size: Vector2 = get_viewport_rect().size
-	for screen in [_forge_screen, _codex_screen, _lend_dialog, _customer_panel, _return_notice, _diary_screen, _rules_screen]:
+	for screen in [_forge_screen, _codex_screen, _lend_dialog, _customer_panel, _return_notice, _diary_screen, _rules_screen, _narrative_overlay]:
 		screen.position = Vector2.ZERO
 		screen.size = vp_size
 		screen.visible = false
@@ -51,6 +52,7 @@ func _ready() -> void:
 	EventBus.forge_finished.connect(_on_forge_finished)
 	EventBus.customer_arrived.connect(_on_customer_arrived)
 	EventBus.equipment_returned.connect(_on_equipment_returned)
+	EventBus.resonance_activated.connect(_on_resonance_activated_narrative)
 	# 4 区域按钮
 	_open_forge_btn.pressed.connect(_on_open_forge)
 	_open_codex_btn.pressed.connect(_on_open_codex)
@@ -91,7 +93,18 @@ func _on_open_forge() -> void:
 	_forge_screen.open()
 
 
-func _on_forge_finished(inst: Variant, _qiao: bool, was_back: bool) -> void:
+func _on_forge_finished(inst: Variant, qiao: bool, was_back: bool) -> void:
+	# N8 叙事卡触发
+	if was_back:
+		var t: String = NarrativeLibrary.pick_card(NarrativeCard.Trigger.BACKLASH)
+		if not t.is_empty():
+			_narrative_overlay.show_text(t)
+	elif inst is GearInstance:
+		var g: GearInstance = inst
+		if qiao or g.rarity >= 3:
+			var t2: String = NarrativeLibrary.pick_card(NarrativeCard.Trigger.QIAO_CHENG)
+			if not t2.is_empty():
+				_narrative_overlay.show_text(t2)
 	# 反噬时无装备入谱
 	if not was_back and inst is GearInstance:
 		var gear: GearInstance = inst
@@ -126,6 +139,15 @@ func _on_open_counter() -> void:
 func _on_customer_arrived(_cid: StringName, req: Variant) -> void:
 	if req is CustomerRequest:
 		_customer_panel.show_request(req)
+		# 首次到访叙事卡
+		var c: CustomerData = (req as CustomerRequest).customer_data
+		if c == null:
+			c = DataRegistry.get_resource(&"customer", (req as CustomerRequest).customer_id) as CustomerData
+		if c != null:
+			var name: String = c.disguise_name if not c.disguise_name.is_empty() else c.display_name
+			var card_text: String = NarrativeLibrary.pick_first_visit(c.id, name)
+			if not card_text.is_empty():
+				_narrative_overlay.show_text(card_text)
 
 
 func _on_customer_lend(req: CustomerRequest) -> void:
@@ -162,6 +184,12 @@ func _resolve_now(gear: GearInstance, req: CustomerRequest) -> void:
 		GameState.add_currency(&"spirit_stones", req.payment * 2)
 		GameState.add_reputation(2)
 	SaveSystem.save_now(true)
+
+
+func _on_resonance_activated_narrative(_gupu_id: StringName, _pattern_id: StringName) -> void:
+	var t: String = NarrativeLibrary.pick_card(NarrativeCard.Trigger.RESONANCE)
+	if not t.is_empty():
+		_narrative_overlay.show_text(t)
 
 
 func _on_equipment_returned(_cid: StringName, gear: Variant, outcome_text: StringName) -> void:

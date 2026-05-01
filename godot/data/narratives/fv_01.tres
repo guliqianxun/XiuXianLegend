@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"fv_01"
+trigger = 0
+body = "门铃响过两声。来人站在门口，看了一眼炉火，没有进。"
+customer_id_filter = &""
+one_shot = false

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"fv_08"
+trigger = 0
+body = "{customer} 眼神在墙上挂的旧剑停了三息。"
+customer_id_filter = &""
+one_shot = false

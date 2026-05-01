@@ -105,7 +105,7 @@ static func generate(rng: RandomNumberGenerator, tier: int, gen_seed: int) -> Cu
 	c.display_name = _make_name(rng, t)
 	c.tier = t
 	c.path_affinity = PATHS[rng.randi() % PATHS.size()]
-	c.faction = FACTIONS[rng.randi() % FACTIONS.size()]
+	c.faction = _pick_faction_with_bias(rng)
 	c.base_payment = rng.randi_range(PAYMENT_MIN[t], PAYMENT_MAX[t])
 	c.allowed_shichen = []  # 任意时辰
 	c.faction_state_bonus = 0.0
@@ -137,6 +137,23 @@ static func _maybe_eerie_note(rng: RandomNumberGenerator, tier: int) -> String:
 
 static func _pick(rng: RandomNumberGenerator, pool: Array) -> String:
 	return pool[rng.randi() % pool.size()]
+
+
+## N8 势力 bias：surge 状态的势力权重 ×2
+static func _pick_faction_with_bias(rng: RandomNumberGenerator) -> StringName:
+	var weights: Array[float] = []
+	for f in FACTIONS:
+		weights.append(2.0 if FactionState.is_surge(f) else 1.0)
+	var total: float = 0.0
+	for w in weights:
+		total += w
+	var u: float = rng.randf() * total
+	var acc: float = 0.0
+	for i in FACTIONS.size():
+		acc += weights[i]
+		if u < acc:
+			return FACTIONS[i]
+	return FACTIONS[0]
 
 
 static func _make_name(rng: RandomNumberGenerator, tier: int) -> String:

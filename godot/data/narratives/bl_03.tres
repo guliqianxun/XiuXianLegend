@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"bl_03"
+trigger = 2
+body = "钳子被反震出去，烙了老铁一个红印。"该补料了。""
+customer_id_filter = &""
+one_shot = false

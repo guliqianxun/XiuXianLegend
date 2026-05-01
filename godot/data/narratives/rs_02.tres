@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"rs_02"
+trigger = 4
+body = "天上没有星。可铺子里的星图，亮得睁不开眼。"
+customer_id_filter = &""
+one_shot = false
