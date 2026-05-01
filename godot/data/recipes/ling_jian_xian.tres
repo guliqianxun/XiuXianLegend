@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RecipeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/recipe_data.gd" id="1_r"]
+
+[resource]
+script = ExtResource("1_r")
+id = &"ling_jian_xian"
+display_name = "灵剑弦"
+required_materials = {
+&"iron": 4,
+&"jin": 6
+}
+optional_materials = Array[StringName]([&"zhusha", &"hui", &"bone"])
+base_quality_distribution = PackedFloat32Array(0.45, 0.30, 0.15, 0.07, 0.03)
+base_minutes_in_furnace = 50
+path_affinity = &"sword"
+slot_kind = &"sword"

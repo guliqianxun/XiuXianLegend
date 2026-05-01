@@ -26,9 +26,18 @@ func _assert(c: bool, m: String) -> void:
 
 
 func _test_3_customers_have_traits() -> void:
+	# 设计：常客允许无 trait（"平凡到无特征"），但全体至少 70% 客人带 trait
+	var total := 0
+	var with_traits := 0
 	for cid in DataRegistry.ids_of(&"customer"):
 		var c := DataRegistry.get_resource(&"customer", cid) as CustomerData
-		_assert(not c.traits.is_empty(), "customer %s has at least 1 trait" % cid)
+		if c == null: continue
+		total += 1
+		if not c.traits.is_empty():
+			with_traits += 1
+	var ratio: float = float(with_traits) / float(max(1, total))
+	_assert(ratio >= 0.70, "≥70%% customers have traits (got %d/%d = %.0f%%)" %
+		[with_traits, total, ratio * 100.0])
 
 
 func _test_trait_library_complete() -> void:

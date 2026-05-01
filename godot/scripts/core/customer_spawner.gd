@@ -4,8 +4,8 @@ extends Node
 ## - 抽 tier → 在该 tier 池里随机选 customer → 实例化 CustomerRequest
 ## - 离线节奏 N5 整合
 
-## tier 抽样权重（v1 简化：无 RARE，常 80% 怪 20%）
-const TIER_WEIGHTS: Array[float] = [0.80, 0.0, 0.20]
+## tier 抽样权重（spec §6.1：常 60% 罕 30% 怪 10%）
+const TIER_WEIGHTS: Array[float] = [0.60, 0.30, 0.10]
 
 ## 默认借出时长（秒）— 各 tier 不同（怪客拖更久）
 const DURATION_BY_TIER: Array[int] = [600, 900, 1800]

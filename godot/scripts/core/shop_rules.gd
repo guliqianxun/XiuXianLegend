@@ -21,6 +21,10 @@ const TRAIT_LIBRARY: Dictionary = {
 	&"family_seal": "腰挂家纹",
 	&"badge_low": "腰牌低品",
 	&"smells_iron": "身有铁腥",
+	&"pale_face": "面色青白",
+	&"whispers_self": "自言自语",
+	&"carries_doll": "怀中抱偶",
+	&"gold_too_new": "金子太新",
 }
 
 ## id -> ShopRule
