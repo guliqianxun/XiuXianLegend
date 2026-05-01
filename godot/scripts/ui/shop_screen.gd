@@ -14,6 +14,10 @@ const AREA_POSITIONS: Dictionary = {
 @onready var _old_iron: Node2D = $OldIron
 @onready var _hud_time: Label = $HUD/TimeLabel
 @onready var _hud_money: Label = $HUD/MoneyLabel
+@onready var _hud_reputation: Label = $HUD/ReputationLabel
+@onready var _hud_brush: Label = $HUD/BrushLabel
+@onready var _hud_codex: Label = $HUD/CodexLabel
+@onready var _hud_rules: Label = $HUD/RulesLabel
 @onready var _open_forge_btn: Button = $AreaFurnace/OpenForgeButton
 @onready var _forge_screen: ForgeScreen = $ForgeScreen
 @onready var _open_codex_btn: Button = $AreaLoft/OpenCodexButton
@@ -56,6 +60,12 @@ func _ready() -> void:
 	EventBus.identity_fragment_unlocked.connect(_on_identity_fragment_unlocked)
 	EventBus.traits_learned.connect(_on_traits_learned_sfx)
 	EventBus.weird_codex_recorded.connect(_on_weird_codex_recorded_sfx)
+	# HUD 刷新钩子（spec 反馈：状态全部常驻可见）
+	EventBus.reputation_changed.connect(func(_v: int) -> void: _refresh_hud())
+	EventBus.star_brushes_changed.connect(func(_v: int) -> void: _refresh_hud())
+	EventBus.resonance_activated.connect(func(_g: StringName, _p: StringName) -> void: _refresh_hud())
+	EventBus.weird_codex_recorded.connect(func(_f: StringName, _t: int) -> void: _refresh_hud())
+	EventBus.shop_rule_changed.connect(func(_i: int) -> void: _refresh_hud())
 	# 4 区域按钮
 	_open_forge_btn.pressed.connect(_on_open_forge)
 	_open_codex_btn.pressed.connect(_on_open_codex)
@@ -243,3 +253,21 @@ func _refresh_hud() -> void:
 	const SHICHEN_NAMES := ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"]
 	_hud_time.text = "时辰：%s" % SHICHEN_NAMES[shichen]
 	_hud_money.text = "灵石：%d" % GameState.spirit_stones
+	_hud_reputation.text = "名望：%d" % GameState.reputation
+	_hud_brush.text = "星轨笔：%d" % GameState.star_brushes
+	# 诡器谱进度 + 共鸣数
+	_hud_codex.text = "诡器谱 %d · 共鸣 %d/7" % [
+		WeirdCodex.count(), GameState.active_resonances.size(),
+	]
+	_hud_rules.text = "已立规：%s" % _format_active_rules()
+
+
+func _format_active_rules() -> String:
+	if ShopRules.enabled.is_empty():
+		return "无"
+	var names: Array[String] = []
+	for rid in ShopRules.enabled:
+		var r: ShopRule = ShopRules.get_preset(rid)
+		if r != null:
+			names.append(r.display_name)
+	return " · ".join(names)
