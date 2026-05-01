@@ -130,11 +130,14 @@ func enable(id: StringName) -> bool:
 	if enabled.has(id): return true
 	if enabled.size() >= MAX_SLOTS: return false
 	enabled.append(id)
+	EventBus.shop_rule_changed.emit(enabled.size() - 1)
 	return true
 
 
 func disable(id: StringName) -> void:
-	enabled.erase(id)
+	if enabled.has(id):
+		enabled.erase(id)
+		EventBus.shop_rule_changed.emit(-1)
 
 
 func is_enabled(id: StringName) -> bool:
