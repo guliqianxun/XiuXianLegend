@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"rs_04"
+trigger = 4
+body = "二十八颗星全亮。老铁看了一会儿，把火压小了一档。"
+customer_id_filter = &""
+one_shot = false

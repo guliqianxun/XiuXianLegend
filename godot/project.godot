@@ -31,6 +31,8 @@ OfflineSimulator="*res://scripts/core/offline_simulator.gd"
 ShopRules="*res://scripts/core/shop_rules.gd"
 ScreenFx="*res://scripts/core/screen_fx.gd"
 Sfx="*res://scripts/core/sfx.gd"
+FactionState="*res://scripts/core/faction_state.gd"
+NarrativeLibrary="*res://scripts/core/narrative_library.gd"
 
 [debug]
 

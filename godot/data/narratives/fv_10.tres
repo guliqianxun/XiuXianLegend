@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"fv_10"
+trigger = 0
+body = "{customer} 把酬金摆在台面上，多了三颗灵石——"添个茶钱"。"
+customer_id_filter = &""
+one_shot = false

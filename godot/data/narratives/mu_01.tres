@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"mu_01"
+trigger = 6
+body = "老铁对着炉火说了句什么。没人听得清。"
+customer_id_filter = &""
+one_shot = false

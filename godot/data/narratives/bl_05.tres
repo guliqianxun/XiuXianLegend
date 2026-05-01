@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"bl_05"
+trigger = 2
+body = "今天的第三炉，又是反噬。老铁把灰收进瓷瓮——"留着炼笔。""
+customer_id_filter = &""
+one_shot = false

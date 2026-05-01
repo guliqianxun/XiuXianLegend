@@ -12,6 +12,7 @@ const INDEX_DIRS := {
 	&"gupu": "res://data/gupu",
 	&"su": "res://data/sus",
 	&"narrative": "res://data/narratives",
+	&"faction": "res://data/factions",
 }
 
 # category -> { id: path }

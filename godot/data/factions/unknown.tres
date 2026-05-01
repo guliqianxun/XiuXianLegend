@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="FactionData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/faction_data.gd" id="1_f"]
+
+[resource]
+script = ExtResource("1_f")
+id = &"unknown"
+display_name = "?"
+style = "邪修传闻"
+baseline_relation = "敌"
+influence = "深夜怪客 + 神秘料"

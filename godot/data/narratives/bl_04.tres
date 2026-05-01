@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"bl_04"
+trigger = 2
+body = "炉里腾起一团白雾。雾散时，铁块只剩一捧灰。"
+customer_id_filter = &""
+one_shot = false

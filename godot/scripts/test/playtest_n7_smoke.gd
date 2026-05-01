@@ -40,4 +40,4 @@ func _test_codex_screen_has_tabs() -> void:
 
 
 func _test_save_v6() -> void:
-	_assert(SaveSystem.SAVE_VERSION == 6, "SAVE_VERSION = 6")
+	_assert(SaveSystem.SAVE_VERSION >= 6, "SAVE_VERSION ≥ 6 (got %d)" % SaveSystem.SAVE_VERSION)

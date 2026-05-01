@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="FactionData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/faction_data.gd" id="1_f"]
+
+[resource]
+script = ExtResource("1_f")
+id = &"kurong_gu"
+display_name = "枯荣谷"
+style = "半正半邪、商道"
+baseline_relation = "中"
+influence = "主要供料商"

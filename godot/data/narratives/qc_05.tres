@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"qc_05"
+trigger = 3
+body = "老铁看着新出的器，像在看一个不该认识的旧友。"
+customer_id_filter = &""
+one_shot = false
