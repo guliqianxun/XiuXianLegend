@@ -16,14 +16,18 @@ const QUALITY_MI: int = 4
 static func roll_quality(dist: PackedFloat32Array, qiao_cheng_hit: bool, rng: RandomNumberGenerator) -> int:
 	if dist.size() < 5:
 		push_warning("forge: distribution has %d tiers, expected 5" % dist.size())
-	# N7 紫微宿：秘品(Q4)权重 ×1.5，多出的从凡品(Q0)扣
+	# N7 紫微宿：秘品(Q4)权重 ×1.5；N7b zi_wei_zhao 再 ×1.2 叠加（先后乘）
 	var working: PackedFloat32Array = dist.duplicate()
-	if working.size() >= 5 and GameState.has_resonance(&"zi_wei"):
-		var mi_orig: float = working[4]
-		var mi_new: float = mi_orig * 1.5
-		var delta: float = mi_new - mi_orig
-		working[4] = mi_new
-		working[0] = maxf(0.0, working[0] - delta)
+	if working.size() >= 5:
+		var mul: float = 1.0
+		if GameState.has_resonance(&"zi_wei"): mul *= 1.5
+		if GameState.has_pattern(&"zi_wei_zhao"): mul *= 1.2
+		if mul > 1.0:
+			var mi_orig: float = working[4]
+			var mi_new: float = mi_orig * mul
+			var delta: float = mi_new - mi_orig
+			working[4] = mi_new
+			working[0] = maxf(0.0, working[0] - delta)
 	var u: float = rng.randf()
 	var acc: float = 0.0
 	var q: int = 0
@@ -69,12 +73,15 @@ const DANGEROUS_MATERIALS: Array[StringName] = [&"yi_zhong_liao", &"mi_pin_zhi_x
 
 ## 计算反噬触发概率，封顶 0.10。
 ## - optional_materials: 玩家投入的可选添料 id 列表
+## - N7b zhu_que_wing pattern: 反噬率 -0.02
 static func compute_backlash_chance(optional_materials: Array) -> float:
 	var c: float = BACKLASH_BASE
 	for mid in optional_materials:
 		if mid in DANGEROUS_MATERIALS:
 			c = BACKLASH_BASE + BACKLASH_BOOST
 			break  # 不重复累加
+	if GameState.has_pattern(&"zhu_que_wing"):
+		c = maxf(0.0, c - 0.02)
 	return c
 
 
