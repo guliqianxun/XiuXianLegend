@@ -46,7 +46,25 @@ func place_equipment(gear: GearInstance, slot_kind: StringName) -> StringName:
 	(_stars[su_id] as Array).append(gear)
 	gear.star_position = {"gupu": String(current_gupu_id), "su": String(su_id)}
 	EventBus.star_lit.emit(current_gupu_id, su_id, gear)
+	# N7：检测此谱是否共鸣（28 颗全亮）
+	_check_resonance(current_gupu_id, gupu)
 	return su_id
+
+
+## 当前 _stars 字典 key 数 = 已点亮星位
+func lit_star_count() -> int:
+	return _stars.size()
+
+
+## 检查 gupu_id 是否 28 颗全亮 → 激活共鸣（一次性）
+func _check_resonance(gupu_id: StringName, gupu: GuPuData) -> void:
+	if GameState.has_resonance(gupu_id):
+		return
+	if gupu == null or gupu.stars.is_empty():
+		return
+	if _stars.size() < gupu.stars.size():
+		return
+	GameState.activate_resonance(gupu_id)
 
 
 func equipments_at_star(su_id: StringName) -> Array:
@@ -54,11 +72,13 @@ func equipments_at_star(su_id: StringName) -> Array:
 
 
 ## 切换当前古谱（N3 仅支持 qing_long；保留接口）
-## N7: 当多古谱实装时，切谱后 _stars 需要按新古谱重建（每件装备的 star_position 重算）。
+## 切换当前古谱：重建 _stars（按 GameState.inventory 中 gear.star_position[gupu] 过滤）
+## 注意：每件装备只入造出来时的那张谱，切谱看不见其他谱的装备
 func switch_gupu(gupu_id: StringName) -> void:
 	if gupu_id == current_gupu_id:
 		return
 	current_gupu_id = gupu_id
+	rebuild_stars_from_game_state()
 	EventBus.codex_changed.emit(gupu_id)
 
 

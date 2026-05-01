@@ -47,7 +47,8 @@ func _test_trait_library_complete() -> void:
 
 
 func _test_save_v5() -> void:
-	_assert(SaveSystem.SAVE_VERSION == 5, "SAVE_VERSION = 5")
+	# v5 introduced learned_traits; current version may have advanced (N7 → v6)
+	_assert(SaveSystem.SAVE_VERSION >= 5, "SAVE_VERSION ≥ 5 (got %d)" % SaveSystem.SAVE_VERSION)
 
 
 func _test_full_loop_inspect_and_use() -> void:

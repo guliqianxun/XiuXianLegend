@@ -25,7 +25,12 @@ const DISTRIBUTION: Array = [
 static func roll_outcome(tier: int, rng: RandomNumberGenerator) -> int:
 	if tier < 0 or tier >= DISTRIBUTION.size():
 		return Outcome.OK_RETURN
-	var dist: Array = DISTRIBUTION[tier]
+	var dist: Array = (DISTRIBUTION[tier] as Array).duplicate()
+	# 共鸣 buff hook：玄武宿激活 → 损坏率 -50%，剩余转入 OK_RETURN
+	if GameState.has_resonance(&"xuan_wu"):
+		var dmg_orig: float = float(dist[Outcome.DAMAGED])
+		dist[Outcome.DAMAGED] = dmg_orig * 0.5
+		dist[Outcome.OK_RETURN] = float(dist[Outcome.OK_RETURN]) + dmg_orig * 0.5
 	var u: float = rng.randf()
 	var acc: float = 0.0
 	for i in dist.size():

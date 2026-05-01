@@ -5,7 +5,7 @@ extends Node
 ## - 写入 5 秒最小间隔限流。
 
 const SAVE_PATH := "user://save_main.json"
-const SAVE_VERSION := 5
+const SAVE_VERSION := 6
 const WRITE_COOLDOWN_SEC := 5.0
 
 var _last_write_msec: int = -10000
@@ -88,11 +88,22 @@ func migrate(payload: Dictionary) -> Dictionary:
 				payload = _migrate_v3_to_v4(payload)
 			4:
 				payload = _migrate_v4_to_v5(payload)
+			5:
+				payload = _migrate_v5_to_v6(payload)
 			_:
 				push_warning("save: no migration from v%d; aborting" % v)
 				return payload  # 中途未知版本：保留原 version，不再前进
 		v += 1
 	payload["version"] = SAVE_VERSION
+	return payload
+
+
+## v5 → v6: GameState 加 active_resonances（默认空 []）
+func _migrate_v5_to_v6(payload: Dictionary) -> Dictionary:
+	var gs: Dictionary = payload.get("game_state", {})
+	if not gs.has("active_resonances"):
+		gs["active_resonances"] = []
+	payload["game_state"] = gs
 	return payload
 
 

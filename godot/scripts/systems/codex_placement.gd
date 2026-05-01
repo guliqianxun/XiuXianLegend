@@ -5,14 +5,17 @@ extends RefCounted
 
 ## 给定装备的 slot 和品质，在 gupu 中找到 match 的 SuData，返回其 id。
 ## 不 match 任何星位返回 &""。
+## N7：先过 gupu.accepts(path, quality) filter，不通过直接返回 &""
 ## - slot_kind: 装备 slot 字符串（"sword"/"talisman"/...）
 ## - quality: 0..4
 ## - gupu: 当前选中的古谱
 static func find_su_for_equipment(slot_kind: StringName, quality: int, gupu: GuPuData) -> StringName:
 	if gupu == null:
 		return &""
-	# N3 简化：青龙宿 28 颗按 generate_sus.py 的 (slot_idx, quality_band) 矩阵布局
-	# 索引规则与 generator 同步：i = band*6 + slot_idx
+	var path: StringName = _slot_to_path(slot_kind)
+	if not gupu.accepts(path, quality):
+		return &""
+	# 索引规则：i = band*6 + slot_idx（与 N3 generate_sus.py 同步）
 	var slot_idx: int = _slot_to_index(slot_kind)
 	if slot_idx < 0:
 		return &""
@@ -24,6 +27,17 @@ static func find_su_for_equipment(slot_kind: StringName, quality: int, gupu: GuP
 	if su == null:
 		return &""
 	return su.id
+
+
+static func _slot_to_path(slot_kind: StringName) -> StringName:
+	match slot_kind:
+		&"sword": return &"sword"
+		&"talisman": return &"curse"
+		&"puppet_core": return &"puppet"
+		&"elixir_furnace": return &"alchemy"
+		&"eating_vessel": return &"eat"
+		&"divination_plate": return &"divination"
+		_: return &""
 
 
 static func _slot_to_index(slot_kind: StringName) -> int:
