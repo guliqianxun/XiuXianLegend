@@ -29,6 +29,8 @@ const AREA_POSITIONS: Dictionary = {
 @onready var _diary_screen: DiaryScreen = $DiaryScreen
 @onready var _rules_screen: RulesScreen = $RulesScreen
 @onready var _narrative_overlay: NarrativeOverlay = $NarrativeOverlay
+@onready var _event_log_panel: EventLogPanel = $EventLogPanel
+@onready var _event_log_screen: EventLogScreen = $EventLogScreen
 @onready var _open_rules_btn: Button = $AreaYard/OpenRulesButton
 
 
@@ -75,6 +77,9 @@ func _ready() -> void:
 	_customer_panel.lend_pressed.connect(_on_customer_lend)
 	_customer_panel.refuse_pressed.connect(_on_customer_refuse)
 	_lend_dialog.gear_chosen.connect(_on_gear_chosen)
+	# 事件流"看全本"按钮：连到展开 screen
+	if _event_log_panel != null:
+		_event_log_panel.set_expand_handler(func() -> void: _event_log_screen.open())
 	# 启动后弹出小本（如果有未读条目）
 	if not GameState.offline_diary_pending.is_empty():
 		_diary_screen.open(GameState.offline_diary_pending.duplicate())
@@ -107,13 +112,16 @@ func _on_open_forge() -> void:
 
 
 func _on_forge_finished(inst: Variant, qiao: bool, was_back: bool) -> void:
-	# N8 叙事卡触发
+	# N8 叙事卡触发 + EventLog
 	if was_back:
+		EventLog.add_entry(&"forge_backlash", "炉中反噬，材料化灰。", &"bad")
 		var t: String = NarrativeLibrary.pick_card(NarrativeCard.Trigger.BACKLASH)
 		if not t.is_empty():
 			_narrative_overlay.show_text(t)
 	elif inst is GearInstance:
 		var g: GearInstance = inst
+		EventLog.add_entry(&"forge_done", "出炉 %s%s" % [g.display_full_name(), "（巧成）" if qiao else ""],
+			&"good" if (qiao or g.rarity >= 3) else &"normal")
 		if qiao or g.rarity >= 3:
 			var t2: String = NarrativeLibrary.pick_card(NarrativeCard.Trigger.QIAO_CHENG)
 			if not t2.is_empty():
@@ -155,6 +163,15 @@ func _on_customer_arrived(_cid: StringName, req: Variant) -> void:
 	if req is CustomerRequest:
 		Sfx.play_door_bell()
 		_customer_panel.show_request(req)
+		# EventLog
+		var c0: CustomerData = (req as CustomerRequest).customer_data
+		var disp: String = "陌客"
+		var color: StringName = &"normal"
+		if c0 != null:
+			disp = c0.disguise_name if not c0.disguise_name.is_empty() else c0.display_name
+			if c0.tier == CustomerData.Tier.WEIRD:
+				color = &"weird"
+		EventLog.add_entry(&"customer_arrive", "来客：%s" % disp, color)
 		# 首次到访叙事卡
 		var c: CustomerData = (req as CustomerRequest).customer_data
 		if c == null:
@@ -170,15 +187,24 @@ func _on_customer_lend(req: CustomerRequest) -> void:
 	_lend_dialog.open(req)
 
 
-func _on_customer_refuse(_req: CustomerRequest) -> void:
+func _on_customer_refuse(req: CustomerRequest) -> void:
 	EncounterState.pending_request = null
 	GameState.add_reputation(-1)
+	var name: String = "客人"
+	if req != null and req.customer_data != null:
+		name = req.customer_data.display_name
+	EventLog.add_entry(&"refuse", "婉拒 %s（-1 名望）" % name, &"bad")
 
 
 func _on_gear_chosen(gear: GearInstance, req: CustomerRequest) -> void:
 	EncounterState.lend(req.customer_id, gear, TimeLine.now_unix(), req.expected_duration_sec)
 	EncounterState.pending_request = null
 	GameState.add_currency(&"spirit_stones", req.payment)
+	var name: String = "客人"
+	if req != null and req.customer_data != null:
+		name = req.customer_data.display_name
+	EventLog.add_entry(&"lend", "借出 %s 给 %s（+%d 灵石）" %
+		[gear.display_full_name(), name, req.payment], &"good")
 	SaveSystem.save_now(true)
 	# N4 v1 简化：到时立即 resolve（玩家不用真等）；N5 改为正常计时
 	_resolve_now(gear, req)
@@ -205,22 +231,35 @@ func _resolve_now(gear: GearInstance, req: CustomerRequest) -> void:
 	SaveSystem.save_now(true)
 
 
-func _on_resonance_activated_narrative(_gupu_id: StringName, _pattern_id: StringName) -> void:
+func _on_resonance_activated_narrative(gupu_id: StringName, _pattern_id: StringName) -> void:
 	var t: String = NarrativeLibrary.pick_card(NarrativeCard.Trigger.RESONANCE)
 	if not t.is_empty():
 		_narrative_overlay.show_text(t)
+	var g := DataRegistry.get_resource(&"gupu", gupu_id) as GuPuData
+	var name: String = g.display_name if g != null else String(gupu_id)
+	EventLog.add_entry(&"resonance", "%s 共鸣激活！" % name, &"system")
 
 
-func _on_traits_learned_sfx(_ids: Array) -> void:
+func _on_traits_learned_sfx(ids: Array) -> void:
 	Sfx.play_paper_flutter()
+	var names: Array[String] = []
+	for t in ids:
+		var zh = ShopRules.TRAIT_LIBRARY.get(t, t)
+		names.append(String(zh))
+	EventLog.add_entry(&"trait_learn", "学到特征：%s" % " · ".join(names), &"weird")
 
 
-func _on_weird_codex_recorded_sfx(_fp: StringName, _total: int) -> void:
+func _on_weird_codex_recorded_sfx(_fp: StringName, total: int) -> void:
 	Sfx.play_paper_flutter()
+	# 仅当解锁阶梯前 N 步时记日志（避免每件出炉都刷屏）
+	var next: int = WeirdCodex.next_threshold()
+	if next > 0:
+		EventLog.add_entry(&"weird_codex", "诡器谱 +1 = %d（下一段碎片需 %d）" % [total, next], &"normal")
 
 
-func _on_identity_fragment_unlocked(_index: int, _total: int) -> void:
+func _on_identity_fragment_unlocked(index: int, _total: int) -> void:
 	# 解锁段触发暗线碎片：稍延迟后弹（避免和共鸣/出炉文字撞车）
+	EventLog.add_entry(&"identity", "暗线碎片 +1（%d/15）" % index, &"weird")
 	var t: String = NarrativeLibrary.pick_card(NarrativeCard.Trigger.IDENTITY_FRAGMENT)
 	if not t.is_empty():
 		await get_tree().create_timer(2.5).timeout
@@ -234,6 +273,12 @@ func _on_equipment_returned(_cid: StringName, gear: Variant, outcome_text: Strin
 	if gear is GearInstance:
 		name = (gear as GearInstance).display_full_name()
 	_return_notice.show_notice("%s · %s" % [name, String(outcome_text)])
+	# EventLog 颜色按 outcome 选
+	var color: StringName = &"normal"
+	var ot: String = String(outcome_text)
+	if "立大功" in ot: color = &"good"
+	elif "未归还" in ot or "损坏" in ot or "异变" in ot: color = &"bad"
+	EventLog.add_entry(&"returned", "%s · %s" % [name, ot], color)
 
 
 func _process(delta: float) -> void:

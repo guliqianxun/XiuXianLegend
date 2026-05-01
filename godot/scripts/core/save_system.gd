@@ -5,7 +5,7 @@ extends Node
 ## - 写入 5 秒最小间隔限流。
 
 const SAVE_PATH := "user://save_main.json"
-const SAVE_VERSION := 9
+const SAVE_VERSION := 10
 const WRITE_COOLDOWN_SEC := 5.0
 
 var _last_write_msec: int = -10000
@@ -28,6 +28,7 @@ func save_now(force: bool = false) -> bool:
 		"faction_state": FactionState.to_dict(),
 		"narrative_library": NarrativeLibrary.to_dict(),
 		"weird_codex": WeirdCodex.to_dict(),
+		"event_log": EventLog.to_dict(),
 	}
 	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if f == null:
@@ -71,6 +72,8 @@ func load_or_init() -> void:
 	NarrativeLibrary.from_dict(nl)
 	var wc: Dictionary = parsed.get("weird_codex", {})
 	WeirdCodex.from_dict(wc)
+	var el: Dictionary = parsed.get("event_log", {})
+	EventLog.from_dict(el)
 	EventBus.save_loaded.emit()
 
 
@@ -105,11 +108,20 @@ func migrate(payload: Dictionary) -> Dictionary:
 				payload = _migrate_v7_to_v8(payload)
 			8:
 				payload = _migrate_v8_to_v9(payload)
+			9:
+				payload = _migrate_v9_to_v10(payload)
 			_:
 				push_warning("save: no migration from v%d; aborting" % v)
 				return payload  # 中途未知版本：保留原 version，不再前进
 		v += 1
 	payload["version"] = SAVE_VERSION
+	return payload
+
+
+## v9 → v10: payload 顶层加 event_log（默认空）
+func _migrate_v9_to_v10(payload: Dictionary) -> Dictionary:
+	if not payload.has("event_log"):
+		payload["event_log"] = {"entries": []}
 	return payload
 
 
