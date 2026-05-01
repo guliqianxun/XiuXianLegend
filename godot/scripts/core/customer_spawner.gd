@@ -10,45 +10,55 @@ const TIER_WEIGHTS: Array[float] = [0.60, 0.30, 0.10]
 ## 默认借出时长（秒）— 各 tier 不同（怪客拖更久）
 const DURATION_BY_TIER: Array[int] = [600, 900, 1800]
 
+## 抽中"剧情池"的概率；其余走 generator（无尽流）
+const STORY_POOL_RATIO: float = 0.30
 
-## 召唤一位客人。返回 CustomerRequest 或 null（无可用客人）
+
+## 召唤一位客人。返回 CustomerRequest 或 null
+## 流程：抽 tier → 30% 概率从剧情池（手写 .tres）抽，70% 程序生成
+## 剧情池此 tier 为空时直接走生成器
 static func spawn_one(rng: RandomNumberGenerator, now_unix: int) -> CustomerRequest:
-	# 1. 抽 tier
+	var tier: int = _pick_tier(rng)
+	var c: CustomerData = null
+	if rng.randf() < STORY_POOL_RATIO:
+		c = _pick_from_story_pool(rng, tier)
+	if c == null:
+		c = CustomerGenerator.generate(rng, tier, now_unix)
+	if c == null:
+		return null
+	# 实例化 CustomerRequest
+	var req := CustomerRequest.new()
+	req.customer_id = c.id
+	req.customer_data = c
+	req.arrived_unix = now_unix
+	req.desired_slot = _slot_from_path(c.path_affinity)
+	req.min_quality = 0
+	req.payment = c.base_payment
+	req.quest_label = "外勤" if tier == CustomerData.Tier.REGULAR else "夜事"
+	req.expected_duration_sec = DURATION_BY_TIER[tier]
+	req.unmasked = (c.disguise_name.is_empty())
+	return req
+
+
+static func _pick_tier(rng: RandomNumberGenerator) -> int:
 	var u: float = rng.randf()
 	var acc: float = 0.0
-	var tier: int = CustomerData.Tier.REGULAR
 	for i in TIER_WEIGHTS.size():
 		acc += TIER_WEIGHTS[i]
 		if u < acc:
-			tier = i
-			break
-	# 2. 在该 tier 池里随机选 customer
+			return i
+	return CustomerData.Tier.REGULAR
+
+
+static func _pick_from_story_pool(rng: RandomNumberGenerator, tier: int) -> CustomerData:
 	var pool: Array = []
 	for cid in DataRegistry.ids_of(&"customer"):
 		var c := DataRegistry.get_resource(&"customer", cid) as CustomerData
 		if c != null and c.tier == tier:
 			pool.append(c)
 	if pool.is_empty():
-		# 兜底：用 REGULAR 池
-		for cid in DataRegistry.ids_of(&"customer"):
-			var c := DataRegistry.get_resource(&"customer", cid) as CustomerData
-			if c != null and c.tier == CustomerData.Tier.REGULAR:
-				pool.append(c)
-	if pool.is_empty():
 		return null
-	var pick: CustomerData = pool[rng.randi() % pool.size()]
-	# 3. 实例化 CustomerRequest
-	var req := CustomerRequest.new()
-	req.customer_id = pick.id
-	req.arrived_unix = now_unix
-	req.desired_slot = _slot_from_path(pick.path_affinity)
-	req.min_quality = 0
-	req.payment = pick.base_payment
-	req.quest_label = "外勤" if tier == CustomerData.Tier.REGULAR else "夜事"
-	req.expected_duration_sec = DURATION_BY_TIER[tier]
-	# 伪装名为空 → 真名公开（常客）；非空 → 盲盒，需玩家打听
-	req.unmasked = (pick.disguise_name.is_empty())
-	return req
+	return pool[rng.randi() % pool.size()]
 
 
 ## 玩家点"接客"时调用：spawn 一位 + 写入 EncounterState.pending_request

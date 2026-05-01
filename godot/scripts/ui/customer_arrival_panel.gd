@@ -36,7 +36,11 @@ func show_request(req: CustomerRequest) -> void:
 
 
 func _render(req: CustomerRequest) -> void:
-	var c := DataRegistry.get_resource(&"customer", req.customer_id) as CustomerData
+	# 优先用 req.customer_data（生成器塞进来的或剧情池的引用）
+	# 兜底回 DataRegistry（旧存档兼容）
+	var c: CustomerData = req.customer_data
+	if c == null:
+		c = DataRegistry.get_resource(&"customer", req.customer_id) as CustomerData
 	if c == null:
 		_name_label.text = String(req.customer_id)
 		_request_label.text = "（未知客人）"
@@ -87,7 +91,9 @@ func _on_inspect() -> void:
 		return
 	_current.unmasked = true
 	# 学到该客人的所有 trait（spec §7.3：打听后永久解锁特征条款）
-	var c := DataRegistry.get_resource(&"customer", _current.customer_id) as CustomerData
+	var c: CustomerData = _current.customer_data
+	if c == null:
+		c = DataRegistry.get_resource(&"customer", _current.customer_id) as CustomerData
 	if c != null and not c.traits.is_empty():
 		GameState.learn_traits(c.traits)
 	_render(_current)

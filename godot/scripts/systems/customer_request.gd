@@ -23,6 +23,12 @@ var expected_duration_sec: int = 600  # 默认 10 分钟
 ## - 伪装怪客：spawn = false，玩家"打听"后变 true
 var unmasked: bool = false
 
+## 客人模板引用（spawner 直接挂上来，避免 UI 反查 DataRegistry）
+## - 手写池客人：指向 .tres 加载的 Resource
+## - 生成器客人：指向 in-memory 新建的 CustomerData（id 形如 gen:xxx）
+## 可能为 null（旧存档兼容路径）；UI 应回退 DataRegistry.get_resource(req.customer_id)
+var customer_data: CustomerData = null
+
 
 func _to_string() -> String:
 	return "[CustomerRequest %s wants %s>=Q%d for %d 灵石]" % [

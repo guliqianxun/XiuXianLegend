@@ -147,7 +147,9 @@ func _on_gear_chosen(gear: GearInstance, req: CustomerRequest) -> void:
 
 
 func _resolve_now(gear: GearInstance, req: CustomerRequest) -> void:
-	var c := DataRegistry.get_resource(&"customer", req.customer_id) as CustomerData
+	var c: CustomerData = req.customer_data
+	if c == null:
+		c = DataRegistry.get_resource(&"customer", req.customer_id) as CustomerData
 	var tier: int = c.tier if c != null else 0
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()

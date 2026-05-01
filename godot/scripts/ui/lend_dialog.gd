@@ -23,8 +23,9 @@ func _ready() -> void:
 func open(req: CustomerRequest) -> void:
 	_current_req = req
 	visible = true
+	var name: String = _resolve_name(req)
 	_title.text = "借给 %s（求 %s ≥ Q%d）" % [
-		_customer_name(req.customer_id),
+		name,
 		CustomerArrivalPanel._slot_zh(req.desired_slot),
 		req.min_quality,
 	]
@@ -55,6 +56,8 @@ func _on_cancel() -> void:
 	cancelled.emit()
 
 
-func _customer_name(cid: StringName) -> String:
-	var c := DataRegistry.get_resource(&"customer", cid) as CustomerData
-	return c.display_name if c != null else String(cid)
+func _resolve_name(req: CustomerRequest) -> String:
+	if req.customer_data != null:
+		return req.customer_data.display_name
+	var c := DataRegistry.get_resource(&"customer", req.customer_id) as CustomerData
+	return c.display_name if c != null else String(req.customer_id)

@@ -55,16 +55,17 @@ func _test_offline_lend_with_lend_any() -> void:
 
 
 func _test_offline_breach_under_disguise() -> void:
-	# 启用 lend_regular（让伪装客被放行），48h 多 seed 找 breach
+	# 启用 lend_regular（让伪装客被放行），多 seed × 长跨度找 breach
+	# 生成器：怪客 10% × 30% 伪装 → 概率较低，需要多次尝试
 	var saved := ShopRules.enabled.duplicate()
 	ShopRules.enabled = [&"lend_regular"]
 	var found := false
-	for s in [11, 22, 33, 44, 55, 66, 77, 88]:
-		var d := OfflineSimulator.simulate(s, s + 48 * 3600)
+	for s in 30:
+		var d := OfflineSimulator.simulate(s * 1000 + 1, s * 1000 + 1 + 72 * 3600)
 		for e in d:
 			if (e as Dictionary).get("kind", &"") == &"rule_breach":
 				found = true
 				break
 		if found: break
 	ShopRules.enabled = saved
-	_assert(found, "rule_breach event triggers under lend_regular + disguised customer")
+	_assert(found, "rule_breach event triggers under lend_regular (30 seeds × 72h)")
