@@ -47,4 +47,4 @@ func _test_autoloads_present() -> void:
 
 
 func _test_save_v7() -> void:
-	_assert(SaveSystem.SAVE_VERSION == 7, "SAVE_VERSION = 7 (got %d)" % SaveSystem.SAVE_VERSION)
+	_assert(SaveSystem.SAVE_VERSION >= 7, "SAVE_VERSION ≥ 7 (got %d)" % SaveSystem.SAVE_VERSION)

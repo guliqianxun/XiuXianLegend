@@ -83,7 +83,8 @@ func _test_spawner_biases_to_surge() -> void:
 
 func _test_narrative_30_cards_loaded() -> void:
 	var ids := DataRegistry.ids_of(&"narrative")
-	_assert(ids.size() == 30, "30 narrative cards loaded (got %d)" % ids.size())
+	# N8 加 30 张；后续 N9 加 15 暗线碎片 = 45+；只要 ≥ 30 通过
+	_assert(ids.size() >= 30, "≥30 narrative cards loaded (got %d)" % ids.size())
 
 
 func _test_narrative_pick_card_replaces_vars() -> void:

@@ -5,7 +5,7 @@ extends Node
 ## - 写入 5 秒最小间隔限流。
 
 const SAVE_PATH := "user://save_main.json"
-const SAVE_VERSION := 7
+const SAVE_VERSION := 8
 const WRITE_COOLDOWN_SEC := 5.0
 
 var _last_write_msec: int = -10000
@@ -27,6 +27,7 @@ func save_now(force: bool = false) -> bool:
 		"shop_rules": ShopRules.to_dict(),
 		"faction_state": FactionState.to_dict(),
 		"narrative_library": NarrativeLibrary.to_dict(),
+		"weird_codex": WeirdCodex.to_dict(),
 	}
 	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if f == null:
@@ -68,6 +69,8 @@ func load_or_init() -> void:
 	FactionState.from_dict(fs)
 	var nl: Dictionary = parsed.get("narrative_library", {})
 	NarrativeLibrary.from_dict(nl)
+	var wc: Dictionary = parsed.get("weird_codex", {})
+	WeirdCodex.from_dict(wc)
 	EventBus.save_loaded.emit()
 
 
@@ -98,11 +101,20 @@ func migrate(payload: Dictionary) -> Dictionary:
 				payload = _migrate_v5_to_v6(payload)
 			6:
 				payload = _migrate_v6_to_v7(payload)
+			7:
+				payload = _migrate_v7_to_v8(payload)
 			_:
 				push_warning("save: no migration from v%d; aborting" % v)
 				return payload  # 中途未知版本：保留原 version，不再前进
 		v += 1
 	payload["version"] = SAVE_VERSION
+	return payload
+
+
+## v7 → v8: payload 顶层加 weird_codex（fingerprints + unlocked_fragments）
+func _migrate_v7_to_v8(payload: Dictionary) -> Dictionary:
+	if not payload.has("weird_codex"):
+		payload["weird_codex"] = {"fingerprints": [], "unlocked_fragments": 0}
 	return payload
 
 

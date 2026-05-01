@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NarrativeCard" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/narrative_card.gd" id="1_n"]
+
+[resource]
+script = ExtResource("1_n")
+id = &"if_12"
+trigger = 7
+body = "他打开樟木箱底，看见一件旧袍。\n他不记得自己有过这件袍。"
+customer_id_filter = &""
+one_shot = true
