@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="CustomerData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/customer_data.gd" id="1_c"]
+
+[resource]
+script = ExtResource("1_c")
+id = &"yu_chongyi"
+display_name = "御重医"
+tier = 2
+path_affinity = &"alchemy"
+faction = &"unknown"
+base_payment = 800
+allowed_shichen = Array[int]([0, 1, 2])
+faction_state_bonus = 0.0
+disguise_name = "云游郎中"
+disguise_tier = 1
+traits = Array[StringName]([&"pale_face", &"carries_doll"])

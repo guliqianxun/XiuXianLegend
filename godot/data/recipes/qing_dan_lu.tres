@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RecipeData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/recipe_data.gd" id="1_r"]
+
+[resource]
+script = ExtResource("1_r")
+id = &"qing_dan_lu"
+display_name = "青丹炉"
+required_materials = {
+&"iron": 4,
+&"jin": 2
+}
+optional_materials = Array[StringName]([&"hui"])
+base_quality_distribution = PackedFloat32Array(0.55, 0.28, 0.12, 0.04, 0.01)
+base_minutes_in_furnace = 45
+path_affinity = &"alchemy"
+slot_kind = &"elixir_furnace"

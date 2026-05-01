@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CustomerData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/customer_data.gd" id="1_c"]
+
+[resource]
+script = ExtResource("1_c")
+id = &"ma_chedeng"
+display_name = "马车灯"
+tier = 0
+path_affinity = &"divination"
+faction = &"kurong_gu"
+base_payment = 150
+allowed_shichen = Array[int]([])
+faction_state_bonus = 0.0
+traits = Array[StringName]([&"badge_low"])

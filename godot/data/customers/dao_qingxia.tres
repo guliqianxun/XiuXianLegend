@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CustomerData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/customer_data.gd" id="1_c"]
+
+[resource]
+script = ExtResource("1_c")
+id = &"dao_qingxia"
+display_name = "刀青霞"
+tier = 1
+path_affinity = &"sword"
+faction = &"hanxing_zong"
+base_payment = 450
+allowed_shichen = Array[int]([])
+faction_state_bonus = 0.0
+traits = Array[StringName]([&"family_seal"])
