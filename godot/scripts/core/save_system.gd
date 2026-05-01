@@ -5,7 +5,7 @@ extends Node
 ## - 写入 5 秒最小间隔限流。
 
 const SAVE_PATH := "user://save_main.json"
-const SAVE_VERSION := 8
+const SAVE_VERSION := 9
 const WRITE_COOLDOWN_SEC := 5.0
 
 var _last_write_msec: int = -10000
@@ -103,11 +103,28 @@ func migrate(payload: Dictionary) -> Dictionary:
 				payload = _migrate_v6_to_v7(payload)
 			7:
 				payload = _migrate_v7_to_v8(payload)
+			8:
+				payload = _migrate_v8_to_v9(payload)
 			_:
 				push_warning("save: no migration from v%d; aborting" % v)
 				return payload  # 中途未知版本：保留原 version，不再前进
 		v += 1
 	payload["version"] = SAVE_VERSION
+	return payload
+
+
+## v8 → v9: GameState 加 star_brushes / activated_patterns；CodexState player_lines（默认空 dict）
+func _migrate_v8_to_v9(payload: Dictionary) -> Dictionary:
+	var gs: Dictionary = payload.get("game_state", {})
+	if not gs.has("star_brushes"):
+		gs["star_brushes"] = 0
+	if not gs.has("activated_patterns"):
+		gs["activated_patterns"] = []
+	payload["game_state"] = gs
+	var cs: Dictionary = payload.get("codex_state", {})
+	if not cs.has("player_lines"):
+		cs["player_lines"] = {}
+	payload["codex_state"] = cs
 	return payload
 
 

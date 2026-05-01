@@ -40,6 +40,14 @@ var learned_traits: Array[StringName] = []
 ## 28 颗星全亮的古谱 id；激活后 buff 永久生效
 var active_resonances: Array[StringName] = []
 
+# ── 星轨笔（spec §5.4）──────────────────────────
+## 自连消耗品；GREAT_DEED 留赠 / 共鸣激活获得 / 灰炼制
+var star_brushes: int = 0
+
+# ── 隐藏图案激活（spec §5.4）─────────────────────
+## 凑出图案后获得永久 buff 的 pattern id
+var activated_patterns: Array[StringName] = []
+
 
 func add_currency(kind: StringName, amount: int) -> void:
 	match kind:
@@ -145,12 +153,41 @@ func activate_resonance(gupu_id: StringName) -> bool:
 	if gupu_id == &"" or active_resonances.has(gupu_id):
 		return false
 	active_resonances.append(gupu_id)
+	# spec §5.4：共鸣激活 +1 笔；完成一张古谱 +3 笔（v1：两条件等价，合并 +4）
+	add_star_brushes(4)
 	EventBus.resonance_activated.emit(gupu_id, &"")
 	return true
 
 
 func has_resonance(gupu_id: StringName) -> bool:
 	return active_resonances.has(gupu_id)
+
+
+# ── 星轨笔 ────────────────────────────────────
+func add_star_brushes(n: int) -> void:
+	if n == 0: return
+	star_brushes = max(0, star_brushes + n)
+	EventBus.star_brushes_changed.emit(star_brushes)
+
+
+func consume_star_brush() -> bool:
+	if star_brushes <= 0: return false
+	star_brushes -= 1
+	EventBus.star_brushes_changed.emit(star_brushes)
+	return true
+
+
+# ── 隐藏图案 ──────────────────────────────────
+func activate_pattern(pattern_id: StringName) -> bool:
+	if pattern_id == &"" or activated_patterns.has(pattern_id):
+		return false
+	activated_patterns.append(pattern_id)
+	EventBus.pattern_resonance_activated.emit(pattern_id)
+	return true
+
+
+func has_pattern(pattern_id: StringName) -> bool:
+	return activated_patterns.has(pattern_id)
 
 
 func _read_currency(kind: StringName) -> int:
@@ -189,6 +226,9 @@ func to_dict() -> Dictionary:
 	var reso_ser: Array = []
 	for g in active_resonances:
 		reso_ser.append(String(g))
+	var pattern_ser: Array = []
+	for p in activated_patterns:
+		pattern_ser.append(String(p))
 	return {
 		"spirit_stones": spirit_stones,
 		"insights": insights,
@@ -201,6 +241,8 @@ func to_dict() -> Dictionary:
 		"offline_diary_pending": diary_ser,
 		"learned_traits": traits_ser,
 		"active_resonances": reso_ser,
+		"star_brushes": star_brushes,
+		"activated_patterns": pattern_ser,
 	}
 
 
@@ -245,3 +287,9 @@ func from_dict(d: Dictionary) -> void:
 	var reso_raw: Array = d.get("active_resonances", [])
 	for s in reso_raw:
 		active_resonances.append(StringName(s))
+
+	star_brushes = int(d.get("star_brushes", 0))
+	activated_patterns = []
+	var pattern_raw: Array = d.get("activated_patterns", [])
+	for s in pattern_raw:
+		activated_patterns.append(StringName(s))

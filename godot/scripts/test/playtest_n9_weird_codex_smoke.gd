@@ -26,7 +26,7 @@ func _assert(c: bool, m: String) -> void:
 
 
 func _test_save_v8() -> void:
-	_assert(SaveSystem.SAVE_VERSION == 8, "SAVE_VERSION = 8 (got %d)" % SaveSystem.SAVE_VERSION)
+	_assert(SaveSystem.SAVE_VERSION >= 8, "SAVE_VERSION ≥ 8 (got %d)" % SaveSystem.SAVE_VERSION)
 
 
 func _test_weird_codex_autoload() -> void:

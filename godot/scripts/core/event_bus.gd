@@ -42,6 +42,11 @@ signal traits_learned(trait_ids: Array)  # 一次学到的 trait id 列表（仅
 signal weird_codex_recorded(fingerprint: StringName, total: int)
 signal identity_fragment_unlocked(fragment_index: int, total_fingerprints: int)
 
+# ── 星轨笔 + 自连图案（spec §5.4）────────────────
+signal star_brushes_changed(value: int)
+signal player_line_drawn(gupu_id: StringName, su_a: StringName, su_b: StringName)
+signal pattern_resonance_activated(pattern_id: StringName)
+
 # ── 存档 ──────────────────────────────────────
 signal save_loaded()
 signal save_written()
