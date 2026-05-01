@@ -79,18 +79,17 @@ func _test_seed_deterministic() -> void:
 
 
 func _test_rule_breach_recorded() -> void:
-	# 启用「拒怪客 + 借常客」，48h 离线应至少出一次伪装攻破事件
-	# （蒙面客 disguise=REGULAR，会被 lend_regular 放行）
+	# 启用「拒怪客 + 借常客」，跨多个 seed × 长时间，应至少出一次伪装攻破
+	# （生成器：怪客 10% × 伪装 30% × 长跨度 → 概率累加）
 	var saved := ShopRules.enabled.duplicate()
 	ShopRules.enabled = [&"refuse_weird", &"lend_regular"]
 	var found_breach := false
-	# 多个 seed 找一个能命中蒙面客的；spec 不要求每次必中，但 24h+ 应能命中
-	for s in [1, 2, 3, 7, 13, 42, 100]:
-		var d := OfflineSimulator.simulate(s, s + 48 * 3600)
+	for s in 30:
+		var d := OfflineSimulator.simulate(s * 1000, s * 1000 + 72 * 3600)
 		for e in d:
 			if (e as Dictionary).get("kind", &"") == &"rule_breach":
 				found_breach = true
 				break
 		if found_breach: break
 	ShopRules.enabled = saved
-	_assert(found_breach, "rule_breach diary entry produced under disguise + lend_regular")
+	_assert(found_breach, "rule_breach diary entry produced (30 seeds × 72h)")

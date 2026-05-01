@@ -41,25 +41,26 @@ func simulate(last_settle_unix: int, real_now_unix: int) -> Array:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = last_settle_unix
 	var n_shichen: int = effective / TimeLine.SECONDS_PER_SHICHEN
-	var recipes: Array = _recipe_pool()
-	var customers: Array = _customer_pool()
 
 	for i in n_shichen:
 		var cur_unix: int = last_settle_unix + (i + 1) * TimeLine.SECONDS_PER_SHICHEN
 		var cur_shichen: int = TimeLine.shichen_of_unix(cur_unix)
-		if rng.randf() < FORGE_PROB_PER_SHICHEN and not recipes.is_empty():
-			var r: RecipeData = recipes[rng.randi() % recipes.size()]
+		if rng.randf() < FORGE_PROB_PER_SHICHEN:
+			# 配方按 tier 0-2 随机生成
+			var r: RecipeData = RecipeGenerator.generate(rng, rng.randi() % 3, last_settle_unix + i)
 			diary.append({
 				"unix": cur_unix,
 				"shichen": cur_shichen,
 				"kind": &"forge",
 				"detail": "%s时，炉火又起，出 %s 一件。" % [SHICHEN_NAMES[cur_shichen], r.display_name],
 			})
-		if rng.randf() < CUSTOMER_PROB_PER_SHICHEN and not customers.is_empty():
-			var c: CustomerData = customers[rng.randi() % customers.size()]
-			# 调铺规决策；伪装客人按 disguise 评估，可被攻破
+		if rng.randf() < CUSTOMER_PROB_PER_SHICHEN:
+			# 按 spec §6.1 weights 抽 tier；走 spawner 同款"30% 剧情池 + 70% 生成器"
+			var c: CustomerData = _spawn_customer_for_offline(rng, last_settle_unix + i)
+			if c == null: continue
 			var req := CustomerRequest.new()
 			req.customer_id = c.id
+			req.customer_data = c
 			req.arrived_unix = cur_unix
 			var result: Dictionary = ShopRules.evaluate_offline(req, c)
 			var perceived_name: String = c.display_name
@@ -80,19 +81,39 @@ func simulate(last_settle_unix: int, real_now_unix: int) -> Array:
 					"detail": "%s时，借了一件给 %s。" % [SHICHEN_NAMES[cur_shichen], perceived_name],
 				})
 				if result["breached"]:
-					# 攻破特殊条目：玩家以为放进去的是 disguise 客，结果是真名/真 tier
 					diary.append({
 						"unix": cur_unix,
 						"shichen": cur_shichen,
 						"kind": &"rule_breach",
 						"detail": "——后来才看清，是 %s。铺规没拦住。" % c.display_name,
 					})
-					# 同时学到该客人的所有 trait（spec §7.3：攻破后永久解锁特征条款）
-					# 注：simulate 故意不改 inventory，但 trait 学习是知识不是物资，
-					# 不会造成数值膨胀，破坏隔离换交互闭环。
+					# trait 学习是知识不是物资，破坏隔离换交互闭环
 					if not c.traits.is_empty():
 						GameState.learn_traits(c.traits)
 	return diary
+
+
+static func _spawn_customer_for_offline(rng: RandomNumberGenerator, gen_seed: int) -> CustomerData:
+	# 抽 tier
+	var u: float = rng.randf()
+	var acc: float = 0.0
+	var tier: int = CustomerData.Tier.REGULAR
+	for i in CustomerSpawner.TIER_WEIGHTS.size():
+		acc += CustomerSpawner.TIER_WEIGHTS[i]
+		if u < acc:
+			tier = i
+			break
+	# 30% 剧情池
+	if rng.randf() < CustomerSpawner.STORY_POOL_RATIO:
+		var pool: Array = []
+		for cid in DataRegistry.ids_of(&"customer"):
+			var c := DataRegistry.get_resource(&"customer", cid) as CustomerData
+			if c != null and c.tier == tier:
+				pool.append(c)
+		if not pool.is_empty():
+			return pool[rng.randi() % pool.size()]
+	# 70% 生成
+	return CustomerGenerator.generate(rng, tier, gen_seed)
 
 
 static func _sleep_detail(raw_seconds: int) -> String:
@@ -101,19 +122,3 @@ static func _sleep_detail(raw_seconds: int) -> String:
 	return "老铁趴在炉边睡过去了，错过了一些事。"
 
 
-static func _recipe_pool() -> Array:
-	var out: Array = []
-	for rid in DataRegistry.ids_of(&"recipe"):
-		var r := DataRegistry.get_resource(&"recipe", rid) as RecipeData
-		if r != null:
-			out.append(r)
-	return out
-
-
-static func _customer_pool() -> Array:
-	var out: Array = []
-	for cid in DataRegistry.ids_of(&"customer"):
-		var c := DataRegistry.get_resource(&"customer", cid) as CustomerData
-		if c != null:
-			out.append(c)
-	return out

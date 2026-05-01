@@ -45,7 +45,10 @@ func _test_tier_distribution_60_30_10() -> void:
 	for i in SAMPLES:
 		var req := CustomerSpawner.spawn_one(rng, 1700000000 + i)
 		if req == null: continue
-		var c := DataRegistry.get_resource(&"customer", req.customer_id) as CustomerData
+		# 优先 req.customer_data（生成器路径不入 DataRegistry）
+		var c: CustomerData = req.customer_data
+		if c == null:
+			c = DataRegistry.get_resource(&"customer", req.customer_id) as CustomerData
 		if c != null:
 			counts[c.tier] += 1
 	_assert(counts[CustomerData.Tier.REGULAR] >= 500, "REGULAR ~600 ±15%% (got %d)" % counts[0])
