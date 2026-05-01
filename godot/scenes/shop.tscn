@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/shop_screen.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/actors/old_iron.tscn" id="2"]
@@ -11,6 +11,8 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/rules_screen.tscn" id="9"]
 [ext_resource type="PackedScene" path="res://scenes/ui/narrative_overlay.tscn" id="10"]
 [ext_resource type="PackedScene" path="res://scenes/ui/inventory_strip.tscn" id="11"]
+[ext_resource type="PackedScene" path="res://scenes/ui/event_log_panel.tscn" id="12"]
+[ext_resource type="PackedScene" path="res://scenes/ui/event_log_screen.tscn" id="13"]
 
 [node name="Shop" type="Node2D"]
 script = ExtResource("1")
@@ -189,3 +191,7 @@ theme_override_colors/font_color = Color(0.6, 0.7, 0.85, 1)
 [node name="NarrativeOverlay" parent="." instance=ExtResource("10")]
 
 [node name="InventoryStrip" parent="." instance=ExtResource("11")]
+
+[node name="EventLogPanel" parent="." instance=ExtResource("12")]
+
+[node name="EventLogScreen" parent="." instance=ExtResource("13")]

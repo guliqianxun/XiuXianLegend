@@ -26,7 +26,7 @@ func _assert(c: bool, m: String) -> void:
 
 
 func _test_save_v9() -> void:
-	_assert(SaveSystem.SAVE_VERSION == 9, "SAVE_VERSION = 9 (got %d)" % SaveSystem.SAVE_VERSION)
+	_assert(SaveSystem.SAVE_VERSION >= 9, "SAVE_VERSION ≥ 9 (got %d)" % SaveSystem.SAVE_VERSION)
 
 
 func _test_pattern_library_complete() -> void:

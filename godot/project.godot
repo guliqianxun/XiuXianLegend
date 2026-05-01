@@ -34,6 +34,7 @@ Sfx="*res://scripts/core/sfx.gd"
 FactionState="*res://scripts/core/faction_state.gd"
 NarrativeLibrary="*res://scripts/core/narrative_library.gd"
 WeirdCodex="*res://scripts/core/weird_codex.gd"
+EventLog="*res://scripts/core/event_log.gd"
 
 [debug]
 

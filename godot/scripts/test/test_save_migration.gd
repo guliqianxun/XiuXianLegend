@@ -143,6 +143,7 @@ func _test_v5_payload_unchanged() -> void:
 	# v5→v9 应同时加 star_brushes/activated_patterns
 	_assert(gs.has("star_brushes"), "v5→v9 chain added star_brushes")
 	_assert(gs.has("activated_patterns"), "v5→v9 chain added activated_patterns")
+	_assert(migrated.has("event_log"), "v5→v10 chain added event_log")
 
 
 func _test_future_version_passthrough() -> void:
