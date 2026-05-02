@@ -58,15 +58,41 @@ func _refresh() -> void:
 func _make_card(g: GearInstance) -> PanelContainer:
 	var p := PanelContainer.new()
 	p.custom_minimum_size = Vector2(132, 36)
-	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# 接收 hover 触发 tooltip
+	p.mouse_filter = Control.MOUSE_FILTER_STOP
+	p.tooltip_text = _tooltip_for(g)
 	var lbl := Label.new()
 	lbl.text = g.display_full_name()
 	lbl.add_theme_font_size_override("font_size", 12)
 	lbl.add_theme_color_override("font_color", _color_for_rarity(g.rarity))
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	p.add_child(lbl)
 	return p
+
+
+## 装备 tooltip：名 + 词缀描述 + 出处 + 履历条数
+static func _tooltip_for(g: GearInstance) -> String:
+	if g == null:
+		return ""
+	var lines: Array[String] = []
+	lines.append(g.display_full_name())
+	# 词缀描述
+	for i in g.affix_ids.size():
+		var a: AffixData = g.get_affix(i)
+		if a == null: continue
+		var v: float = g.affix_values[i] if i < g.affix_values.size() else 0.0
+		var desc: String = a.description_template.replace("{value}", "%.0f" % v)
+		lines.append("%s · %s" % [a.display_name, desc])
+	# 出处
+	var rid: String = String((g.origin as Dictionary).get("recipe", ""))
+	if rid != "":
+		lines.append("—— 出自 %s" % rid)
+	# 履历条数
+	if g.history.size() > 1:
+		lines.append("履历 %d 条" % g.history.size())
+	return "\n".join(lines)
 
 
 static func _color_for_rarity(r: int) -> Color:
