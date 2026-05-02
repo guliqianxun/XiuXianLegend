@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/forge_bottom_bar.gd" id="1"]
+
+[node name="ForgeBottomBar" type="Control"]
+custom_minimum_size = Vector2(540, 50)
+script = ExtResource("1")
+
+[node name="HBox" type="HBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/separation = 8
+
+[node name="ChipsBox" type="HBoxContainer" parent="HBox"]
+theme_override_constants/separation = 6
+
+[node name="StartButton" type="Button" parent="HBox"]
+text = "─── 开　炉 ───"
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 40)
+theme_override_font_sizes/font_size = 18
+disabled = true
