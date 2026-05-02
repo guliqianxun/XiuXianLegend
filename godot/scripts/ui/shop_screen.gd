@@ -12,7 +12,7 @@ const AREA_POSITIONS: Dictionary = {
 }
 
 @onready var _old_iron: Node2D = $OldIron
-@onready var _hud_time: Label = $HUD/HudFrame/VBox/TimeLabel
+@onready var _hud_time: Label = $HUD/HudFrame/VBox/TimeRow/TimeLabel
 @onready var _hud_money: Label = $HUD/HudFrame/VBox/MoneyLabel
 @onready var _hud_reputation: Label = $HUD/HudFrame/VBox/ReputationLabel
 @onready var _hud_brush: Label = $HUD/HudFrame/VBox/BrushLabel
@@ -296,15 +296,14 @@ func _on_currency_changed(_kind: StringName, _value: int) -> void:
 func _refresh_hud() -> void:
 	var shichen := TimeLine.shichen_of_unix(TimeLine.now_unix())
 	const SHICHEN_NAMES := ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"]
-	_hud_time.text = "时辰：%s" % SHICHEN_NAMES[shichen]
-	_hud_money.text = "灵石：%d" % GameState.spirit_stones
-	_hud_reputation.text = "名望：%d" % GameState.reputation
-	_hud_brush.text = "星轨笔：%d" % GameState.star_brushes
-	# 诡器谱进度 + 共鸣数
-	_hud_codex.text = "诡器谱 %d · 共鸣 %d/7" % [
+	_hud_time.text = "时辰　%s" % SHICHEN_NAMES[shichen]
+	_hud_money.text = "◇ 灵石　%d" % GameState.spirit_stones
+	_hud_reputation.text = "○ 名望　%d" % GameState.reputation
+	_hud_brush.text = "✦ 星轨笔　%d" % GameState.star_brushes
+	_hud_codex.text = "☯ 诡器谱 %d · 共鸣 %d/7" % [
 		WeirdCodex.count(), GameState.active_resonances.size(),
 	]
-	_hud_rules.text = "已立规：%s" % _format_active_rules()
+	_hud_rules.text = "❖ 已立规：%s" % _format_active_rules()
 
 
 func _format_active_rules() -> String:

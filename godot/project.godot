@@ -12,7 +12,7 @@ config_version=5
 
 config/name="我在诡异修仙造兵器"
 config/description="诡异修仙 + 造兵器 + 单机挂机"
-run/main_scene="res://scenes/shop.tscn"
+run/main_scene="res://scenes/main_menu.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
