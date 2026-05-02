@@ -34,7 +34,7 @@ func _test_three_components_loadable() -> void:
 		var pkd: PackedScene = load(s)
 		_assert(pkd != null, "%s loadable" % s)
 		var inst: Node = pkd.instantiate()
-		_assert(inst != null, "instantiable")
+		_assert(inst != null, "%s instantiable" % s)
 		inst.queue_free()
 
 
