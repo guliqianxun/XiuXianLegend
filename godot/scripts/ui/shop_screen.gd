@@ -112,17 +112,14 @@ func _on_open_forge() -> void:
 
 
 func _on_forge_finished(inst: Variant, qiao: bool, was_back: bool) -> void:
-	# N8 叙事卡触发 + EventLog + flash
+	# N8 叙事卡触发 + flash（EventLog 由 ForgeScreen 写入，避免双源）
 	if was_back:
-		EventLog.add_entry(&"forge_backlash", "炉中反噬，材料化灰。", &"bad")
 		ScreenFx.flash(Color(0.65, 0.20, 0.18), 0.35, 0.5)
 		var t: String = NarrativeLibrary.pick_card(NarrativeCard.Trigger.BACKLASH)
 		if not t.is_empty():
 			_narrative_overlay.show_text(t)
 	elif inst is GearInstance:
 		var g: GearInstance = inst
-		EventLog.add_entry(&"forge_done", "出炉 %s%s" % [g.display_full_name(), "（巧成）" if qiao else ""],
-			&"good" if (qiao or g.rarity >= 3) else &"normal")
 		# 秘品 flash 强 / 禁品+巧成 中 / 法以下不闪
 		if g.rarity >= 4:
 			ScreenFx.flash(Color(0.95, 0.78, 0.30), 0.40, 0.6)
