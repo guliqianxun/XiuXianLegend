@@ -8,6 +8,8 @@ const QUALITY_FA: int = 2
 const QUALITY_JIN: int = 3
 const QUALITY_MI: int = 4
 
+const AFFIX_BIAS_COEFFICIENT := 0.1   ## 调平衡只改这一行
+
 
 ## 从基础品质分布抽样，巧成时升一阶（封顶 Q4）。
 ## - dist: [p_凡, p_灵, p_法, p_禁, p_秘]，应总和 1.0
@@ -135,8 +137,13 @@ static func forge_one(
 	g.base_id = recipe.id  # N2 临时：以配方 id 当 base_id；N3 引入 base_template_id 字段时改
 	g.rarity = q
 	g.seed = rng.seed
-	# N9 主词缀：按 path × quality roll 一个
-	var main_affix: AffixData = roll_main_affix(recipe.path_affinity, q, rng)
+	# N9 主词缀：按 path × quality roll 一个（投料偏向注入）
+	var materials_used: Dictionary = {}
+	for mid in recipe.required_materials:
+		materials_used[mid] = int(recipe.required_materials[mid])
+	for mid in optional_materials:
+		materials_used[mid] = materials_used.get(mid, 0) + 1
+	var main_affix: AffixData = roll_main_affix(recipe.path_affinity, q, rng, materials_used)
 	if main_affix != null:
 		g.affix_ids = [main_affix.id]
 		g.affix_values = [rng.randf_range(main_affix.value_min, main_affix.value_max)]
@@ -158,13 +165,39 @@ static func forge_one(
 	return result
 
 
+## 累加投料的 affix_bias，返回 { path: total_bonus }
+static func _compute_affix_bias(materials_used: Dictionary) -> Dictionary:
+	var total: Dictionary = {}
+	for mid in materials_used:
+		var md: MaterialData = DataRegistry.get_resource(&"material", mid) as MaterialData
+		if md == null:
+			continue
+		for path in md.affix_bias:
+			total[path] = total.get(path, 0) + int(md.affix_bias[path])
+	return total
+
+
+## 给定一个词缀候选 + bias dict，返回修正后的权重
+static func _apply_bias_to_weight(affix: AffixData, bias: Dictionary) -> float:
+	var w: float = affix.weight
+	# path_filter 命中
+	for path in affix.path_filter:
+		if bias.has(path):
+			w *= 1.0 + float(bias[path]) * AFFIX_BIAS_COEFFICIENT
+	# _weird 元 path：tier=ARCANE 的词缀视为命中
+	if bias.has(&"_weird") and affix.min_tier == AffixData.Tier.ARCANE:
+		w *= 1.0 + float(bias[&"_weird"]) * AFFIX_BIAS_COEFFICIENT
+	return w
+
+
 ## 抽 1 个主词缀。
 ## - pool 来自 DataRegistry（hooks 为空 = 主题词缀，过滤旧战斗 affix）
 ## - path_filter 命中 path 或为空（通用）
 ## - min_tier <= quality
 ## - quality≥3（禁/秘）有 5% 概率从诡缀池抽（ARCANE）
+## - materials_used: 投料 dict { material_id: qty }，用于 affix bias 注入（空 dict = 无偏向）
 ## 返回 null 表示无 match（罕见）
-static func roll_main_affix(path: StringName, quality: int, rng: RandomNumberGenerator) -> AffixData:
+static func roll_main_affix(path: StringName, quality: int, rng: RandomNumberGenerator, materials_used: Dictionary = {}) -> AffixData:
 	var thematic: Array = []
 	var arcane: Array = []
 	for aid in DataRegistry.ids_of(&"affix"):
@@ -178,12 +211,14 @@ static func roll_main_affix(path: StringName, quality: int, rng: RandomNumberGen
 			arcane.append(a)
 		else:
 			thematic.append(a)
+	# 计算投料 bias（空 dict → 无偏向，weight 不变）
+	var bias_total: Dictionary = _compute_affix_bias(materials_used)
 	# 禁/秘品 + 5% → 诡缀池
 	if quality >= 3 and not arcane.is_empty() and rng.randf() < 0.05:
-		return _weighted_pick(arcane, rng)
+		return _weighted_pick_biased(arcane, bias_total, rng)
 	if thematic.is_empty():
 		return null
-	return _weighted_pick(thematic, rng)
+	return _weighted_pick_biased(thematic, bias_total, rng)
 
 
 static func _weighted_pick(pool: Array, rng: RandomNumberGenerator) -> AffixData:
@@ -194,6 +229,22 @@ static func _weighted_pick(pool: Array, rng: RandomNumberGenerator) -> AffixData
 	var acc: float = 0.0
 	for a in pool:
 		acc += float((a as AffixData).weight)
+		if u < acc:
+			return a as AffixData
+	return pool[0] as AffixData
+
+
+## bias 注入版权重抽取：空 bias dict 时行为与 _weighted_pick 完全一致
+static func _weighted_pick_biased(pool: Array, bias: Dictionary, rng: RandomNumberGenerator) -> AffixData:
+	if bias.is_empty():
+		return _weighted_pick(pool, rng)
+	var total: float = 0.0
+	for a in pool:
+		total += _apply_bias_to_weight(a as AffixData, bias)
+	var u: float = rng.randf() * total
+	var acc: float = 0.0
+	for a in pool:
+		acc += _apply_bias_to_weight(a as AffixData, bias)
 		if u < acc:
 			return a as AffixData
 	return pool[0] as AffixData
