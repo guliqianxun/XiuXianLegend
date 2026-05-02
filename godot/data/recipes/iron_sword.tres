@@ -7,10 +7,10 @@ script = ExtResource("1_r")
 id = &"iron_sword"
 display_name = "凡铁剑"
 required_materials = {
-&"iron": 2,
+&"tie": 2,
 &"jin": 4
 }
-optional_materials = Array[StringName]([&"zhusha", &"hui"])
+optional_materials = Array[StringName]([&"zhu_sha", &"hui"])
 base_quality_distribution = PackedFloat32Array(0.6, 0.25, 0.1, 0.04, 0.01)
 base_minutes_in_furnace = 30
 path_affinity = &"sword"

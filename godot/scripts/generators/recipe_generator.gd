@@ -10,11 +10,11 @@ const PREFIXES_MID: Array[String] = ["灵", "活", "巧", "细"]
 const PREFIXES_HIGH: Array[String] = ["法", "古", "异", "诡"]
 
 const MATERIAL_SHORT: Dictionary = {
-	&"iron": "铁",
+	&"tie": "铁",
 	&"jin": "金",
-	&"bone": "骨",
-	&"zhusha": "朱",
-	&"yellow_paper": "纸",
+	&"gu": "骨",
+	&"zhu_sha": "朱",
+	&"huang_zhi": "纸",
 	&"hui": "灰",
 }
 
@@ -38,12 +38,12 @@ const SLOT_TO_PATH: Dictionary = {
 
 # slot → 推荐主材料 + 次材料 候选
 const SLOT_MATERIAL_AFFINITY: Dictionary = {
-	&"sword": {"primary": [&"iron"], "secondary": [&"jin", &"hui"]},
-	&"talisman": {"primary": [&"zhusha"], "secondary": [&"yellow_paper", &"hui"]},
-	&"puppet_core": {"primary": [&"iron"], "secondary": [&"zhusha", &"bone"]},
-	&"elixir_furnace": {"primary": [&"iron"], "secondary": [&"jin", &"hui"]},
-	&"eating_vessel": {"primary": [&"bone"], "secondary": [&"jin"]},
-	&"divination_plate": {"primary": [&"jin"], "secondary": [&"yellow_paper", &"zhusha"]},
+	&"sword": {"primary": [&"tie"], "secondary": [&"jin", &"hui"]},
+	&"talisman": {"primary": [&"zhu_sha"], "secondary": [&"huang_zhi", &"hui"]},
+	&"puppet_core": {"primary": [&"tie"], "secondary": [&"zhu_sha", &"gu"]},
+	&"elixir_furnace": {"primary": [&"tie"], "secondary": [&"jin", &"hui"]},
+	&"eating_vessel": {"primary": [&"gu"], "secondary": [&"jin"]},
+	&"divination_plate": {"primary": [&"jin"], "secondary": [&"huang_zhi", &"zhu_sha"]},
 }
 
 const SLOTS: Array[StringName] = [

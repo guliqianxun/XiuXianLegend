@@ -7,10 +7,10 @@ script = ExtResource("1_r")
 id = &"spirit_talisman"
 display_name = "朱书符"
 required_materials = {
-&"zhusha": 3,
-&"yellow_paper": 2
+&"zhu_sha": 3,
+&"huang_zhi": 2
 }
-optional_materials = Array[StringName]([&"hui", &"yi_zhong_liao"])
+optional_materials = Array[StringName]([&"hui", &"yi"])
 base_quality_distribution = PackedFloat32Array(0.55, 0.28, 0.12, 0.04, 0.01)
 base_minutes_in_furnace = 25
 path_affinity = &"curse"

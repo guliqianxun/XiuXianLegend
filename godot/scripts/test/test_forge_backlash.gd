@@ -31,17 +31,17 @@ func _approx(got: float, want: float, tol: float = 0.001) -> bool:
 func _test_baseline_5pct() -> void:
 	var c := ForgeSystem.compute_backlash_chance([])
 	_assert(_approx(c, 0.05), "no materials -> 0.05 (got %.3f)" % c)
-	var c2 := ForgeSystem.compute_backlash_chance([&"hui", &"zhusha"])
+	var c2 := ForgeSystem.compute_backlash_chance([&"hui", &"zhu_sha"])
 	_assert(_approx(c2, 0.05), "non-dangerous mats -> 0.05 (got %.3f)" % c2)
 
 
 func _test_jin_or_mi_material_doubles() -> void:
-	var c1 := ForgeSystem.compute_backlash_chance([&"yi_zhong_liao"])
-	_assert(_approx(c1, 0.10), "yi_zhong_liao -> 0.10 (got %.3f)" % c1)
+	var c1 := ForgeSystem.compute_backlash_chance([&"yi"])
+	_assert(_approx(c1, 0.10), "yi -> 0.10 (got %.3f)" % c1)
 	var c2 := ForgeSystem.compute_backlash_chance([&"mi_pin_zhi_xie"])
 	_assert(_approx(c2, 0.10), "mi_pin_zhi_xie -> 0.10 (got %.3f)" % c2)
 
 
 func _test_multiple_dangerous_no_extra_stack() -> void:
-	var c := ForgeSystem.compute_backlash_chance([&"yi_zhong_liao", &"mi_pin_zhi_xie", &"yi_zhong_liao"])
+	var c := ForgeSystem.compute_backlash_chance([&"yi", &"mi_pin_zhi_xie", &"yi"])
 	_assert(_approx(c, 0.10), "stacked dangerous mats capped at 0.10 (got %.3f)" % c)

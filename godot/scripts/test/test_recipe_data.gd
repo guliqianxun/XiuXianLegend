@@ -26,13 +26,13 @@ func _test_basic() -> void:
 	var r := RecipeData.new()
 	r.id = &"sword_basic"
 	r.display_name = "凡铁剑"
-	r.required_materials = {&"iron": 2, &"jin": 4}
-	r.optional_materials = [&"zhusha", &"hui"]
+	r.required_materials = {&"tie": 2, &"jin": 4}
+	r.optional_materials = [&"zhu_sha", &"hui"]
 	r.base_quality_distribution = PackedFloat32Array([0.6, 0.25, 0.10, 0.04, 0.01])
 	r.base_minutes_in_furnace = 30
 	_assert(r.id == &"sword_basic", "id set")
 	_assert(r.display_name == "凡铁剑", "display_name set")
-	_assert(r.required_materials.has(&"iron"), "required_materials map")
+	_assert(r.required_materials.has(&"tie"), "required_materials map")
 	_assert(r.base_quality_distribution.size() == 5, "5-tier quality")
 	_assert(r.base_minutes_in_furnace == 30, "base_minutes_in_furnace set")
 

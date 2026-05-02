@@ -13,6 +13,7 @@ func _ready() -> void:
 	_test_v4_payload_migrates()
 	_test_v5_payload_unchanged()
 	_test_future_version_passthrough()
+	_test_v10_to_v11_material_rename()
 	print("\n========== test_save_migration ==========")
 	print("PASS: %d  FAIL: %d" % [_passed, _failed])
 	get_tree().quit(0 if _failed == 0 else 1)
@@ -144,6 +145,35 @@ func _test_v5_payload_unchanged() -> void:
 	_assert(gs.has("star_brushes"), "v5→v9 chain added star_brushes")
 	_assert(gs.has("activated_patterns"), "v5→v9 chain added activated_patterns")
 	_assert(migrated.has("event_log"), "v5→v10 chain added event_log")
+
+
+func _test_v10_to_v11_material_rename() -> void:
+	var v10 := {
+		"version": 10,
+		"game_state": {
+			"spirit_stones": 100,
+			"materials": {
+				"iron": 5,
+				"zhusha": 3,
+				"yellow_paper": 2,
+				"bone": 1,
+				"yi_zhong_liao": 1,
+				"jin": 8,
+				"hui": 2,
+			},
+		},
+	}
+	var migrated := SaveSystem.migrate(v10)
+	_assert(int(migrated.get("version", 0)) == SaveSystem.SAVE_VERSION, "v10→latest version bumped")
+	var m: Dictionary = (migrated.get("game_state", {}) as Dictionary).get("materials", {})
+	_assert(m.get("tie", 0) == 5, "iron→tie value preserved")
+	_assert(m.get("zhu_sha", 0) == 3, "zhusha→zhu_sha")
+	_assert(m.get("huang_zhi", 0) == 2, "yellow_paper→huang_zhi")
+	_assert(m.get("gu", 0) == 1, "bone→gu")
+	_assert(m.get("yi", 0) == 1, "yi_zhong_liao→yi")
+	_assert(m.get("jin", 0) == 8, "jin unchanged")
+	_assert(m.get("hui", 0) == 2, "hui unchanged")
+	_assert(not m.has("iron"), "old iron key removed")
 
 
 func _test_future_version_passthrough() -> void:

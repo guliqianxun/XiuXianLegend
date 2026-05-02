@@ -4,6 +4,8 @@ class_name ForgeScreen
 ## 协调 3 个子组件：TopBar / LogFlow / BottomBar；TimingWindow 嵌入 LogFlow 顶；
 ## ResultOverlay 浮屏。业务逻辑全在 ForgeSystem，本类只串信号。
 
+const _SHOP_DIALOG_SCENE := preload("res://scenes/ui/material_shop_dialog.tscn")
+
 @onready var _top_bar: ForgeTopBar = $Layout/TopBar
 @onready var _log_flow: ForgeLogFlow = $Layout/LogFlow
 @onready var _bottom_bar: ForgeBottomBar = $Layout/BottomBar
@@ -19,6 +21,7 @@ func _ready() -> void:
 	visible = false
 	_top_bar.recipe_picked.connect(_on_recipe_picked)
 	_top_bar.close_pressed.connect(_on_close)
+	_top_bar.buy_pressed.connect(_on_buy_pressed)
 	_bottom_bar.start_pressed.connect(_on_start)
 	_timing_window.timing_finished.connect(_on_timing_finished)
 	_result_overlay.animation_finished.connect(_on_overlay_done)
@@ -134,3 +137,8 @@ func _on_overlay_done() -> void:
 
 func _on_close() -> void:
 	visible = false
+
+
+func _on_buy_pressed() -> void:
+	var dlg := _SHOP_DIALOG_SCENE.instantiate()
+	add_child(dlg)

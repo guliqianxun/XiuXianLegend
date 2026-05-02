@@ -7,10 +7,10 @@ script = ExtResource("1_r")
 id = &"ling_kuilei_xin"
 display_name = "灵傀儡心"
 required_materials = {
-&"iron": 3,
-&"zhusha": 2
+&"tie": 3,
+&"zhu_sha": 2
 }
-optional_materials = Array[StringName]([&"bone", &"yi_zhong_liao"])
+optional_materials = Array[StringName]([&"gu", &"yi"])
 base_quality_distribution = PackedFloat32Array(0.5, 0.30, 0.13, 0.05, 0.02)
 base_minutes_in_furnace = 40
 path_affinity = &"puppet"

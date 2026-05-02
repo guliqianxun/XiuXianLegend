@@ -14,7 +14,7 @@ var was_backlash: bool = false
 ## 出炉装备实例（反噬时为 null）
 var equipment: GearInstance = null
 
-## 反噬副产物 ID（反噬时为 &"hui" 或 &"yi_zhong_liao"，否则为空）
+## 反噬副产物 ID（反噬时为 &"hui" 或 &"yi"，否则为空）
 var byproduct: StringName = &""
 
 ## 反噬副产物数量（反噬时 1，否则 0）

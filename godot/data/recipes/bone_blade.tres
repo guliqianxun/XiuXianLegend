@@ -7,10 +7,10 @@ script = ExtResource("1_r")
 id = &"bone_blade"
 display_name = "骨刃"
 required_materials = {
-&"bone": 2,
+&"gu": 2,
 &"jin": 2
 }
-optional_materials = Array[StringName]([&"yi_zhong_liao"])
+optional_materials = Array[StringName]([&"yi"])
 base_quality_distribution = PackedFloat32Array(0.5, 0.30, 0.13, 0.05, 0.02)
 base_minutes_in_furnace = 35
 path_affinity = &"eat"

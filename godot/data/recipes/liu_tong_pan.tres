@@ -8,9 +8,9 @@ id = &"liu_tong_pan"
 display_name = "六通盘"
 required_materials = {
 &"jin": 3,
-&"yellow_paper": 2
+&"huang_zhi": 2
 }
-optional_materials = Array[StringName]([&"zhusha", &"hui"])
+optional_materials = Array[StringName]([&"zhu_sha", &"hui"])
 base_quality_distribution = PackedFloat32Array(0.55, 0.28, 0.12, 0.04, 0.01)
 base_minutes_in_furnace = 30
 path_affinity = &"divination"

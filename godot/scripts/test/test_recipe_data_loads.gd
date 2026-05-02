@@ -40,9 +40,9 @@ func _test_iron_sword_loads() -> void:
 	_assert(r.id == &"iron_sword", "iron_sword.id correct")
 	_assert(r.display_name == "凡铁剑", "iron_sword.display_name 凡铁剑")
 	_assert(r.path_affinity == &"sword", "iron_sword path=sword")
-	_assert(r.required_materials.has(&"iron"), "iron_sword requires iron")
+	_assert(r.required_materials.has(&"tie"), "iron_sword requires tie")
 	_assert(r.required_materials.has(&"jin"), "iron_sword requires jin")
-	_assert(int(r.required_materials.get(&"iron", 0)) == 2, "iron_sword needs 2 iron")
+	_assert(int(r.required_materials.get(&"tie", 0)) == 2, "iron_sword needs 2 tie")
 	_assert(int(r.required_materials.get(&"jin", 0)) == 4, "iron_sword needs 4 jin")
 	var sum: float = 0.0
 	for x in r.base_quality_distribution:
@@ -55,7 +55,7 @@ func _test_spirit_talisman_loads() -> void:
 	_assert(r != null, "spirit_talisman loads")
 	if r == null: return
 	_assert(r.path_affinity == &"curse", "spirit_talisman path=curse")
-	_assert(r.required_materials.has(&"zhusha"), "spirit_talisman requires zhusha")
+	_assert(r.required_materials.has(&"zhu_sha"), "spirit_talisman requires zhu_sha")
 
 
 func _test_bone_blade_loads() -> void:
@@ -63,4 +63,4 @@ func _test_bone_blade_loads() -> void:
 	_assert(r != null, "bone_blade loads")
 	if r == null: return
 	_assert(r.path_affinity == &"eat", "bone_blade path=eat")
-	_assert(r.required_materials.has(&"bone"), "bone_blade requires bone")
+	_assert(r.required_materials.has(&"gu"), "bone_blade requires gu")

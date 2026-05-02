@@ -99,12 +99,12 @@ func _run_offline_settlement() -> void:
 
 func _seed_starter_materials() -> void:
 	# 首次进入或清存档后给一把材料，避免玩家无米下锅
-	if GameState.material_count(&"iron") == 0 and GameState.material_count(&"jin") == 0:
-		GameState.add_material(&"iron", 8)
+	if GameState.material_count(&"tie") == 0 and GameState.material_count(&"jin") == 0:
+		GameState.add_material(&"tie", 8)
 		GameState.add_material(&"jin", 16)
-		GameState.add_material(&"zhusha", 6)
-		GameState.add_material(&"yellow_paper", 6)
-		GameState.add_material(&"bone", 4)
+		GameState.add_material(&"zhu_sha", 6)
+		GameState.add_material(&"huang_zhi", 6)
+		GameState.add_material(&"gu", 4)
 
 
 func _on_open_forge() -> void:
@@ -225,6 +225,21 @@ func _resolve_now(gear: GearInstance, req: CustomerRequest) -> void:
 	var path: StringName = gear_recipe.path_affinity if gear_recipe != null else &""
 	var outcome := ReturnResolver.roll_outcome(tier, rng, path)
 	EncounterState.resolve_return(gear, outcome, TimeLine.now_unix() + req.expected_duration_sec)
+	# C · 客人归还带料：GREAT_DEED 100% / OK_RETURN 30%
+	var dropped_material: StringName = &""
+	match outcome:
+		ReturnResolver.Outcome.GREAT_DEED:
+			var pool := [&"gu", &"zhu_sha"]
+			dropped_material = pool[rng.randi_range(0, pool.size() - 1)]
+			GameState.add_material(dropped_material, 1)
+		ReturnResolver.Outcome.OK_RETURN:
+			if rng.randf() < 0.30:
+				dropped_material = &"tie"
+				GameState.add_material(dropped_material, 1)
+	if dropped_material != &"":
+		var md: MaterialData = DataRegistry.get_resource(&"material", dropped_material) as MaterialData
+		var disp: String = md.display_name if md != null else String(dropped_material)
+		EventLog.add_entry(&"customer_return_drop", "%s 顺手捎了 %s×1" % [c.display_name if c != null else "客人", disp], &"normal")
 	if outcome == ReturnResolver.Outcome.GREAT_DEED:
 		GameState.add_currency(&"spirit_stones", req.payment * 2)
 		GameState.add_reputation(2)

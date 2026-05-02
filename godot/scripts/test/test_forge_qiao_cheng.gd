@@ -50,8 +50,8 @@ func _test_smith_hand_contribution() -> void:
 func _test_qiao_material_contribution() -> void:
 	var c1 := ForgeSystem.compute_qiao_cheng_chance(0.0, 1.0, [&"hui"])
 	_assert(_approx(c1, 0.10), "hui -> 0.10 (got %.3f)" % c1)
-	var c2 := ForgeSystem.compute_qiao_cheng_chance(0.0, 1.0, [&"zhusha"])
-	_assert(_approx(c2, 0.0), "zhusha (non-qiao) -> 0.0 (got %.3f)" % c2)
+	var c2 := ForgeSystem.compute_qiao_cheng_chance(0.0, 1.0, [&"zhu_sha"])
+	_assert(_approx(c2, 0.0), "zhu_sha (non-qiao) -> 0.0 (got %.3f)" % c2)
 	var c3 := ForgeSystem.compute_qiao_cheng_chance(0.0, 1.0, [&"hui", &"hui"])
 	_assert(_approx(c3, 0.20), "2x hui -> 0.20 (got %.3f)" % c3)
 
