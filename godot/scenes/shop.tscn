@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/shop_screen.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/actors/old_iron.tscn" id="2"]
@@ -13,11 +13,21 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/inventory_strip.tscn" id="11"]
 [ext_resource type="PackedScene" path="res://scenes/ui/event_log_panel.tscn" id="12"]
 [ext_resource type="PackedScene" path="res://scenes/ui/event_log_screen.tscn" id="13"]
+[ext_resource type="Shader" path="res://scripts/shaders/paper_grain.gdshader" id="14"]
+[ext_resource type="Script" path="res://scripts/ui/shichen_dial.gd" id="15"]
+
+[sub_resource type="ShaderMaterial" id="bg_mat"]
+shader = ExtResource("14")
+shader_parameter/base_color = Color(0.055, 0.045, 0.038, 1.0)
+shader_parameter/noise_strength = 0.06
+shader_parameter/vignette_strength = 0.45
+shader_parameter/grain_scale = 180.0
 
 [node name="Shop" type="Node2D"]
 script = ExtResource("1")
 
 [node name="Background" type="ColorRect" parent="."]
+material = SubResource("bg_mat")
 offset_left = 0.0
 offset_top = 0.0
 offset_right = 1280.0
@@ -44,7 +54,7 @@ offset_left = 120.0
 offset_top = 105.0
 offset_right = 280.0
 offset_bottom = 170.0
-text = "开　炉"
+text = "❋  开　炉"
 theme_override_font_sizes/font_size = 26
 
 [node name="LabelFurnace" type="Label" parent="AreaFurnace"]
@@ -76,7 +86,7 @@ offset_left = 80.0
 offset_top = 105.0
 offset_right = 240.0
 offset_bottom = 170.0
-text = "接　客"
+text = "✉  接　客"
 theme_override_font_sizes/font_size = 26
 
 [node name="LabelCounter" type="Label" parent="AreaCounter"]
@@ -108,7 +118,7 @@ offset_left = 100.0
 offset_top = 50.0
 offset_right = 220.0
 offset_bottom = 110.0
-text = "查　谱"
+text = "☷  查　谱"
 theme_override_font_sizes/font_size = 26
 
 [node name="LabelLoft" type="Label" parent="AreaLoft"]
@@ -149,7 +159,7 @@ offset_left = 100.0
 offset_top = 105.0
 offset_right = 280.0
 offset_bottom = 170.0
-text = "立　规"
+text = "❖  立　规"
 theme_override_font_sizes/font_size = 26
 
 [node name="OldIron" parent="." instance=ExtResource("2")]
@@ -160,36 +170,45 @@ position = Vector2(150, 490)
 [node name="HudFrame" type="PanelContainer" parent="HUD"]
 offset_left = 12.0
 offset_top = 12.0
-offset_right = 240.0
-offset_bottom = 158.0
+offset_right = 260.0
+offset_bottom = 192.0
 
 [node name="VBox" type="VBoxContainer" parent="HUD/HudFrame"]
-theme_override_constants/separation = 2
+theme_override_constants/separation = 4
 
-[node name="TimeLabel" type="Label" parent="HUD/HudFrame/VBox"]
+[node name="TimeRow" type="HBoxContainer" parent="HUD/HudFrame/VBox"]
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="ShichenDial" type="Control" parent="HUD/HudFrame/VBox/TimeRow"]
+custom_minimum_size = Vector2(56, 56)
+script = ExtResource("15")
+
+[node name="TimeLabel" type="Label" parent="HUD/HudFrame/VBox/TimeRow"]
 text = "时辰　子"
+size_flags_vertical = 4
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.940, 0.870, 0.685, 1)
 
 [node name="Sep1" type="HSeparator" parent="HUD/HudFrame/VBox"]
 
 [node name="MoneyLabel" type="Label" parent="HUD/HudFrame/VBox"]
-text = "灵石　0"
+text = "◇ 灵石　0"
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.910, 0.846, 0.659, 1)
 
 [node name="ReputationLabel" type="Label" parent="HUD/HudFrame/VBox"]
-text = "名望　0"
+text = "○ 名望　0"
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.785, 0.720, 0.550, 1)
 
 [node name="BrushLabel" type="Label" parent="HUD/HudFrame/VBox"]
-text = "星轨笔　0"
+text = "✦ 星轨笔　0"
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.640, 0.808, 0.910, 1)
 
 [node name="CodexLabel" type="Label" parent="HUD/HudFrame/VBox"]
-text = "诡器谱 0 · 共鸣 0/7"
+text = "☯ 诡器谱 0 · 共鸣 0/7"
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.745, 0.585, 0.585, 1)
 

@@ -1,0 +1,5 @@
+[gd_resource type="SystemFont" format=3]
+
+[resource]
+font_names = PackedStringArray("KaiTi", "STKaiti", "Kaiti SC", "DFKai-SB", "BiauKai", "Microsoft YaHei", "WenQuanYi Zen Hei", "Noto Serif CJK SC", "Noto Sans CJK SC")
+allow_system_fallback = true

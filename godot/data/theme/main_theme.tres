@@ -1,4 +1,6 @@
-[gd_resource type="Theme" load_steps=11 format=3]
+[gd_resource type="Theme" load_steps=12 format=3]
+
+[ext_resource type="Font" path="res://data/theme/system_font.tres" id="font_main"]
 
 [sub_resource type="StyleBoxFlat" id="panel_bg"]
 bg_color = Color(0.165, 0.133, 0.110, 0.95)
@@ -118,6 +120,7 @@ content_margin_bottom = 4.0
 bg_color = Color(0.310, 0.180, 0.130, 0.85)
 
 [resource]
+default_font = ExtResource("font_main")
 default_font_size = 14
 Label/colors/font_color = Color(0.910, 0.846, 0.659, 1)
 Label/font_sizes/font_size = 14
