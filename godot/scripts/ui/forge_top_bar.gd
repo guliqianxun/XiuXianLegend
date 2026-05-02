@@ -5,6 +5,7 @@ class_name ForgeTopBar
 
 signal recipe_picked(recipe_id: StringName)
 signal close_pressed
+signal buy_pressed
 
 const COLOR_OK := Color(0.910, 0.846, 0.659, 1.0)
 const COLOR_ABUNDANT := Color(0.745, 0.920, 0.650, 1.0)
@@ -13,6 +14,7 @@ const COLOR_LACK := Color(0.752, 0.345, 0.282, 1.0)
 @onready var _recipe_picker: OptionButton = $HBox/RecipePicker
 @onready var _materials_box: HBoxContainer = $HBox/MaterialsBox
 @onready var _close_btn: Button = $HBox/CloseButton
+@onready var _buy_button: Button = $HBox/BuyButton
 
 var _recipes: Array[RecipeData] = []
 
@@ -20,6 +22,7 @@ var _recipes: Array[RecipeData] = []
 func _ready() -> void:
 	_recipe_picker.item_selected.connect(_on_picker_selected)
 	_close_btn.pressed.connect(func() -> void: close_pressed.emit())
+	_buy_button.pressed.connect(func() -> void: buy_pressed.emit())
 
 
 ## ForgeScreen 调用：刷新可选配方列表

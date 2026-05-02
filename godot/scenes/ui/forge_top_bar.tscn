@@ -19,6 +19,10 @@ custom_minimum_size = Vector2(140, 0)
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
+[node name="BuyButton" type="Button" parent="HBox"]
+text = "采办"
+custom_minimum_size = Vector2(56, 28)
+
 [node name="CloseButton" type="Button" parent="HBox"]
 text = "闭门 ✕"
 custom_minimum_size = Vector2(80, 0)
