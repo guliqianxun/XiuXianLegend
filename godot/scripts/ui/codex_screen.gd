@@ -14,6 +14,7 @@ const STAR_NODE_SCENE := preload("res://scenes/ui/star_node.tscn")
 @onready var _progress_label: Label = $Layout/Progress
 @onready var _brush_label: Label = $Layout/BrushBar
 @onready var _close_btn: Button = $Layout/CloseButton
+@onready var _corner_close_btn: Button = $CornerCloseButton
 @onready var _star_field: Control = $Layout/StarField
 @onready var _line_canvas: CodexLineCanvas = $Layout/StarField/LineCanvas
 @onready var _detail_panel: StarDetailPanel = $StarDetailPanel
@@ -30,6 +31,7 @@ var _selected_su: StringName = &""  # 第一颗已选星位（用于自连画线
 func _ready() -> void:
 	visible = false
 	_close_btn.pressed.connect(_on_close)
+	_corner_close_btn.pressed.connect(_on_close)
 	EventBus.star_lit.connect(_on_star_lit)
 	EventBus.resonance_activated.connect(_on_resonance_activated)
 	EventBus.star_brushes_changed.connect(_on_brushes_changed)
@@ -201,3 +203,11 @@ func _on_pattern_activated(pattern_id: StringName) -> void:
 
 func _on_close() -> void:
 	visible = false
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not visible:
+		return
+	if event.is_action_pressed(&"ui_cancel"):
+		_on_close()
+		get_viewport().set_input_as_handled()

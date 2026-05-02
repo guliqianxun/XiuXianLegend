@@ -23,6 +23,7 @@ const AREA_POSITIONS: Dictionary = {
 @onready var _open_codex_btn: Button = $AreaLoft/OpenCodexButton
 @onready var _codex_screen: CodexScreen = $CodexScreen
 @onready var _open_counter_btn: Button = $AreaCounter/OpenCounterButton
+@onready var _door_visual: DoorVisual = $AreaCounter/DoorVisual
 @onready var _customer_panel: CustomerArrivalPanel = $CustomerArrivalPanel
 @onready var _lend_dialog: LendDialog = $LendDialog
 @onready var _return_notice: ReturnNotice = $ReturnNotice
@@ -83,7 +84,25 @@ func _ready() -> void:
 	# 启动后弹出小本（如果有未读条目）
 	if not GameState.offline_diary_pending.is_empty():
 		_diary_screen.open(GameState.offline_diary_pending.duplicate())
+	# 柜台按钮联动 pending 状态
+	EventBus.customer_arrived.connect(func(_a: Variant = null, _b: Variant = null) -> void: _refresh_counter_button())
+	EventBus.equipment_returned.connect(func(_c: StringName, _g: Variant, _o: StringName) -> void: _refresh_counter_button())
+	EventBus.customer_left.connect(func(_c: StringName, _r: bool) -> void: _refresh_counter_button())
+	_refresh_counter_button()
 	_refresh_hud()
+
+
+const COUNTER_FAIL_THROTTLE_SEC := 1.5
+var _last_counter_fail_unix: float = -10.0
+
+
+func _refresh_counter_button() -> void:
+	if EncounterState.pending_request != null:
+		_open_counter_btn.text = "✉  等回应中…"
+		_open_counter_btn.disabled = true
+	else:
+		_open_counter_btn.text = "✉  接　客"
+		_open_counter_btn.disabled = false
 
 
 func _run_offline_settlement() -> void:
@@ -158,8 +177,16 @@ func _on_open_rules() -> void:
 # ── Customer 流程 ─────────────────────────────
 
 func _on_open_counter() -> void:
-	if not CustomerSpawner.spawn_now():
-		push_warning("counter: pending request exists or spawn failed (pending=%s)" % EncounterState.pending_request)
+	if CustomerSpawner.spawn_now():
+		return
+	# spawn_now == false：要么 pending 已存在（按钮本应 disabled，防意外），要么 spawn miss
+	if EncounterState.pending_request != null:
+		return
+	_door_visual.flash_failed()
+	var now: float = float(Time.get_ticks_msec()) * 0.001
+	if now - _last_counter_fail_unix >= COUNTER_FAIL_THROTTLE_SEC:
+		EventLog.add_entry(&"counter_empty", "门外无人迹", &"normal")
+		_last_counter_fail_unix = now
 
 
 func _on_customer_arrived(_cid: StringName, req: Variant) -> void:
