@@ -4,10 +4,6 @@ class_name ForgeLogFlow
 ## ScrollContainer + VBox，自动滚到底；用户主动滚则暂停 auto-scroll。
 
 const KIND_PREFIX: String = "forge_"
-const SHICHEN_NAMES: Array[String] = [
-	"子", "丑", "寅", "卯", "辰", "巳",
-	"午", "未", "申", "酉", "戌", "亥",
-]
 
 @onready var _scroll: ScrollContainer = $Frame/Scroll
 @onready var _list: VBoxContainer = $Frame/Scroll/List
@@ -47,7 +43,7 @@ static func _is_forge_entry(entry: Dictionary) -> bool:
 func _append_label(entry: Dictionary) -> void:
 	var lbl := Label.new()
 	var sh: int = int(entry.get("shichen", 0))
-	var sname: String = SHICHEN_NAMES[sh] if sh >= 0 and sh < 12 else "?"
+	var sname: String = EventLog.SHICHEN_NAMES[sh] if sh >= 0 and sh < 12 else "?"
 	lbl.text = "[%s] %s" % [sname, String(entry.get("text", ""))]
 	lbl.add_theme_font_size_override("font_size", 12)
 	lbl.add_theme_color_override("font_color", EventLog.color_of(StringName(entry.get("color_key", "normal"))))
