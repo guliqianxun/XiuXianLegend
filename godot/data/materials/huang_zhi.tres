@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MaterialData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/material_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"huang_zhi"
+display_name = "黄纸"
+short_name = "纸"
+unit_price = 5
+category = &"common"
+affix_bias = {
+&"talisman": 3,
+&"curse": 1,
+}

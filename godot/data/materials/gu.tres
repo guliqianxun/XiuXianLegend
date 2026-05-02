@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MaterialData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/material_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"gu"
+display_name = "骨"
+short_name = "骨"
+unit_price = 12
+category = &"weird"
+affix_bias = {
+&"curse": 2,
+&"divination_plate": 2,
+}

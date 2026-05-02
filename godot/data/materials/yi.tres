@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MaterialData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/material_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"yi"
+display_name = "异种料"
+short_name = "异"
+unit_price = 0
+category = &"weird_byproduct"
+affix_bias = {
+&"_weird": 5,
+}
