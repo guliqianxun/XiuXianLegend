@@ -47,6 +47,7 @@ func _on_recipe_picked(recipe_id: StringName) -> void:
 		if r.id == recipe_id:
 			_current_recipe = r
 			break
+	_last_selected_optional.clear()
 	_bottom_bar.rebuild_chips(_current_recipe)
 
 
@@ -111,6 +112,7 @@ func _on_timing_finished(score: float) -> void:
 
 
 func _on_overlay_done() -> void:
+	# 注意：rebuild_chips 会清空 _chip_state — 这是设计意图（每次出炉后玩家重新选添料）
 	# 刷新材料缩略 + chips 状态（消耗后数量变了）
 	if _current_recipe != null:
 		_top_bar.refresh_materials(_current_recipe)
