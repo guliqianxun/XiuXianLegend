@@ -9,5 +9,5 @@ display_name = "柳"
 match_path = &"sword"
 match_quality_min = 3
 match_quality_max = 4
-position_x = 0.886
-position_y = 0.409
+position_x = 0.52
+position_y = 0.86

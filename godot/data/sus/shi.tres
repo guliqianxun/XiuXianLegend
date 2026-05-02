@@ -9,5 +9,5 @@ display_name = "室"
 match_path = &"sword"
 match_quality_min = 2
 match_quality_max = 2
-position_x = 0.1
-position_y = 0.5
+position_x = 0.69
+position_y = 0.15

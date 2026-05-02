@@ -9,5 +9,5 @@ display_name = "斗"
 match_path = &"sword"
 match_quality_min = 1
 match_quality_max = 1
-position_x = 0.396
-position_y = 0.838
+position_x = 0.32
+position_y = 0.10

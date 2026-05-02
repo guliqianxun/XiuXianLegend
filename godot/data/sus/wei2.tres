@@ -9,5 +9,5 @@ display_name = "危"
 match_path = &"sword"
 match_quality_min = 1
 match_quality_max = 1
-position_x = 0.114
-position_y = 0.591
+position_x = 0.62
+position_y = 0.10

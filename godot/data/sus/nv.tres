@@ -9,5 +9,5 @@ display_name = "女"
 match_path = &"sword"
 match_quality_min = 1
 match_quality_max = 1
-position_x = 0.217
-position_y = 0.747
+position_x = 0.48
+position_y = 0.10

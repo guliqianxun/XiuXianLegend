@@ -9,5 +9,5 @@ display_name = "张"
 match_path = &"sword"
 match_quality_min = 0
 match_quality_max = 4
-position_x = 0.65
-position_y = 0.5
+position_x = 0.32
+position_y = 0.86

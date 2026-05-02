@@ -9,5 +9,5 @@ display_name = "壁"
 match_path = &"sword"
 match_quality_min = 2
 match_quality_max = 2
-position_x = 0.114
-position_y = 0.409
+position_x = 0.76
+position_y = 0.10
