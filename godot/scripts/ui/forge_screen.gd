@@ -22,6 +22,19 @@ func _ready() -> void:
 	_bottom_bar.start_pressed.connect(_on_start)
 	_timing_window.timing_finished.connect(_on_timing_finished)
 	_result_overlay.animation_finished.connect(_on_overlay_done)
+	_position_timing_window()
+
+
+func _position_timing_window() -> void:
+	if _timing_window == null or _log_flow == null:
+		return
+	await get_tree().process_frame
+	var lf_global: Vector2 = _log_flow.global_position
+	var lf_size: Vector2 = _log_flow.size
+	_timing_window.position = Vector2(
+		lf_global.x + lf_size.x * 0.5 - 80,
+		lf_global.y + 12
+	)
 
 
 ## 入口：从 ShopScreen 打开
