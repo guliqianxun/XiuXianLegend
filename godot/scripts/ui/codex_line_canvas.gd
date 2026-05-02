@@ -2,10 +2,14 @@ extends Node2D
 class_name CodexLineCanvas
 ## 画古谱主脉骨架线 + N7b 玩家自连线。
 
-const COLOR_PRESET := Color(0.72, 0.55, 0.32, 0.7)  # 主脉骨架（金线）
-const COLOR_PLAYER := Color(0.55, 0.85, 1.0, 0.85)  # 玩家自连（青线）
-const WIDTH_PRESET: float = 1.5
-const WIDTH_PLAYER: float = 2.0
+## 主脉骨架金线（亮内 + 淡外）
+const COLOR_PRESET_CORE := Color(0.940, 0.685, 0.345, 0.85)
+const COLOR_PRESET_GLOW := Color(0.940, 0.685, 0.345, 0.18)
+## 玩家自连青线（亮内 + 淡外）
+const COLOR_PLAYER_CORE := Color(0.55, 0.85, 1.0, 0.95)
+const COLOR_PLAYER_GLOW := Color(0.55, 0.85, 1.0, 0.20)
+const WIDTH_CORE: float = 1.6
+const WIDTH_GLOW: float = 5.5
 
 var _gupu: GuPuData = null
 var _field_size: Vector2 = Vector2.ZERO
@@ -27,8 +31,8 @@ func _draw() -> void:
 		var a: int = lines[i]
 		var b: int = lines[i + 1]
 		i += 2
-		_draw_pair_by_index(a, b, COLOR_PRESET, WIDTH_PRESET)
-	# 玩家自连（青色虚感）
+		_draw_glow_line_by_index(a, b, COLOR_PRESET_GLOW, COLOR_PRESET_CORE)
+	# 玩家自连
 	var su_to_idx: Dictionary = {}
 	for k in _gupu.stars.size():
 		var s: SuData = _gupu.stars[k]
@@ -37,10 +41,10 @@ func _draw() -> void:
 	for pair in CodexState.lines_of(_gupu.id):
 		var ia: int = int(su_to_idx.get(StringName(pair[0]), -1))
 		var ib: int = int(su_to_idx.get(StringName(pair[1]), -1))
-		_draw_pair_by_index(ia, ib, COLOR_PLAYER, WIDTH_PLAYER)
+		_draw_glow_line_by_index(ia, ib, COLOR_PLAYER_GLOW, COLOR_PLAYER_CORE)
 
 
-func _draw_pair_by_index(a: int, b: int, color: Color, width: float) -> void:
+func _draw_glow_line_by_index(a: int, b: int, glow_color: Color, core_color: Color) -> void:
 	if a < 0 or a >= _gupu.stars.size() or b < 0 or b >= _gupu.stars.size():
 		return
 	var su_a: SuData = _gupu.stars[a]
@@ -49,4 +53,6 @@ func _draw_pair_by_index(a: int, b: int, color: Color, width: float) -> void:
 		return
 	var pa := Vector2(su_a.position_x * _field_size.x, su_a.position_y * _field_size.y)
 	var pb := Vector2(su_b.position_x * _field_size.x, su_b.position_y * _field_size.y)
-	draw_line(pa, pb, color, width)
+	# 外宽淡 + 内细亮
+	draw_line(pa, pb, glow_color, WIDTH_GLOW, true)
+	draw_line(pa, pb, core_color, WIDTH_CORE, true)
