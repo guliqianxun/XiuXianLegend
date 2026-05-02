@@ -1,32 +1,63 @@
 class_name CodexPlacement
 extends RefCounted
-## 入谱公式：根据装备的 (slot_kind, quality, gupu) → 返回该装备应落入的 SuData id。
+## 入谱公式：根据装备的 (slot_kind, quality, gupu) → 该装备应落入的 SuData id。
 ## 确定性公式，不随机。同 input 必返回同 output（玩家可学到规律）。
+##
+## v2（28 宿星宫图布局重排后）：path → 方位严格映射
+## - sword (剑)       → 东方青龙 indices 0..4 (jiao/kang/di/fang/xin)，Q0..Q4
+## - curse (符咒)     → 北方玄武 indices 7..11 (dou/niu/nv/xu/wei2)，Q0..Q4
+## - puppet (傀核)    → 西方白虎 indices 14..18 (kui/lou/wei3/mao/bi2)，Q0..Q4
+## - alchemy (丹)     → 南方朱雀 indices 21..25 (jing/gui/liu/xing/zhang)，Q0..Q4
+## - eat (食器)       → 4 方位边缘 [5,6,12,13] (wei/ji/shi/bi)，Q0..Q3（Q4 不入）
+## - divination (卜)  → 4 方位边缘 [19,20,26,27] (zi/shen/yi/zhen)，Q0..Q3（Q4 不入）
+##
+## 28 颗星全占满。"剑入青龙、咒入玄武" 视觉成立。
 
-## 给定装备的 slot 和品质，在 gupu 中找到 match 的 SuData，返回其 id。
-## 不 match 任何星位返回 &""。
-## N7：先过 gupu.accepts(path, quality) filter，不通过直接返回 &""
-## - slot_kind: 装备 slot 字符串（"sword"/"talisman"/...）
-## - quality: 0..4
-## - gupu: 当前选中的古谱
+const PATH_BASE: Dictionary = {
+	&"sword": 0,
+	&"curse": 7,
+	&"puppet": 14,
+	&"alchemy": 21,
+}
+
+const PATH_SPARE: Dictionary = {
+	&"eat": [5, 6, 12, 13],          # Q0=wei(东尾), Q1=ji(东末), Q2=shi(北右), Q3=bi(北末)
+	&"divination": [19, 20, 26, 27], # Q0=zi(西下), Q1=shen(西末), Q2=yi(南左), Q3=zhen(南末)
+}
+
+
+## 给定装备的 slot 和品质，返回应落入的 SuData id。
+## 不通过 gupu filter 或无对应位 → &""
 static func find_su_for_equipment(slot_kind: StringName, quality: int, gupu: GuPuData) -> StringName:
 	if gupu == null:
 		return &""
 	var path: StringName = _slot_to_path(slot_kind)
 	if not gupu.accepts(path, quality):
 		return &""
-	# 索引规则：i = band*6 + slot_idx（与 N3 generate_sus.py 同步）
-	var slot_idx: int = _slot_to_index(slot_kind)
-	if slot_idx < 0:
+	var idx: int = _index_for(path, quality)
+	if idx < 0 or idx >= gupu.stars.size():
 		return &""
-	var band: int = _quality_to_band(quality)
-	var target_i: int = band * 6 + slot_idx
-	if target_i < 0 or target_i >= gupu.stars.size():
-		return &""
-	var su: SuData = gupu.stars[target_i]
+	var su: SuData = gupu.stars[idx]
 	if su == null:
 		return &""
 	return su.id
+
+
+## path × quality → su index in stars Array
+static func _index_for(path: StringName, quality: int) -> int:
+	if PATH_BASE.has(path):
+		# 主 path：方位内 5 颗对应 Q0..Q4（封顶 4）
+		var q: int = clampi(quality, 0, 4)
+		return int(PATH_BASE[path]) + q
+	if PATH_SPARE.has(path):
+		# 次 path：4 颗对应 Q0..Q3，Q4 不入谱
+		if quality > 3:
+			return -1
+		var arr: Array = PATH_SPARE[path]
+		if quality < 0 or quality >= arr.size():
+			return -1
+		return int(arr[quality])
+	return -1
 
 
 static func _slot_to_path(slot_kind: StringName) -> StringName:
@@ -38,23 +69,3 @@ static func _slot_to_path(slot_kind: StringName) -> StringName:
 		&"eating_vessel": return &"eat"
 		&"divination_plate": return &"divination"
 		_: return &""
-
-
-static func _slot_to_index(slot_kind: StringName) -> int:
-	match slot_kind:
-		&"sword": return 0
-		&"talisman": return 1
-		&"puppet_core": return 2
-		&"elixir_furnace": return 3
-		&"eating_vessel": return 4
-		&"divination_plate": return 5
-		_: return -1
-
-
-static func _quality_to_band(quality: int) -> int:
-	match quality:
-		0: return 0  # 凡
-		1: return 1  # 灵
-		2: return 2  # 法
-		3, 4: return 3  # 禁/秘合并
-		_: return 0

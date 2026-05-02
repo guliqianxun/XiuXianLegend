@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/shop_screen.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/actors/old_iron.tscn" id="2"]
@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/event_log_screen.tscn" id="13"]
 [ext_resource type="Shader" path="res://scripts/shaders/paper_grain.gdshader" id="14"]
 [ext_resource type="Script" path="res://scripts/ui/shichen_dial.gd" id="15"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="16"]
 
 [sub_resource type="ShaderMaterial" id="bg_mat"]
 shader = ExtResource("14")
@@ -245,3 +246,5 @@ theme_override_colors/font_color = Color(0.640, 0.745, 0.870, 1)
 [node name="EventLogPanel" parent="." instance=ExtResource("12")]
 
 [node name="EventLogScreen" parent="." instance=ExtResource("13")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("16")]
