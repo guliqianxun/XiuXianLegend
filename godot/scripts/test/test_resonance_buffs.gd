@@ -90,7 +90,7 @@ func _find_backlash_amount(recipe: RecipeData) -> int:
 	for s in 200:
 		var rng := RandomNumberGenerator.new()
 		rng.seed = s
-		var result := ForgeSystem.forge_one(recipe, [&"yi_zhong_liao"], 0.0, 1.0, 0, rng)
+		var result := ForgeSystem.forge_one(recipe, [&"yi"], 0.0, 1.0, 0, rng)
 		if result.was_backlash:
 			return result.byproduct_amount
 	return -1

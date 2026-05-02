@@ -42,7 +42,7 @@ static func roll_quality(dist: PackedFloat32Array, qiao_cheng_hit: bool, rng: Ra
 
 
 ## "巧成材料"id 集合：添加这些材料 +0.10 巧成率/件
-const QIAO_MATERIALS: Array[StringName] = [&"hui", &"zhu_yu", &"yi_zhong_liao_qiao"]
+const QIAO_MATERIALS: Array[StringName] = [&"hui", &"zhu_yu", &"yi_zhong_liao_qiao"]  ## yi_zhong_liao_qiao 是专用巧成变种，不同于 &"yi"
 
 
 ## 计算巧成命中概率，封顶 0.50。
@@ -68,7 +68,7 @@ static func compute_qiao_cheng_chance(timing_score: float, smith_hand: float, op
 const BACKLASH_BASE: float = 0.05
 const BACKLASH_BOOST: float = 0.05
 ## 禁/秘料 ID 集合：添加这些材料反噬概率 +0.05（封顶 0.10）
-const DANGEROUS_MATERIALS: Array[StringName] = [&"yi_zhong_liao", &"mi_pin_zhi_xie"]
+const DANGEROUS_MATERIALS: Array[StringName] = [&"yi", &"mi_pin_zhi_xie"]
 
 
 ## 计算反噬触发概率，封顶 0.10。
@@ -114,7 +114,7 @@ static func forge_one(
 		if rng.randf() < 0.5:
 			result.byproduct = &"hui"
 		else:
-			result.byproduct = &"yi_zhong_liao"
+			result.byproduct = &"yi"
 		result.byproduct_amount = 1
 		# N7 朱雀宿：反噬副产物 ×2
 		if GameState.has_resonance(&"zhu_que"):

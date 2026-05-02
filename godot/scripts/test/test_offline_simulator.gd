@@ -62,10 +62,10 @@ func _test_very_long_offline_tier2_text() -> void:
 func _test_simulate_does_not_touch_inventory() -> void:
 	# v1 模拟器不修改 inventory（避免无铺规时 imbalance）
 	var inv_size_before: int = GameState.inventory.size()
-	var iron_before: int = GameState.material_count(&"iron")
+	var iron_before: int = GameState.material_count(&"tie")
 	OfflineSimulator.simulate(1700000000, 1700000000 + 48 * 3600)
 	_assert(GameState.inventory.size() == inv_size_before, "inventory size unchanged")
-	_assert(GameState.material_count(&"iron") == iron_before, "iron count unchanged")
+	_assert(GameState.material_count(&"tie") == iron_before, "tie count unchanged")
 
 
 func _test_seed_deterministic() -> void:

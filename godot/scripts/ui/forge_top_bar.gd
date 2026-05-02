@@ -61,14 +61,7 @@ func _on_picker_selected(idx: int) -> void:
 	refresh_materials(r)
 
 
-## 材料 id → 短名（铁/金/朱/纸/灰/骨...）
+## 材料 id → 短名（读 MaterialData.short_name，fallback 为 id 字符串）
 static func _short_name(material_id: StringName) -> String:
-	match material_id:
-		&"iron": return "铁"
-		&"jin": return "金"
-		&"zhusha": return "朱"
-		&"yellow_paper": return "纸"
-		&"hui": return "灰"
-		&"bone": return "骨"
-		&"yi_zhong_liao": return "异"
-		_: return String(material_id)
+	var md: MaterialData = DataRegistry.get_resource(&"material", material_id) as MaterialData
+	return md.short_name if md != null else String(material_id)

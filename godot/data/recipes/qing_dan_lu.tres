@@ -7,7 +7,7 @@ script = ExtResource("1_r")
 id = &"qing_dan_lu"
 display_name = "青丹炉"
 required_materials = {
-&"iron": 4,
+&"tie": 4,
 &"jin": 2
 }
 optional_materials = Array[StringName]([&"hui"])

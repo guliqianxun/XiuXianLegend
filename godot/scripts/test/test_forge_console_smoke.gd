@@ -62,10 +62,10 @@ func _test_log_flow_filters_forge_only() -> void:
 
 
 func _test_top_bar_short_name() -> void:
-	_assert(ForgeTopBar._short_name(&"iron") == "铁", "iron → 铁")
+	_assert(ForgeTopBar._short_name(&"tie") == "铁", "tie → 铁")
 	_assert(ForgeTopBar._short_name(&"jin") == "金", "jin → 金")
-	_assert(ForgeTopBar._short_name(&"zhusha") == "朱", "zhusha → 朱")
-	_assert(ForgeTopBar._short_name(&"yellow_paper") == "纸", "yellow_paper → 纸")
+	_assert(ForgeTopBar._short_name(&"zhu_sha") == "朱", "zhu_sha → 朱")
+	_assert(ForgeTopBar._short_name(&"huang_zhi") == "纸", "huang_zhi → 纸")
 
 
 func _test_bottom_bar_chip_state() -> void:

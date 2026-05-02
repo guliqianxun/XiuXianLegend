@@ -5,7 +5,7 @@ extends Node
 ## - 写入 5 秒最小间隔限流。
 
 const SAVE_PATH := "user://save_main.json"
-const SAVE_VERSION := 10
+const SAVE_VERSION := 11
 const WRITE_COOLDOWN_SEC := 5.0
 
 var _last_write_msec: int = -10000
@@ -110,12 +110,36 @@ func migrate(payload: Dictionary) -> Dictionary:
 				payload = _migrate_v8_to_v9(payload)
 			9:
 				payload = _migrate_v9_to_v10(payload)
+			10:
+				payload = _migrate_v10_to_v11(payload)
 			_:
 				push_warning("save: no migration from v%d; aborting" % v)
 				return payload  # 中途未知版本：保留原 version，不再前进
 		v += 1
 	payload["version"] = SAVE_VERSION
 	return payload
+
+
+const MATERIAL_ID_RENAME_V11 := {
+	"iron": "tie",
+	"zhusha": "zhu_sha",
+	"yellow_paper": "huang_zhi",
+	"bone": "gu",
+	"yi_zhong_liao": "yi",
+}
+
+## v10 → v11: 材料命名统一全拼音（materials 在 game_state 内）
+func _migrate_v10_to_v11(p: Dictionary) -> Dictionary:
+	var gs: Dictionary = p.get("game_state", {})
+	var mats: Dictionary = gs.get("materials", {})
+	var new_mats: Dictionary = {}
+	for k in mats:
+		var new_k: String = MATERIAL_ID_RENAME_V11.get(String(k), String(k))
+		new_mats[new_k] = mats[k]
+	gs["materials"] = new_mats
+	p["game_state"] = gs
+	p["version"] = 11
+	return p
 
 
 ## v9 → v10: payload 顶层加 event_log（默认空）

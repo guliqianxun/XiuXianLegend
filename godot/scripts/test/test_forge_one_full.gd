@@ -29,7 +29,7 @@ func _make_recipe() -> RecipeData:
 	var r := RecipeData.new()
 	r.id = &"test_recipe"
 	r.display_name = "测试配方"
-	r.required_materials = {&"iron": 2}
+	r.required_materials = {&"tie": 2}
 	r.optional_materials = []
 	r.base_quality_distribution = PackedFloat32Array([1.0, 0.0, 0.0, 0.0, 0.0])  # 强制 Q0
 	r.base_minutes_in_furnace = 30
@@ -67,11 +67,11 @@ func _test_backlash_path() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 0
 	var recipe := _make_recipe()
-	var result := ForgeSystem.forge_one(recipe, [&"yi_zhong_liao"], 0.0, 1.0, 1700000000, rng)
+	var result := ForgeSystem.forge_one(recipe, [&"yi"], 0.0, 1.0, 1700000000, rng)
 	if result.was_backlash:
 		_assert(result.equipment == null, "backlash -> equipment null")
 		_assert(result.quality == -1, "backlash -> quality -1")
-		_assert(result.byproduct in [&"hui", &"yi_zhong_liao"], "backlash byproduct in {hui, yi_zhong_liao}")
+		_assert(result.byproduct in [&"hui", &"yi"], "backlash byproduct in {hui, yi}")
 		_assert(result.byproduct_amount == 1, "backlash byproduct_amount = 1")
 	else:
 		_assert(result.equipment != null, "no backlash -> equipment present")

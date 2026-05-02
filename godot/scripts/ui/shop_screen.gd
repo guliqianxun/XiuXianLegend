@@ -99,12 +99,12 @@ func _run_offline_settlement() -> void:
 
 func _seed_starter_materials() -> void:
 	# 首次进入或清存档后给一把材料，避免玩家无米下锅
-	if GameState.material_count(&"iron") == 0 and GameState.material_count(&"jin") == 0:
-		GameState.add_material(&"iron", 8)
+	if GameState.material_count(&"tie") == 0 and GameState.material_count(&"jin") == 0:
+		GameState.add_material(&"tie", 8)
 		GameState.add_material(&"jin", 16)
-		GameState.add_material(&"zhusha", 6)
-		GameState.add_material(&"yellow_paper", 6)
-		GameState.add_material(&"bone", 4)
+		GameState.add_material(&"zhu_sha", 6)
+		GameState.add_material(&"huang_zhi", 6)
+		GameState.add_material(&"gu", 4)
 
 
 func _on_open_forge() -> void:
