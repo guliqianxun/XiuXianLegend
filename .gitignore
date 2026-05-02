@@ -1,4 +1,4 @@
 xiuxian/
 .superpowers/
 .claude/settings.local.json
-.superpowers/
+.claude/scheduled_tasks.lock
