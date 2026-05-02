@@ -98,4 +98,4 @@ func _test_screen_loadable() -> void:
 
 
 func _test_save_v10() -> void:
-	_assert(SaveSystem.SAVE_VERSION == 10, "SAVE_VERSION = 10 (got %d)" % SaveSystem.SAVE_VERSION)
+	_assert(SaveSystem.SAVE_VERSION == 11, "SAVE_VERSION = 11 (got %d)" % SaveSystem.SAVE_VERSION)
