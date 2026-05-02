@@ -1,8 +1,11 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/forge_screen.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/timing_window.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/forge_result_overlay.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/forge_top_bar.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/forge_log_flow.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/ui/forge_bottom_bar.tscn" id="6"]
 
 [node name="ForgeScreen" type="Control"]
 anchors_preset = 15
@@ -22,39 +25,20 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -260.0
-offset_top = -200.0
-offset_right = 260.0
-offset_bottom = 200.0
-theme_override_constants/separation = 12
+offset_left = -300.0
+offset_top = -220.0
+offset_right = 300.0
+offset_bottom = 220.0
+theme_override_constants/separation = 8
 
-[node name="Title" type="Label" parent="Layout"]
-text = "锻造"
-horizontal_alignment = 1
-theme_override_colors/font_color = Color(0.95, 0.85, 0.55, 1)
+[node name="TopBar" parent="Layout" instance=ExtResource("4")]
+custom_minimum_size = Vector2(580, 36)
 
-[node name="RecipePicker" type="OptionButton" parent="Layout"]
+[node name="LogFlow" parent="Layout" instance=ExtResource("5")]
+custom_minimum_size = Vector2(580, 280)
 
-[node name="MaterialStatus" type="Label" parent="Layout"]
-text = ""
-
-[node name="OptionalPickerLabel" type="Label" parent="Layout"]
-text = "可选添料（多选）"
-
-[node name="OptionalPicker" type="ItemList" parent="Layout"]
-custom_minimum_size = Vector2(0, 100)
-select_mode = 1
-
-[node name="StartButton" type="Button" parent="Layout"]
-text = "开炉"
-
-[node name="ResultLabel" type="Label" parent="Layout"]
-text = ""
-horizontal_alignment = 1
-theme_override_colors/font_color = Color(0.95, 0.85, 0.55, 1)
-
-[node name="CloseButton" type="Button" parent="Layout"]
-text = "关闭"
+[node name="BottomBar" parent="Layout" instance=ExtResource("6")]
+custom_minimum_size = Vector2(580, 50)
 
 [node name="TimingWindow" parent="." instance=ExtResource("2")]
 
