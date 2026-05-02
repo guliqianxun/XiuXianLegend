@@ -9,5 +9,5 @@ display_name = "心"
 match_path = &"sword"
 match_quality_min = 0
 match_quality_max = 0
-position_x = 0.7
-position_y = 0.803
+position_x = 0.11
+position_y = 0.56

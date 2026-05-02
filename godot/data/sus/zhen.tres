@@ -9,5 +9,5 @@ display_name = "轸"
 match_path = &"sword"
 match_quality_min = 0
 match_quality_max = 4
-position_x = 0.35
-position_y = 0.5
+position_x = 0.18
+position_y = 0.84

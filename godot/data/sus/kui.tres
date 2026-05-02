@@ -9,5 +9,5 @@ display_name = "奎"
 match_path = &"sword"
 match_quality_min = 2
 match_quality_max = 2
-position_x = 0.154
-position_y = 0.325
+position_x = 0.86
+position_y = 0.20

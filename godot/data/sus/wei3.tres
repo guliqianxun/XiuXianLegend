@@ -9,5 +9,5 @@ display_name = "胃"
 match_path = &"sword"
 match_quality_min = 2
 match_quality_max = 2
-position_x = 0.3
-position_y = 0.197
+position_x = 0.85
+position_y = 0.40

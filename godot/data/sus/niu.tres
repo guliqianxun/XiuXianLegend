@@ -9,5 +9,5 @@ display_name = "牛"
 match_path = &"sword"
 match_quality_min = 1
 match_quality_max = 1
-position_x = 0.3
-position_y = 0.803
+position_x = 0.40
+position_y = 0.16

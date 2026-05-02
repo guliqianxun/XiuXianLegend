@@ -65,6 +65,50 @@ custom_minimum_size = Vector2(900, 540)
 [node name="LineCanvas" type="Node2D" parent="Layout/StarField"]
 script = ExtResource("2")
 
+[node name="DirNorth" type="Label" parent="Layout/StarField"]
+offset_left = 410.0
+offset_top = 0.0
+offset_right = 490.0
+offset_bottom = 18.0
+text = "北 · 玄武"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.420, 0.385, 0.330, 0.7)
+mouse_filter = 2
+
+[node name="DirSouth" type="Label" parent="Layout/StarField"]
+offset_left = 410.0
+offset_top = 522.0
+offset_right = 490.0
+offset_bottom = 540.0
+text = "南 · 朱雀"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.420, 0.385, 0.330, 0.7)
+mouse_filter = 2
+
+[node name="DirEast" type="Label" parent="Layout/StarField"]
+offset_left = 0.0
+offset_top = 261.0
+offset_right = 80.0
+offset_bottom = 279.0
+text = "东 · 青龙"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.420, 0.385, 0.330, 0.7)
+mouse_filter = 2
+
+[node name="DirWest" type="Label" parent="Layout/StarField"]
+offset_left = 820.0
+offset_top = 261.0
+offset_right = 900.0
+offset_bottom = 279.0
+text = "西 · 白虎"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.420, 0.385, 0.330, 0.7)
+mouse_filter = 2
+
 [node name="CloseButton" type="Button" parent="Layout"]
 text = "关闭"
 custom_minimum_size = Vector2(0, 40)
