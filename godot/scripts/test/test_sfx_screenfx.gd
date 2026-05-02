@@ -10,6 +10,7 @@ func _ready() -> void:
 	_test_sfx_streams_built()
 	_test_play_no_crash()
 	_test_screenfx_shake_no_crash()
+	_test_screenfx_flash_no_crash()
 	_test_sfx_invalid_tier_clamped()
 	print("\n========== test_sfx_screenfx ==========")
 	print("PASS: %d  FAIL: %d" % [_passed, _failed])
@@ -53,6 +54,14 @@ func _test_screenfx_shake_no_crash() -> void:
 	ScreenFx.shake(0.0, 0.3)  # zero intensity
 	ScreenFx.shake(8.0, 0.0)  # zero duration
 	_ok("ScreenFx.shake no crash on edge cases")
+
+
+func _test_screenfx_flash_no_crash() -> void:
+	# flash 创建顶层 CanvasLayer + ColorRect 作为 tree.root 子；headless 应可工作
+	ScreenFx.flash(Color(1, 0.5, 0.3), 0.4, 0.5)
+	ScreenFx.flash(Color(1, 1, 1), 0.0, 0.5)  # zero alpha skip
+	ScreenFx.flash(Color(1, 1, 1), 0.4, 0.0)  # zero duration skip
+	_ok("ScreenFx.flash no crash on edge cases")
 
 
 func _test_sfx_invalid_tier_clamped() -> void:

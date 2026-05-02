@@ -185,8 +185,9 @@ func _on_player_line_drawn(_g: StringName, _a: StringName, _b: StringName) -> vo
 
 
 func _on_pattern_activated(pattern_id: StringName) -> void:
-	# 隐藏图案命中：屏震 + 嗡声 + 弹叙事
+	# 隐藏图案命中：屏震 + 嗡声 + 青色 flash（区别共鸣的金色）
 	ScreenFx.shake(20.0, 0.8)
+	ScreenFx.flash(Color(0.55, 0.85, 1.0), 0.45, 0.7)
 	Sfx.play_breach()
 	# 简单提示文本（无固定 NarrativeCard 类目，直接拼）
 	if visible:
