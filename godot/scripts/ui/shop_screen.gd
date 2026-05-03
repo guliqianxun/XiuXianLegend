@@ -218,12 +218,14 @@ func _on_customer_lend(req: CustomerRequest) -> void:
 
 
 func _on_customer_refuse(req: CustomerRequest) -> void:
+	var cid: StringName = req.customer_id if req != null else &""
 	EncounterState.pending_request = null
 	GameState.add_reputation(-1)
 	var name: String = "客人"
 	if req != null and req.customer_data != null:
 		name = req.customer_data.display_name
 	EventLog.add_entry(&"refuse", "婉拒 %s（-1 名望）" % name, &"bad")
+	EventBus.customer_left.emit(cid, true)
 
 
 func _on_gear_chosen(gear: GearInstance, req: CustomerRequest) -> void:
@@ -236,6 +238,7 @@ func _on_gear_chosen(gear: GearInstance, req: CustomerRequest) -> void:
 	EventLog.add_entry(&"lend", "借出 %s 给 %s（+%d 灵石）" %
 		[gear.display_full_name(), name, req.payment], &"good")
 	SaveSystem.save_now(true)
+	_refresh_counter_button()
 	# N4 v1 简化：到时立即 resolve（玩家不用真等）；N5 改为正常计时
 	_resolve_now(gear, req)
 
