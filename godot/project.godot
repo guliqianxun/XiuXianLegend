@@ -35,6 +35,7 @@ FactionState="*res://scripts/core/faction_state.gd"
 NarrativeLibrary="*res://scripts/core/narrative_library.gd"
 WeirdCodex="*res://scripts/core/weird_codex.gd"
 EventLog="*res://scripts/core/event_log.gd"
+WindowManager="*res://scripts/core/window_manager.gd"
 
 [debug]
 
@@ -44,7 +45,9 @@ gdscript/warnings/untyped_declaration=1
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
+window/size/resizable=true
 window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [gui]
 
