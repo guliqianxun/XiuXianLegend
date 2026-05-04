@@ -4,14 +4,24 @@ extends Node2D
 ## N1 仅显示 + 老铁站位 + 时辰 HUD；交互留给后续 milestone。
 
 ## 4 区域中老铁的"站位"坐标（相对于场景原点；避开炉房中央按钮）
+## 这些是 1280×720 基准；实际 viewport 不同时由 _layout_for_viewport 重算
 const AREA_POSITIONS: Dictionary = {
-	&"furnace": Vector2(150, 490),  # 炉房：左下角（避开中央"开炉"按钮）
+	&"furnace": Vector2(150, 490),
 	&"counter": Vector2(640, 490),
 	&"loft":    Vector2(640, 110),
 	&"yard":    Vector2(960, 490),
 }
 
+## 4 卷宗在 viewport 上的相对中心位置（vp 比例 0..1）+ 卡尺寸 base
+const CARD_LAYOUT: Dictionary = {
+	&"forge":   Vector2(0.20, 0.40),
+	&"counter": Vector2(0.65, 0.40),
+	&"codex":   Vector2(0.25, 0.75),
+	&"rules":   Vector2(0.70, 0.75),
+}
+
 @onready var _old_iron: Node2D = $OldIron
+@onready var _background: ColorRect = $Background
 @onready var _hud_time: Label = $HUD/HudFrame/VBox/TimeRow/TimeLabel
 @onready var _hud_money: Label = $HUD/HudFrame/VBox/MoneyLabel
 @onready var _hud_reputation: Label = $HUD/HudFrame/VBox/ReputationLabel
@@ -45,8 +55,9 @@ func _ready() -> void:
 		screen.position = Vector2.ZERO
 		screen.size = vp_size
 		screen.visible = false
-	# 老铁初始站在炉房（避开按钮位置）
-	_old_iron.global_position = AREA_POSITIONS[&"furnace"]
+	# 多分辨率：响应窗口尺寸变化重布局（老铁位置由 _layout_for_viewport 安排）
+	get_viewport().size_changed.connect(_layout_for_viewport)
+	_layout_for_viewport()
 	# 启动后立即载档
 	SaveSystem.load_or_init()
 	# 给玩家点初始材料用于试炉（仅在 inventory 为空时）
@@ -99,6 +110,31 @@ const COUNTER_FAIL_THROTTLE_SEC := 1.5
 const RECENT_FORGE_LOOKBACK := 10
 var _last_counter_fail_unix: float = -10.0
 const _GUPU_IDS: Array[StringName] = [&"qing_long", &"xuan_wu", &"zhu_que", &"bai_hu", &"zi_wei", &"xue_yao", &"can_xiu"]
+
+
+## 重布局以适应当前 viewport 尺寸（窗口缩放 / fullscreen 切换 / 不同分辨率启动）
+func _layout_for_viewport() -> void:
+	var vp: Vector2 = get_viewport_rect().size
+	# 背景占满
+	if _background != null:
+		_background.position = Vector2.ZERO
+		_background.size = vp
+	# 4 卷宗按相对中心位置摆放
+	var cards := {
+		&"forge": _card_forge,
+		&"counter": _card_counter,
+		&"codex": _card_codex,
+		&"rules": _card_rules,
+	}
+	for k in cards:
+		var card: ScrollCard = cards[k]
+		if card == null:
+			continue
+		var center: Vector2 = CARD_LAYOUT[k]
+		var sz: Vector2 = card.card_size
+		card.position = Vector2(vp.x * center.x - sz.x * 0.5, vp.y * center.y - sz.y * 0.5)
+	# 老铁锚底中
+	_old_iron.global_position = Vector2(vp.x * 0.5, vp.y - 180)
 
 
 func _refresh_card_forge() -> void:
