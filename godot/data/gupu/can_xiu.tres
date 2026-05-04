@@ -41,3 +41,6 @@ preset_lines = PackedInt32Array(0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 7, 8, 8, 9, 
 allowed_paths = Array[StringName]([])
 quality_min = 0
 quality_max = 4
+tint_color = Color(0.045, 0.040, 0.030, 1)
+accent_color = Color(0.55, 0.50, 0.42, 1)
+glyph_char = "残"

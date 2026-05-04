@@ -15,6 +15,8 @@ const STAR_NODE_SCENE := preload("res://scenes/ui/star_node.tscn")
 @onready var _brush_label: Label = $Layout/BrushBar
 @onready var _close_btn: Button = $Layout/CloseButton
 @onready var _corner_close_btn: Button = $CornerCloseButton
+@onready var _backdrop: ColorRect = $Backdrop
+@onready var _seal_label: Label = $GupuSeal/Label
 @onready var _star_field: Control = $Layout/StarField
 @onready var _line_canvas: CodexLineCanvas = $Layout/StarField/LineCanvas
 @onready var _detail_panel: StarDetailPanel = $StarDetailPanel
@@ -82,7 +84,18 @@ func _load_current_gupu() -> void:
 	if _gupu == null:
 		push_warning("codex: gupu %s not loaded" % CodexState.current_gupu_id)
 		return
+	_apply_gupu_theme()
 	_refresh_title_and_progress()
+
+
+func _apply_gupu_theme() -> void:
+	# 背景 ShaderMaterial.base_color 切到该谱 tint_color
+	if _backdrop != null and _backdrop.material is ShaderMaterial:
+		(_backdrop.material as ShaderMaterial).set_shader_parameter("base_color", _gupu.tint_color)
+		_backdrop.color = Color(_gupu.tint_color.r, _gupu.tint_color.g, _gupu.tint_color.b, 0.95)
+	# 印章单字
+	if _seal_label != null:
+		_seal_label.text = _gupu.glyph_char
 
 
 func _refresh_title_and_progress() -> void:
@@ -121,7 +134,7 @@ func _rebuild_star_field() -> void:
 		_star_field.add_child(node)
 		node.position = Vector2(s.position_x * field_size.x, s.position_y * field_size.y)
 		var count: int = CodexState.equipments_at_star(s.id).size()
-		node.setup(s.id, count)
+		node.setup(s.id, count, _gupu.accent_color)
 		node.clicked.connect(_on_star_clicked)
 		_star_nodes[s.id] = node
 	# 重绘骨架
@@ -133,7 +146,8 @@ func _on_star_lit(_gupu_id: StringName, su_id: StringName, _gear_inst: Resource)
 		return
 	var node: StarNode = _star_nodes.get(su_id, null)
 	if node != null:
-		node.setup(su_id, CodexState.equipments_at_star(su_id).size())
+		var c: Color = _gupu.accent_color if _gupu != null else StarNode.COLOR_LIT_GLOW
+		node.setup(su_id, CodexState.equipments_at_star(su_id).size(), c)
 	_refresh_title_and_progress()
 
 
