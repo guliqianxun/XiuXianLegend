@@ -48,6 +48,9 @@ var star_brushes: int = 0
 ## 凑出图案后获得永久 buff 的 pattern id
 var activated_patterns: Array[StringName] = []
 
+# ── 新手引导 ─────────────────────────────────
+var onboarding_done: bool = false
+
 
 func add_currency(kind: StringName, amount: int) -> void:
 	match kind:
@@ -243,6 +246,7 @@ func to_dict() -> Dictionary:
 		"active_resonances": reso_ser,
 		"star_brushes": star_brushes,
 		"activated_patterns": pattern_ser,
+		"onboarding_done": onboarding_done,
 	}
 
 
@@ -293,3 +297,5 @@ func from_dict(d: Dictionary) -> void:
 	var pattern_raw: Array = d.get("activated_patterns", [])
 	for s in pattern_raw:
 		activated_patterns.append(StringName(s))
+
+	onboarding_done = bool(d.get("onboarding_done", false))

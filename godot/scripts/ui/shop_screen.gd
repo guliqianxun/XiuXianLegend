@@ -28,7 +28,11 @@ const CARD_LAYOUT: Dictionary = {
 @onready var _hud_reputation: Label = $HUD/HudFrame/VBox/ReputationLabel
 @onready var _hud_brush: Label = $HUD/HudFrame/VBox/BrushLabel
 @onready var _hud_codex: Label = $HUD/HudFrame/VBox/CodexLabel
+@onready var _hud_chapter: Label = $HUD/HudFrame/VBox/ChapterLabel
+@onready var _hud_quest_btn: Button = $HUD/HudFrame/VBox/QuestButton
 @onready var _hud_rules: Label = $HUD/RulesFrame/RulesLabel
+@onready var _main_quest_panel: MainQuestPanel = $MainQuestPanel
+@onready var _onboarding: OnboardingOverlay = $OnboardingOverlay
 @onready var _card_forge: ScrollCard = $ScrollCardForge
 @onready var _forge_screen: ForgeScreen = $ForgeScreen
 @onready var _card_codex: ScrollCard = $ScrollCardCodex
@@ -90,6 +94,16 @@ func _ready() -> void:
 	EventBus.resonance_activated.connect(func(_g: StringName, _p: StringName) -> void: _refresh_hud())
 	EventBus.weird_codex_recorded.connect(func(_f: StringName, _t: int) -> void: _refresh_hud())
 	EventBus.shop_rule_changed.connect(func(_i: int) -> void: _refresh_hud())
+	# 跨章节大字 + flash
+	StoryChapters.chapter_changed.connect(_on_chapter_changed)
+	# 主线面板按钮
+	_hud_quest_btn.pressed.connect(func() -> void: _main_quest_panel.open())
+	_main_quest_panel.visibility_changed.connect(_refresh_hud_visibility)
+	# 新手引导：首次进游戏触发
+	if not GameState.onboarding_done:
+		# 等一帧让 _layout_for_viewport 算完，spotlight 才能锚到正确位置
+		await get_tree().process_frame
+		_onboarding.start(self)
 	# 4 区域按钮
 	_card_forge.opened.connect(_on_open_forge)
 	_card_codex.opened.connect(_on_open_codex)
@@ -124,7 +138,7 @@ const _GUPU_IDS: Array[StringName] = [&"qing_long", &"xuan_wu", &"zhu_que", &"ba
 
 func _refresh_hud_visibility() -> void:
 	var any_modal_open: bool = false
-	for modal in [_forge_screen, _codex_screen, _diary_screen, _rules_screen]:
+	for modal in [_forge_screen, _codex_screen, _diary_screen, _rules_screen, _main_quest_panel]:
 		if modal != null and modal.visible:
 			any_modal_open = true
 			break
@@ -431,6 +445,15 @@ func _on_currency_changed(_kind: StringName, _value: int) -> void:
 	_refresh_hud()
 
 
+func _on_chapter_changed(new_idx: int, _prev_idx: int) -> void:
+	# 大字章节标 + 屏震 + 金色 flash
+	var title: String = StoryChapters.chapter_title(new_idx)
+	_narrative_overlay.show_text("—— %s ——" % title)
+	ScreenFx.flash(Color(0.95, 0.78, 0.30), 0.5, 0.7)
+	EventLog.add_entry(&"chapter", "进入「%s」" % title, &"system")
+	_refresh_hud()
+
+
 func _refresh_hud() -> void:
 	var shichen := TimeLine.shichen_of_unix(TimeLine.now_unix())
 	const SHICHEN_NAMES := ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"]
@@ -441,6 +464,7 @@ func _refresh_hud() -> void:
 	_hud_codex.text = "☯ 诡器谱 %d · 共鸣 %d/7" % [
 		WeirdCodex.count(), GameState.active_resonances.size(),
 	]
+	_hud_chapter.text = "卷·%s" % StoryChapters.current_title()
 	_hud_rules.text = "❖ 已立规：%s" % _format_active_rules()
 
 
