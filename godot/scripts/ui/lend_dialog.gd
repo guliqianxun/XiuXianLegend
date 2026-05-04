@@ -31,15 +31,42 @@ func open(req: CustomerRequest) -> void:
 	]
 	_candidates.clear()
 	_list.clear()
+	# 分桶：按筛选原因分类，让"无道具"能解释为什么
+	var skip_slot: int = 0
+	var skip_quality: int = 0
+	var skip_status: int = 0
 	for inst: GearInstance in GameState.inventory:
 		if inst == null: continue
-		if inst.status != GearInstance.Status.IN_SHOP: continue
-		if inst.rarity < req.min_quality: continue
 		var recipe := DataRegistry.get_resource(&"recipe", inst.base_id) as RecipeData
 		if recipe != null and recipe.slot_kind != req.desired_slot:
+			skip_slot += 1
+			continue
+		if inst.status != GearInstance.Status.IN_SHOP:
+			skip_status += 1
+			continue
+		if inst.rarity < req.min_quality:
+			skip_quality += 1
 			continue
 		_candidates.append(inst)
 		_list.add_item("%s（%d 次履历）" % [inst.display_full_name(), inst.history.size()])
+	# 候选为空时，把"为什么"列在 list 中（grayed）
+	if _candidates.is_empty():
+		var reasons: Array[String] = []
+		if skip_slot > 0:
+			reasons.append("%d 件不合品类（求 %s）" % [skip_slot, CustomerArrivalPanel._slot_zh(req.desired_slot)])
+		if skip_quality > 0:
+			reasons.append("%d 件品阶不够（求 ≥Q%d）" % [skip_quality, req.min_quality])
+		if skip_status > 0:
+			reasons.append("%d 件不在铺中（已借出/损坏/异变/未还）" % skip_status)
+		if reasons.is_empty():
+			_list.add_item("—— 库中无任何兵器 ——")
+		else:
+			_list.add_item("—— 无可借兵器 ——")
+			for r in reasons:
+				_list.add_item("· " + r)
+		# 禁用 list 选中
+		for i in _list.item_count:
+			_list.set_item_disabled(i, true)
 
 
 func _on_confirm() -> void:

@@ -45,7 +45,7 @@ func _test_idle_initial_state() -> void:
 	var dv := _make_dv()
 	await get_tree().process_frame
 	var label: Label = dv.get_node("Curtain/Label")
-	_assert(label.text == DoorVisual.TEXT_IDLE, "idle text=门外静寂 (got %s)" % label.text)
+	_assert(label.text == DoorVisual.TEXT_IDLE, "idle text=%s (got %s)" % [DoorVisual.TEXT_IDLE, label.text])
 	dv.queue_free()
 	await get_tree().process_frame
 

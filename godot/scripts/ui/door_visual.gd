@@ -9,10 +9,10 @@ extends Control
 const COLOR_IDLE := Color(0.182, 0.142, 0.108, 1.0)
 const COLOR_PENDING := Color(0.545, 0.227, 0.165, 0.85)
 const COLOR_FAIL := Color(0.32, 0.32, 0.32, 0.85)
-const TEXT_IDLE := "门外静寂"
-const TEXT_PENDING := "门外有客"
+const TEXT_IDLE := "门外候客 · 点开接见"
+const TEXT_PENDING := "客在堂中 · 速回应"
 const TEXT_ARRIVED := "来客了"
-const TEXT_FAIL := "门外无人迹"
+const TEXT_FAIL := "今无叩门者"
 
 @onready var _curtain: ColorRect = $Curtain
 @onready var _label: Label = $Curtain/Label
@@ -26,7 +26,14 @@ func _ready() -> void:
 	EventBus.customer_arrived.connect(_on_customer_arrived)
 	EventBus.equipment_returned.connect(_on_equipment_returned)
 	EventBus.customer_left.connect(_on_customer_left)
+	# 若 reparent 后 origin 变了，refresh 时重新捕获
+	visibility_changed.connect(_recapture_origin_x)
 	_refresh_base()
+
+
+func _recapture_origin_x() -> void:
+	if visible and is_inside_tree() and _curtain != null:
+		_curtain_origin_x = _curtain.position.x
 
 
 func _refresh_base() -> void:
