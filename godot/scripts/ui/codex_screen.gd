@@ -127,7 +127,16 @@ func _rebuild_star_field() -> void:
 	var field_size: Vector2 = _star_field.size
 	if field_size.x < 100 or field_size.y < 100:
 		field_size = Vector2(900, 540)
-	for s: SuData in _gupu.stars:
+	# 计算"本谱参与连线的星索引"集合
+	var participating: Dictionary = {}
+	var lines := _gupu.preset_lines
+	var i: int = 0
+	while i + 1 < lines.size():
+		participating[lines[i]] = true
+		participating[lines[i + 1]] = true
+		i += 2
+	for idx in _gupu.stars.size():
+		var s: SuData = _gupu.stars[idx]
 		if s == null:
 			continue
 		var node: StarNode = STAR_NODE_SCENE.instantiate()
@@ -135,6 +144,9 @@ func _rebuild_star_field() -> void:
 		node.position = Vector2(s.position_x * field_size.x, s.position_y * field_size.y)
 		var count: int = CodexState.equipments_at_star(s.id).size()
 		node.setup(s.id, count, _gupu.accent_color)
+		# 不参与本谱连线 + 无装备 → 大幅淡化（保留可点击）
+		if not participating.has(idx) and count == 0:
+			node.modulate.a = 0.18
 		node.clicked.connect(_on_star_clicked)
 		_star_nodes[s.id] = node
 	# 重绘骨架
