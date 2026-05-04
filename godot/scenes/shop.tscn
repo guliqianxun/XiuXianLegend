@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/shop_screen.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/actors/old_iron.tscn" id="2"]
@@ -18,6 +18,8 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="16"]
 [ext_resource type="PackedScene" path="res://scenes/ui/door_visual.tscn" id="17"]
 [ext_resource type="PackedScene" path="res://scenes/ui/scroll_card.tscn" id="18"]
+[ext_resource type="PackedScene" path="res://scenes/ui/main_quest_panel.tscn" id="19"]
+[ext_resource type="PackedScene" path="res://scenes/ui/onboarding_overlay.tscn" id="20"]
 
 [sub_resource type="ShaderMaterial" id="bg_mat"]
 shader = ExtResource("14")
@@ -117,6 +119,16 @@ text = "☯ 诡器谱 0 · 共鸣 0/7"
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.745, 0.585, 0.585, 1)
 
+[node name="ChapterLabel" type="Label" parent="HUD/HudFrame/VBox"]
+text = "卷·序章 旧债"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.85, 0.78, 0.50, 0.9)
+
+[node name="QuestButton" type="Button" parent="HUD/HudFrame/VBox"]
+text = "☯ 老铁身世"
+custom_minimum_size = Vector2(0, 26)
+theme_override_font_sizes/font_size = 12
+
 [node name="RulesFrame" type="PanelContainer" parent="HUD"]
 offset_left = 320.0
 offset_top = 12.0
@@ -150,5 +162,9 @@ theme_override_colors/font_color = Color(0.640, 0.745, 0.870, 1)
 [node name="EventLogPanel" parent="." instance=ExtResource("12")]
 
 [node name="EventLogScreen" parent="." instance=ExtResource("13")]
+
+[node name="MainQuestPanel" parent="." instance=ExtResource("19")]
+
+[node name="OnboardingOverlay" parent="." instance=ExtResource("20")]
 
 [node name="PauseMenu" parent="." instance=ExtResource("16")]
