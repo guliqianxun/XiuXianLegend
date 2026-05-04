@@ -4,6 +4,7 @@ class_name ForgeLogFlow
 ## ScrollContainer + VBox，自动滚到底；用户主动滚则暂停 auto-scroll。
 
 const KIND_PREFIX: String = "forge_"
+const MAX_LABELS: int = 60   ## 与 EventLog.MAX_ENTRIES (50) 略大，防 Label 累积成性能瓶颈
 
 @onready var _scroll: ScrollContainer = $Frame/Scroll
 @onready var _list: VBoxContainer = $Frame/Scroll/List
@@ -32,6 +33,9 @@ func rebuild_from_event_log() -> void:
 func _on_log_added(entry: Dictionary) -> void:
 	if not _is_forge_entry(entry): return
 	_append_label(entry)
+	# 超出 cap 时丢弃最早的 Label（防长玩累积）
+	while _list.get_child_count() > MAX_LABELS:
+		_list.get_child(0).queue_free()
 	if not _user_scrolled_up:
 		_scroll_to_bottom_deferred()
 

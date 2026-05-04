@@ -62,6 +62,12 @@ func _ready() -> void:
 	# 全屏 modal 弹出时隐藏 HUD（避免与 modal 角部按钮重叠）
 	for modal in [_forge_screen, _codex_screen, _diary_screen, _rules_screen]:
 		modal.visibility_changed.connect(_refresh_hud_visibility)
+	# 把 DoorVisual 移入 Counter 卡的 StatusArea 并隐藏默认 status 文字
+	if _door_visual.get_parent() != null:
+		_door_visual.get_parent().remove_child(_door_visual)
+	_door_visual.position = Vector2.ZERO
+	_door_visual.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_card_counter.mount_status_widget(_door_visual)
 	# 启动后立即载档
 	SaveSystem.load_or_init()
 	# 给玩家点初始材料用于试炉（仅在 inventory 为空时）
