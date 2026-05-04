@@ -18,12 +18,12 @@ const AREA_POSITIONS: Dictionary = {
 @onready var _hud_brush: Label = $HUD/HudFrame/VBox/BrushLabel
 @onready var _hud_codex: Label = $HUD/HudFrame/VBox/CodexLabel
 @onready var _hud_rules: Label = $HUD/RulesFrame/RulesLabel
-@onready var _open_forge_btn: Button = $AreaFurnace/OpenForgeButton
+@onready var _card_forge: ScrollCard = $ScrollCardForge
 @onready var _forge_screen: ForgeScreen = $ForgeScreen
-@onready var _open_codex_btn: Button = $AreaLoft/OpenCodexButton
+@onready var _card_codex: ScrollCard = $ScrollCardCodex
 @onready var _codex_screen: CodexScreen = $CodexScreen
-@onready var _open_counter_btn: Button = $AreaCounter/OpenCounterButton
-@onready var _door_visual: DoorVisual = $AreaCounter/DoorVisual
+@onready var _card_counter: ScrollCard = $ScrollCardCounter
+@onready var _door_visual: DoorVisual = $ScrollCardCounter/DoorVisual
 @onready var _customer_panel: CustomerArrivalPanel = $CustomerArrivalPanel
 @onready var _lend_dialog: LendDialog = $LendDialog
 @onready var _return_notice: ReturnNotice = $ReturnNotice
@@ -32,7 +32,7 @@ const AREA_POSITIONS: Dictionary = {
 @onready var _narrative_overlay: NarrativeOverlay = $NarrativeOverlay
 @onready var _event_log_panel: EventLogPanel = $EventLogPanel
 @onready var _event_log_screen: EventLogScreen = $EventLogScreen
-@onready var _open_rules_btn: Button = $AreaYard/OpenRulesButton
+@onready var _card_rules: ScrollCard = $ScrollCardRules
 
 
 func _ready() -> void:
@@ -70,10 +70,10 @@ func _ready() -> void:
 	EventBus.weird_codex_recorded.connect(func(_f: StringName, _t: int) -> void: _refresh_hud())
 	EventBus.shop_rule_changed.connect(func(_i: int) -> void: _refresh_hud())
 	# 4 区域按钮
-	_open_forge_btn.pressed.connect(_on_open_forge)
-	_open_codex_btn.pressed.connect(_on_open_codex)
-	_open_counter_btn.pressed.connect(_on_open_counter)
-	_open_rules_btn.pressed.connect(_on_open_rules)
+	_card_forge.opened.connect(_on_open_forge)
+	_card_codex.opened.connect(_on_open_codex)
+	_card_counter.opened.connect(_on_open_counter)
+	_card_rules.opened.connect(_on_open_rules)
 	# Customer 流程
 	_customer_panel.lend_pressed.connect(_on_customer_lend)
 	_customer_panel.refuse_pressed.connect(_on_customer_refuse)
@@ -84,25 +84,59 @@ func _ready() -> void:
 	# 启动后弹出小本（如果有未读条目）
 	if not GameState.offline_diary_pending.is_empty():
 		_diary_screen.open(GameState.offline_diary_pending.duplicate())
-	# 柜台按钮联动 pending 状态
-	EventBus.customer_arrived.connect(func(_a: Variant = null, _b: Variant = null) -> void: _refresh_counter_button())
-	EventBus.equipment_returned.connect(func(_c: StringName, _g: Variant, _o: StringName) -> void: _refresh_counter_button())
-	EventBus.customer_left.connect(func(_c: StringName, _r: bool) -> void: _refresh_counter_button())
-	_refresh_counter_button()
+	# 卷宗近况实时刷新
+	EventBus.forge_finished.connect(func(_g: Variant, _q: bool, _b: bool) -> void: _refresh_card_forge())
+	EventBus.resonance_activated.connect(func(_g: StringName, _p: StringName) -> void: _refresh_card_codex())
+	EventBus.codex_changed.connect(func(_g: StringName) -> void: _refresh_card_codex())
+	EventBus.shop_rule_changed.connect(func(_i: int) -> void: _refresh_card_rules())
+	_refresh_card_forge()
+	_refresh_card_codex()
+	_refresh_card_rules()
 	_refresh_hud()
 
 
 const COUNTER_FAIL_THROTTLE_SEC := 1.5
+const RECENT_FORGE_LOOKBACK := 10
 var _last_counter_fail_unix: float = -10.0
+const _GUPU_IDS: Array[StringName] = [&"qing_long", &"xuan_wu", &"zhu_que", &"bai_hu", &"zi_wei", &"xue_yao", &"can_xiu"]
 
 
-func _refresh_counter_button() -> void:
-	if EncounterState.pending_request != null:
-		_open_counter_btn.text = "✉  等回应中…"
-		_open_counter_btn.disabled = true
-	else:
-		_open_counter_btn.text = "✉  接　客"
-		_open_counter_btn.disabled = false
+func _refresh_card_forge() -> void:
+	var entries: Array = EventLog.entries
+	var open_n: int = 0
+	var bk_n: int = 0
+	var seen: int = 0
+	for i in range(entries.size() - 1, -1, -1):
+		var e: Dictionary = entries[i]
+		var k: String = String(e.get("kind", ""))
+		if not k.begins_with("forge_"):
+			continue
+		seen += 1
+		if k == "forge_done":
+			open_n += 1
+		elif k == "forge_backlash":
+			bk_n += 1
+		if seen >= RECENT_FORGE_LOOKBACK:
+			break
+	_card_forge.set_status("近 %d 条：开炉 %d · 反噬 %d" % [seen, open_n, bk_n])
+
+
+func _refresh_card_codex() -> void:
+	var resonant: int = 0
+	for gid in _GUPU_IDS:
+		if GameState.has_resonance(gid):
+			resonant += 1
+	var current: StringName = CodexState.current_gupu_id if CodexState.current_gupu_id != &"" else &"qing_long"
+	var name: String = "—"
+	var g := DataRegistry.get_resource(&"gupu", current) as GuPuData
+	if g != null:
+		name = g.display_name
+	_card_codex.set_status("共鸣 %d/7 · 当前 %s" % [resonant, name])
+
+
+func _refresh_card_rules() -> void:
+	var n: int = ShopRules.enabled.size()
+	_card_rules.set_status("%d 条铺规已立" % n)
 
 
 func _run_offline_settlement() -> void:
@@ -238,7 +272,6 @@ func _on_gear_chosen(gear: GearInstance, req: CustomerRequest) -> void:
 	EventLog.add_entry(&"lend", "借出 %s 给 %s（+%d 灵石）" %
 		[gear.display_full_name(), name, req.payment], &"good")
 	SaveSystem.save_now(true)
-	_refresh_counter_button()
 	# N4 v1 简化：到时立即 resolve（玩家不用真等）；N5 改为正常计时
 	_resolve_now(gear, req)
 
