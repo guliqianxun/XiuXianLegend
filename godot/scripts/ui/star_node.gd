@@ -17,6 +17,8 @@ const COLOR_LIT_GLOW := Color(0.940, 0.685, 0.345, 0.55)
 
 var su_id: StringName = &""
 var equipment_count: int = 0
+## 该谱主色 — 应用到 glow + 暗环。null 时回退默认金色。
+var accent_color: Color = COLOR_LIT_GLOW
 
 @onready var _count_label: Label = $CountLabel
 @onready var _btn: Button = $HitArea
@@ -31,9 +33,11 @@ func _ready() -> void:
 
 
 ## 设置星位状态。count > 0 = 亮；= 0 = 暗。
-func setup(su_id_: StringName, count: int) -> void:
+## glow_color 为该古谱的 accent_color；不传则用默认金色。
+func setup(su_id_: StringName, count: int, glow_color: Color = COLOR_LIT_GLOW) -> void:
 	su_id = su_id_
 	equipment_count = count
+	accent_color = glow_color
 	if is_inside_tree():
 		_refresh_visual()
 
@@ -50,18 +54,21 @@ func _refresh_visual() -> void:
 func _draw() -> void:
 	var c := Vector2.ZERO  # Control 局部 (0,0) 即星位中心（父级 position 已偏移）
 	if equipment_count > 0:
-		# glow 多层圆，从外到内
+		# glow 多层圆，从外到内 — 用谱的 accent_color
+		var glow_base: Color = accent_color
 		for i in GLOW_LAYERS:
 			var t: float = float(i + 1) / float(GLOW_LAYERS)
 			var r: float = lerpf(RADIUS_LIT_CORE, GLOW_RADIUS_MAX, t)
-			var col: Color = COLOR_LIT_GLOW
+			var col: Color = glow_base
 			col.a = COLOR_LIT_GLOW.a * (1.0 - t) * 0.6
 			draw_circle(c, r, col)
-		# 中心亮核
+		# 中心亮核保持米黄白（"亮"的辨识度）
 		draw_circle(c, RADIUS_LIT_CORE, COLOR_LIT_CORE)
 	else:
-		# 暗态：小圆 + 微环
-		draw_circle(c, RADIUS_DIM + 1.5, COLOR_DIM_RING)
+		# 暗态：小圆 + 微环 — 环用谱色低饱和暗示主题
+		var ring: Color = accent_color
+		ring.a = 0.30
+		draw_circle(c, RADIUS_DIM + 1.5, ring)
 		draw_circle(c, RADIUS_DIM, COLOR_DIM)
 
 

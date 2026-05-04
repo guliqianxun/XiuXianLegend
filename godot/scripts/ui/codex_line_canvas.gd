@@ -2,9 +2,9 @@ extends Node2D
 class_name CodexLineCanvas
 ## 画古谱主脉骨架线 + N7b 玩家自连线。
 
-## 主脉骨架金线（亮内 + 淡外）
-const COLOR_PRESET_CORE := Color(0.940, 0.685, 0.345, 0.85)
-const COLOR_PRESET_GLOW := Color(0.940, 0.685, 0.345, 0.18)
+## 主脉骨架默认金色（古谱无 accent_color 时的回退）
+const COLOR_PRESET_CORE_DEFAULT := Color(0.940, 0.685, 0.345, 0.85)
+const COLOR_PRESET_GLOW_DEFAULT := Color(0.940, 0.685, 0.345, 0.18)
 ## 玩家自连青线（亮内 + 淡外）
 const COLOR_PLAYER_CORE := Color(0.55, 0.85, 1.0, 0.95)
 const COLOR_PLAYER_GLOW := Color(0.55, 0.85, 1.0, 0.20)
@@ -24,14 +24,18 @@ func setup(gupu: GuPuData, field_size: Vector2) -> void:
 func _draw() -> void:
 	if _gupu == null or _field_size == Vector2.ZERO:
 		return
-	# 主脉骨架
+	# 主脉骨架 — 用古谱 accent_color
+	var core: Color = _gupu.accent_color
+	core.a = 0.85
+	var glow: Color = _gupu.accent_color
+	glow.a = 0.18
 	var lines := _gupu.preset_lines
 	var i: int = 0
 	while i + 1 < lines.size():
 		var a: int = lines[i]
 		var b: int = lines[i + 1]
 		i += 2
-		_draw_glow_line_by_index(a, b, COLOR_PRESET_GLOW, COLOR_PRESET_CORE)
+		_draw_glow_line_by_index(a, b, glow, core)
 	# 玩家自连
 	var su_to_idx: Dictionary = {}
 	for k in _gupu.stars.size():

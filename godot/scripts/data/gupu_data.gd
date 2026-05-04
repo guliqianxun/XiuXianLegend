@@ -30,6 +30,11 @@ extends Resource
 @export var quality_min: int = 0
 @export var quality_max: int = 4
 
+## 视觉主题（用于切谱时差异化背景/星点/主脉色）
+@export var tint_color: Color = Color(0.022, 0.020, 0.045, 1.0)   ## 背景基调
+@export var accent_color: Color = Color(0.940, 0.685, 0.345, 1.0) ## 主脉线 + 星点 glow
+@export var glyph_char: String = "谱"                              ## 右上角印章单字
+
 
 ## 装备 (path, quality) 能否入此谱
 func accepts(path_affinity: StringName, quality: int) -> bool:
