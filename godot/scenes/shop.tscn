@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/shop_screen.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/actors/old_iron.tscn" id="2"]
@@ -17,12 +17,13 @@
 [ext_resource type="Script" path="res://scripts/ui/shichen_dial.gd" id="15"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="16"]
 [ext_resource type="PackedScene" path="res://scenes/ui/door_visual.tscn" id="17"]
+[ext_resource type="PackedScene" path="res://scenes/ui/scroll_card.tscn" id="18"]
 
 [sub_resource type="ShaderMaterial" id="bg_mat"]
 shader = ExtResource("14")
-shader_parameter/base_color = Color(0.055, 0.045, 0.038, 1.0)
+shader_parameter/base_color = Color(0.082, 0.060, 0.038, 1.0)
 shader_parameter/noise_strength = 0.06
-shader_parameter/vignette_strength = 0.45
+shader_parameter/vignette_strength = 0.55
 shader_parameter/grain_scale = 180.0
 
 [node name="Shop" type="Node2D"]
@@ -34,144 +35,40 @@ offset_left = 0.0
 offset_top = 0.0
 offset_right = 1280.0
 offset_bottom = 720.0
-color = Color(0.055, 0.045, 0.038, 1)
+color = Color(0.082, 0.060, 0.038, 1)
 
-[node name="AreaFurnace" type="ColorRect" parent="."]
-offset_left = 80.0
-offset_top = 240.0
-offset_right = 480.0
-offset_bottom = 520.0
-color = Color(0.130, 0.082, 0.062, 1)
+[node name="ScrollCardForge" parent="." instance=ExtResource("18")]
+position = Vector2(120, 180)
+seal_char = "炉"
+card_title = "今日炉记"
+z_rotation_degrees = -3.0
 
-[node name="AreaFurnaceBorder" type="ColorRect" parent="AreaFurnace"]
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 400.0
-offset_bottom = 1.0
-color = Color(0.545, 0.227, 0.165, 0.4)
-mouse_filter = 2
+[node name="ScrollCardCounter" parent="." instance=ExtResource("18")]
+position = Vector2(720, 180)
+seal_char = "帖"
+card_title = "门外牌示"
+z_rotation_degrees = 3.0
 
-[node name="OpenForgeButton" type="Button" parent="AreaFurnace"]
-offset_left = 120.0
-offset_top = 105.0
-offset_right = 280.0
-offset_bottom = 170.0
-text = "❋  开　炉"
-theme_override_font_sizes/font_size = 26
+[node name="DoorVisual" parent="ScrollCardCounter" instance=ExtResource("17")]
+offset_left = 12.0
+offset_top = 60.0
+offset_right = 268.0
+offset_bottom = 140.0
 
-[node name="LabelFurnace" type="Label" parent="AreaFurnace"]
-offset_left = 14.0
-offset_top = 8.0
-offset_right = 200.0
-offset_bottom = 36.0
-text = "—— 炉房 ——"
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.785, 0.580, 0.420, 1)
+[node name="ScrollCardCodex" parent="." instance=ExtResource("18")]
+position = Vector2(200, 420)
+seal_char = "谱"
+card_title = "古谱卷"
+z_rotation_degrees = 2.0
 
-[node name="AreaCounter" type="ColorRect" parent="."]
-offset_left = 480.0
-offset_top = 240.0
-offset_right = 800.0
-offset_bottom = 520.0
-color = Color(0.155, 0.122, 0.082, 1)
-
-[node name="AreaCounterBorder" type="ColorRect" parent="AreaCounter"]
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 320.0
-offset_bottom = 1.0
-color = Color(0.545, 0.227, 0.165, 0.4)
-mouse_filter = 2
-
-[node name="DoorVisual" parent="AreaCounter" instance=ExtResource("17")]
-offset_left = 20.0
-offset_top = 38.0
-offset_right = 300.0
-offset_bottom = 118.0
-
-[node name="OpenCounterButton" type="Button" parent="AreaCounter"]
-offset_left = 80.0
-offset_top = 130.0
-offset_right = 240.0
-offset_bottom = 195.0
-text = "✉  接　客"
-theme_override_font_sizes/font_size = 26
-
-[node name="LabelCounter" type="Label" parent="AreaCounter"]
-offset_left = 14.0
-offset_top = 8.0
-offset_right = 200.0
-offset_bottom = 36.0
-text = "—— 柜台 ——"
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.785, 0.580, 0.420, 1)
-
-[node name="AreaLoft" type="ColorRect" parent="."]
-offset_left = 480.0
-offset_top = 80.0
-offset_right = 800.0
-offset_bottom = 240.0
-color = Color(0.082, 0.067, 0.055, 1)
-
-[node name="AreaLoftBorder" type="ColorRect" parent="AreaLoft"]
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 320.0
-offset_bottom = 1.0
-color = Color(0.545, 0.227, 0.165, 0.35)
-mouse_filter = 2
-
-[node name="OpenCodexButton" type="Button" parent="AreaLoft"]
-offset_left = 100.0
-offset_top = 50.0
-offset_right = 220.0
-offset_bottom = 110.0
-text = "☷  查　谱"
-theme_override_font_sizes/font_size = 26
-
-[node name="LabelLoft" type="Label" parent="AreaLoft"]
-offset_left = 14.0
-offset_top = 8.0
-offset_right = 200.0
-offset_bottom = 36.0
-text = "—— 阁楼 ——"
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.685, 0.520, 0.395, 1)
-
-[node name="AreaYard" type="ColorRect" parent="."]
-offset_left = 800.0
-offset_top = 240.0
-offset_right = 1200.0
-offset_bottom = 520.0
-color = Color(0.045, 0.042, 0.030, 1)
-
-[node name="AreaYardBorder" type="ColorRect" parent="AreaYard"]
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 400.0
-offset_bottom = 1.0
-color = Color(0.545, 0.227, 0.165, 0.35)
-mouse_filter = 2
-
-[node name="LabelYard" type="Label" parent="AreaYard"]
-offset_left = 14.0
-offset_top = 8.0
-offset_right = 200.0
-offset_bottom = 36.0
-text = "—— 后院 ——"
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.585, 0.520, 0.385, 1)
-
-[node name="OpenRulesButton" type="Button" parent="AreaYard"]
-offset_left = 100.0
-offset_top = 105.0
-offset_right = 280.0
-offset_bottom = 170.0
-text = "❖  立　规"
-theme_override_font_sizes/font_size = 26
+[node name="ScrollCardRules" parent="." instance=ExtResource("18")]
+position = Vector2(820, 420)
+seal_char = "规"
+card_title = "店铺规约"
+z_rotation_degrees = -2.0
 
 [node name="OldIron" parent="." instance=ExtResource("2")]
-position = Vector2(150, 490)
+position = Vector2(640, 540)
 
 [node name="HUD" type="CanvasLayer" parent="."]
 

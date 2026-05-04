@@ -1,0 +1,74 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/scroll_card.gd" id="1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.18, 0.14, 0.10, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.545, 0.227, 0.165, 0.85)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_left = 0
+corner_radius_bottom_right = 0
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 6
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+
+[node name="ScrollCard" type="Control"]
+custom_minimum_size = Vector2(280, 160)
+script = ExtResource("1")
+
+[node name="Frame" type="PanelContainer" parent="."]
+offset_right = 280.0
+offset_bottom = 160.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="VBox" type="VBoxContainer" parent="Frame"]
+theme_override_constants/separation = 8
+
+[node name="Header" type="HBoxContainer" parent="Frame/VBox"]
+theme_override_constants/separation = 10
+
+[node name="Seal" type="ColorRect" parent="Frame/VBox/Header"]
+custom_minimum_size = Vector2(34, 34)
+color = Color(0.78, 0.32, 0.22, 1)
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="Frame/VBox/Header/Seal"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "炉"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.98, 0.94, 0.78, 1)
+mouse_filter = 2
+
+[node name="TitleLabel" type="Label" parent="Frame/VBox/Header"]
+text = "今日炉记"
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.940, 0.870, 0.685, 1)
+mouse_filter = 2
+
+[node name="Sep" type="HSeparator" parent="Frame/VBox"]
+
+[node name="StatusLabel" type="Label" parent="Frame/VBox"]
+text = "—— 暂无 ——"
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.785, 0.720, 0.550, 1)
+autowrap_mode = 2
+mouse_filter = 2
+
+[node name="StatusArea" type="Control" parent="Frame/VBox"]
+custom_minimum_size = Vector2(0, 80)
+size_flags_vertical = 3
+mouse_filter = 2
