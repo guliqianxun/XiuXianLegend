@@ -70,6 +70,8 @@ func _on_recipe_picked(recipe_id: StringName) -> void:
 func _on_start(selected_optional: Array) -> void:
 	if _current_recipe == null: return
 	_last_selected_optional = selected_optional
+	# 锁开炉按钮：本次开炉走完才能再点（防连点掏空材料）
+	_bottom_bar.set_busy(true)
 	# 消耗必要材料 + 可选添料
 	for mid in _current_recipe.required_materials:
 		var need: int = int(_current_recipe.required_materials[mid])
@@ -130,6 +132,7 @@ func _on_timing_finished(score: float) -> void:
 func _on_overlay_done() -> void:
 	# 注意：rebuild_chips 会清空 _chip_state — 这是设计意图（每次出炉后玩家重新选添料）
 	# 刷新材料缩略 + chips 状态（消耗后数量变了）
+	_bottom_bar.set_busy(false)
 	if _current_recipe != null:
 		_top_bar.refresh_materials(_current_recipe)
 		_bottom_bar.rebuild_chips(_current_recipe)

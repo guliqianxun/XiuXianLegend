@@ -39,9 +39,18 @@ func rebuild_chips(recipe: RecipeData) -> void:
 	refresh_start_enabled()
 
 
-## ForgeScreen 调用：根据材料是否够用刷新 start 按钮
+var _busy: bool = false
+
+
+## ForgeScreen 调用：开炉中锁按钮（防玩家连点掏空材料），出炉后解锁。
+func set_busy(busy: bool) -> void:
+	_busy = busy
+	refresh_start_enabled()
+
+
+## ForgeScreen 调用：根据材料是否够用 + 是否在开炉中刷新 start 按钮
 func refresh_start_enabled() -> void:
-	if _current_recipe == null:
+	if _busy or _current_recipe == null:
 		_start_btn.disabled = true
 		return
 	var ok: bool = true

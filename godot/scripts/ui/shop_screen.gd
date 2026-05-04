@@ -22,6 +22,7 @@ const CARD_LAYOUT: Dictionary = {
 
 @onready var _old_iron: Node2D = $OldIron
 @onready var _background: ColorRect = $Background
+@onready var _hud_canvas: CanvasLayer = $HUD
 @onready var _hud_time: Label = $HUD/HudFrame/VBox/TimeRow/TimeLabel
 @onready var _hud_money: Label = $HUD/HudFrame/VBox/MoneyLabel
 @onready var _hud_reputation: Label = $HUD/HudFrame/VBox/ReputationLabel
@@ -58,6 +59,9 @@ func _ready() -> void:
 	# 多分辨率：响应窗口尺寸变化重布局（老铁位置由 _layout_for_viewport 安排）
 	get_viewport().size_changed.connect(_layout_for_viewport)
 	_layout_for_viewport()
+	# 全屏 modal 弹出时隐藏 HUD（避免与 modal 角部按钮重叠）
+	for modal in [_forge_screen, _codex_screen, _diary_screen, _rules_screen]:
+		modal.visibility_changed.connect(_refresh_hud_visibility)
 	# 启动后立即载档
 	SaveSystem.load_or_init()
 	# 给玩家点初始材料用于试炉（仅在 inventory 为空时）
@@ -110,6 +114,15 @@ const COUNTER_FAIL_THROTTLE_SEC := 1.5
 const RECENT_FORGE_LOOKBACK := 10
 var _last_counter_fail_unix: float = -10.0
 const _GUPU_IDS: Array[StringName] = [&"qing_long", &"xuan_wu", &"zhu_que", &"bai_hu", &"zi_wei", &"xue_yao", &"can_xiu"]
+
+
+func _refresh_hud_visibility() -> void:
+	var any_modal_open: bool = false
+	for modal in [_forge_screen, _codex_screen, _diary_screen, _rules_screen]:
+		if modal != null and modal.visible:
+			any_modal_open = true
+			break
+	_hud_canvas.visible = not any_modal_open
 
 
 ## 重布局以适应当前 viewport 尺寸（窗口缩放 / fullscreen 切换 / 不同分辨率启动）
